@@ -1,18 +1,18 @@
-package de.melanx.modid;
+package de.melanx.advancementbook;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(ModName.MODID)
-public class ModName {
+@Mod(AdvancementBook.MODID)
+public class AdvancementBook {
 
-    public static final String MODID = "modid";
+    public static final String MODID = "advancementbook";
     private static final Logger LOGGER = LogManager.getLogger(MODID);
-    public ModName instance;
+    public AdvancementBook instance;
 
-    public ModName() {
+    public AdvancementBook() {
         instance = this;
 
         MinecraftForge.EVENT_BUS.register(this);
