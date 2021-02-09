@@ -34,7 +34,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 minecraft {
     mappings("snapshot", mappings_version)
-//    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     createRunConfig("client")
     createRunConfig("server")
@@ -116,13 +116,18 @@ repositories {
         name = "JEI"
         url = "https://dvs1.progwml6.com/files/maven/"
     }
+    maven {
+        name = "MelanX Maven"
+        url = "https://maven.melanx.de/"
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    compile fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.16.3-${libx_version}")
+
+    compile fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 }
 
 private static String getVersion(String group, String artifact, String baseVersion) {
