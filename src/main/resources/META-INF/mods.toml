@@ -11,7 +11,7 @@ updateJSONURL="https://raw.githubusercontent.com/MelanX/mod-updatechecker-files/
 displayURL="www.curseforge.com/members/melanx/"
 #logoFile="jea.png"
 credits=""
-authors="MelanX"
+authors="MelanX, noeppi_noeppi"
 description='''
 An addon for JEI to view advancements.
 '''
