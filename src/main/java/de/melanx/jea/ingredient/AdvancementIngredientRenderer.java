@@ -30,7 +30,7 @@ public class AdvancementIngredientRenderer implements IIngredientRenderer<Advanc
     @Override
     public List<ITextComponent> getTooltip(@Nonnull AdvancementInfo ingredient, @Nonnull ITooltipFlag flag) {
         List<ITextComponent> list = new ArrayList<>();
-        list.add(ingredient.translation);
+        list.add(ingredient.title);
         return list;
     }
 }

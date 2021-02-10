@@ -1,9 +1,11 @@
 package de.melanx.jea;
 
+import de.melanx.jea.ingredient.AdvancementCategory;
 import de.melanx.jea.ingredient.AdvancementInfo;
 import de.melanx.jea.ingredient.AdvancementIngredientHelper;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
 import de.melanx.jea.util.ClientAdvancementInfo;
+import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -35,6 +37,13 @@ public class JEAPlugin implements IModPlugin {
     public void registerIngredients(@Nonnull IModIngredientRegistration registration) {
         Collection<AdvancementInfo> advancements = ClientAdvancementInfo.getAdvancements();
         registration.register(TYPE, advancements, new AdvancementIngredientHelper(), new AdvancementIngredientRenderer());
+    }
+
+    @Override
+    public void registerCategories(@Nonnull IRecipeCategoryRegistration registration) {
+        registration.addRecipeCategories(
+                new AdvancementCategory(registration.getJeiHelpers().getGuiHelper(), Internal.getTextures())
+        );
     }
 
     @Override

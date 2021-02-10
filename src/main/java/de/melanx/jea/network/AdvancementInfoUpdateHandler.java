@@ -14,13 +14,13 @@ public class AdvancementInfoUpdateHandler {
     public static void handle(AdvancementInfoUpdateSerializer.AdvancementInfoUpdateMessage msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             msg.infos.forEach(info -> {
-                ClientAdvancementInfo.updateAdvancementInfo(info.id, info.display, info.translation, info.tooltip);
+                ClientAdvancementInfo.updateAdvancementInfo(info.id, info.display, info.title, info.desc, info.tooltip);
             });
             if (Minecraft.getInstance().getResourceManager() instanceof SimpleReloadableResourceManager) {
                 SimpleReloadableResourceManager resourceManager = (SimpleReloadableResourceManager) Minecraft.getInstance().getResourceManager();
                 for (IFutureReloadListener listener : resourceManager.reloadListeners) {
                     if (listener instanceof JeiReloadListener) {
-                        ((ISelectiveResourceReloadListener) listener).onResourceManagerReload(resourceManager); // TODO
+                        ((ISelectiveResourceReloadListener) listener).onResourceManagerReload(resourceManager);
                     }
                 }
             }

@@ -66,7 +66,7 @@ public class JustEnoughNetwork extends NetworkX {
                     }
                 }
 
-                infos.add(new AdvancementInfo(advancement.getId(), advancement.getDisplay().icon, advancement.getDisplay().getTitle(), tooltip));
+                infos.add(new AdvancementInfo(advancement.getId(), advancement.getDisplay().icon, advancement.getDisplay().getTitle(), advancement.getDisplay().getDescription(), tooltip));
             }
         });
 

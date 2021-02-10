@@ -2,7 +2,6 @@ package de.melanx.jea.ingredient;
 
 import com.google.common.collect.Streams;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import net.minecraft.advancements.Advancement;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +18,7 @@ public class AdvancementIngredientHelper implements IIngredientHelper<Advancemen
     @Nonnull
     @Override
     public String getDisplayName(@Nonnull AdvancementInfo advancement) {
-        return advancement.translation.getString();
+        return advancement.title.getString();
     }
 
     @Nonnull

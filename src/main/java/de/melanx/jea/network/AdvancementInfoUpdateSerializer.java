@@ -27,7 +27,8 @@ public class AdvancementInfoUpdateSerializer implements PacketSerializer<Advance
         msg.infos.forEach(info -> {
             buffer.writeResourceLocation(info.id);
             buffer.writeCompoundTag(info.display.write(new CompoundNBT()));
-            buffer.writeTextComponent(info.translation);
+            buffer.writeTextComponent(info.title);
+            buffer.writeTextComponent(info.desc);
             buffer.writeBoolean(info.tooltip != null);
             if (info.tooltip != null) {
                 buffer.writeString(JustEnoughAdvancements.GSON.toJson(info.tooltip.serialize()), 0x40000);
@@ -45,11 +46,12 @@ public class AdvancementInfoUpdateSerializer implements PacketSerializer<Advance
             @SuppressWarnings("ConstantConditions")
             ItemStack display = ItemStack.read(buffer.readCompoundTag());
             ITextComponent translation = buffer.readTextComponent();
+            ITextComponent desc = buffer.readTextComponent();
             ItemPredicate tooltip = null;
             if (buffer.readBoolean()) {
                 tooltip = ItemPredicate.deserialize(JustEnoughAdvancements.GSON.fromJson(buffer.readString(0x40000), JsonElement.class));
             }
-            infos.add(new AdvancementInfo(id, display, translation, tooltip));
+            infos.add(new AdvancementInfo(id, display, translation, desc, tooltip));
         }
 
         return new AdvancementInfoUpdateMessage(infos);
