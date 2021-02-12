@@ -1,7 +1,5 @@
 package de.melanx.jea;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.melanx.jea.network.JustEnoughNetwork;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,13 +14,6 @@ import javax.annotation.Nonnull;
 @Mod("jea")
 public class JustEnoughAdvancements extends ModX {
 
-    public static final Gson GSON = net.minecraft.util.Util.make(() -> {
-        GsonBuilder gsonbuilder = new GsonBuilder();
-        gsonbuilder.disableHtmlEscaping();
-        gsonbuilder.setLenient();
-        return gsonbuilder.create();
-    });
-
     private static JustEnoughAdvancements instance;
     private static JustEnoughNetwork network;
 
@@ -32,16 +23,18 @@ public class JustEnoughAdvancements extends ModX {
         super("jea", null);
         instance = this;
         network = new JustEnoughNetwork(this);
-    }
-
-    @Nonnull
-    public static JustEnoughNetwork getNetwork() {
-        return network;
+        
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     @Nonnull
     public static JustEnoughAdvancements getInstance() {
         return instance;
+    }
+
+    @Nonnull
+    public static JustEnoughNetwork getNetwork() {
+        return network;
     }
 
     @Override

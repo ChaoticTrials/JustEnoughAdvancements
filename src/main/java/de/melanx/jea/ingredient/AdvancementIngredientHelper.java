@@ -1,6 +1,7 @@
 package de.melanx.jea.ingredient;
 
 import com.google.common.collect.Streams;
+import de.melanx.jea.client.data.AdvancementInfo;
 import mezz.jei.api.ingredients.IIngredientHelper;
 
 import javax.annotation.Nonnull;
@@ -18,7 +19,7 @@ public class AdvancementIngredientHelper implements IIngredientHelper<Advancemen
     @Nonnull
     @Override
     public String getDisplayName(@Nonnull AdvancementInfo advancement) {
-        return advancement.title.getString();
+        return advancement.getDisplay().getTitle().getString();
     }
 
     @Nonnull
@@ -36,7 +37,7 @@ public class AdvancementIngredientHelper implements IIngredientHelper<Advancemen
     @Nonnull
     @Override
     public String getResourceId(@Nonnull AdvancementInfo advancement) {
-        return advancement.id.toString();
+        return advancement.id.getPath();
     }
 
     @Nonnull
@@ -48,6 +49,6 @@ public class AdvancementIngredientHelper implements IIngredientHelper<Advancemen
     @Nonnull
     @Override
     public String getErrorInfo(@Nullable AdvancementInfo advancement) {
-        return "Ja lol ey, da gibt's n Fehler."; // TODO skateIEH
+        return advancement == null ? "Unknwon advancement" : advancement.toString();
     }
 }

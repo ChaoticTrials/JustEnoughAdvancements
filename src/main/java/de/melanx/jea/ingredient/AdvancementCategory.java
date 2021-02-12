@@ -3,6 +3,7 @@ package de.melanx.jea.ingredient;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import de.melanx.jea.JEAPlugin;
 import de.melanx.jea.JustEnoughAdvancements;
+import de.melanx.jea.client.data.AdvancementInfo;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -10,13 +11,9 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-
-import java.nio.charset.MalformedInputException;
 
 import static mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory.recipeHeight;
 import static mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory.recipeWidth;
@@ -68,7 +65,7 @@ public class AdvancementCategory implements IRecipeCategory<AdvancementInfo> {
 
     @Override
     public void setIngredients(@Nonnull AdvancementInfo info, @Nonnull IIngredients ingredients) {
-        ingredients.setInput(JEAPlugin.TYPE, info);
+        ingredients.setInput(JEAPlugin.ADVANCEMENT_TYPE, info);
     }
 
     @Override

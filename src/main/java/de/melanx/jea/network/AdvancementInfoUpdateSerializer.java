@@ -1,15 +1,8 @@
 package de.melanx.jea.network;
 
-import com.google.gson.JsonElement;
-import de.melanx.jea.JustEnoughAdvancements;
-import de.melanx.jea.ingredient.AdvancementInfo;
+import de.melanx.jea.client.data.AdvancementInfo;
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,45 +16,28 @@ public class AdvancementInfoUpdateSerializer implements PacketSerializer<Advance
 
     @Override
     public void encode(AdvancementInfoUpdateMessage msg, PacketBuffer buffer) {
-        buffer.writeVarInt(msg.infos.size());
-        msg.infos.forEach(info -> {
-            buffer.writeResourceLocation(info.id);
-            buffer.writeCompoundTag(info.display.write(new CompoundNBT()));
-            buffer.writeTextComponent(info.title);
-            buffer.writeTextComponent(info.desc);
-            buffer.writeBoolean(info.tooltip != null);
-            if (info.tooltip != null) {
-                buffer.writeString(JustEnoughAdvancements.GSON.toJson(info.tooltip.serialize()), 0x40000);
-            }
-        });
+        buffer.writeVarInt(msg.advancements.size());
+        for (AdvancementInfo info : msg.advancements) {
+            info.write(buffer);
+        }
     }
 
     @Override
     public AdvancementInfoUpdateMessage decode(PacketBuffer buffer) {
-        Set<AdvancementInfo> infos = new HashSet<>();
         int size = buffer.readVarInt();
-
+        Set<AdvancementInfo> advancements = new HashSet<>(size);
         for (int i = 0; i < size; i++) {
-            ResourceLocation id = buffer.readResourceLocation();
-            @SuppressWarnings("ConstantConditions")
-            ItemStack display = ItemStack.read(buffer.readCompoundTag());
-            ITextComponent translation = buffer.readTextComponent();
-            ITextComponent desc = buffer.readTextComponent();
-            ItemPredicate tooltip = null;
-            if (buffer.readBoolean()) {
-                tooltip = ItemPredicate.deserialize(JustEnoughAdvancements.GSON.fromJson(buffer.readString(0x40000), JsonElement.class));
-            }
-            infos.add(new AdvancementInfo(id, display, translation, desc, tooltip));
+            advancements.add(AdvancementInfo.read(buffer));
         }
-
-        return new AdvancementInfoUpdateMessage(infos);
+        return new AdvancementInfoUpdateMessage(advancements);
     }
 
     public static class AdvancementInfoUpdateMessage {
-        public final Set<AdvancementInfo> infos;
+        
+        public final Set<AdvancementInfo> advancements;
 
-        public AdvancementInfoUpdateMessage(Set<AdvancementInfo> infos) {
-            this.infos = infos;
+        public AdvancementInfoUpdateMessage(Set<AdvancementInfo> advancements) {
+            this.advancements = advancements;
         }
     }
 }

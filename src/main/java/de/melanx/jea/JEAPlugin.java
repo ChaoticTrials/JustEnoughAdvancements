@@ -1,21 +1,21 @@
 package de.melanx.jea;
 
+import de.melanx.jea.client.data.AdvancementInfo;
+import de.melanx.jea.client.data.ClientAdvancements;
 import de.melanx.jea.ingredient.AdvancementCategory;
-import de.melanx.jea.ingredient.AdvancementInfo;
 import de.melanx.jea.ingredient.AdvancementIngredientHelper;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
-import de.melanx.jea.util.ClientAdvancementInfo;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.registration.*;
+import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -23,7 +23,7 @@ import java.util.function.Function;
 public class JEAPlugin implements IModPlugin {
 
     public static final ResourceLocation ID = new ResourceLocation(JustEnoughAdvancements.getInstance().modid, "jeiplugin");
-    public static final IIngredientType<AdvancementInfo> TYPE = () -> AdvancementInfo.class;
+    public static final IIngredientType<AdvancementInfo> ADVANCEMENT_TYPE = () -> AdvancementInfo.class;
 
     private static IJeiRuntime runtime;
 
@@ -35,8 +35,7 @@ public class JEAPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registration) {
-        Collection<AdvancementInfo> advancements = ClientAdvancementInfo.getAdvancements();
-        registration.register(TYPE, advancements, new AdvancementIngredientHelper(), new AdvancementIngredientRenderer());
+        registration.register(ADVANCEMENT_TYPE, ClientAdvancements.getAdvancements(), new AdvancementIngredientHelper(), new AdvancementIngredientRenderer());
     }
 
     @Override
