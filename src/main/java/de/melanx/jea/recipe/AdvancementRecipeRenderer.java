@@ -1,10 +1,10 @@
-package de.melanx.jea.ingredient;
+package de.melanx.jea.recipe;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import de.melanx.jea.api.client.IAdvancementInfo;
-import de.melanx.jea.client.ClientAdvancementProgress;
-import de.melanx.jea.client.AdvancementDisplayHelper;
 import de.melanx.jea.AdvancementInfo;
+import de.melanx.jea.api.client.IAdvancementInfo;
+import de.melanx.jea.client.AdvancementDisplayHelper;
+import de.melanx.jea.client.ClientAdvancementProgress;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdvancementIngredientRenderer implements IIngredientRenderer<IAdvancementInfo> {
+public class AdvancementRecipeRenderer implements IIngredientRenderer<IAdvancementInfo> {
     
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int x, int y, @Nullable IAdvancementInfo info) {
@@ -31,14 +31,7 @@ public class AdvancementIngredientRenderer implements IIngredientRenderer<IAdvan
                 state = AdvancementState.OBTAINED;
             }
             
-            matrixStack.push();
-            matrixStack.translate(x, y, 0);
-            matrixStack.scale(16/24f, 16/24f, 1);
-            matrixStack.translate(-1, -1, 0);
-
-            AdvancementDisplayHelper.renderAdvancement(matrixStack, buffer, AdvancementInfo.get(info), state, 0, 0);
-            
-            matrixStack.pop();
+            AdvancementDisplayHelper.renderAdvancement(matrixStack, buffer, AdvancementInfo.get(info), state, x, y);
         }
     }
 

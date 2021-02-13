@@ -1,6 +1,6 @@
 package de.melanx.jea.network;
 
-import de.melanx.jea.client.data.ClientAdvancements;
+import de.melanx.jea.client.ClientAdvancements;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;

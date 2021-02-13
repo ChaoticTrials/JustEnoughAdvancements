@@ -1,6 +1,6 @@
 package de.melanx.jea.network;
 
-import de.melanx.jea.client.data.AdvancementInfo;
+import de.melanx.jea.AdvancementInfo;
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
 import net.minecraft.network.PacketBuffer;
 

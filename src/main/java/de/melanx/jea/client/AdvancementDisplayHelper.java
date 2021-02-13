@@ -2,7 +2,7 @@ package de.melanx.jea.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.melanx.jea.client.data.AdvancementInfo;
+import de.melanx.jea.AdvancementInfo;
 import io.github.noeppi_noeppi.libx.render.RenderHelper;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;

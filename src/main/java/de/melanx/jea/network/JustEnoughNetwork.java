@@ -1,6 +1,6 @@
 package de.melanx.jea.network;
 
-import de.melanx.jea.client.data.AdvancementInfo;
+import de.melanx.jea.AdvancementInfo;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import io.github.noeppi_noeppi.libx.network.NetworkX;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -19,7 +19,7 @@ public class JustEnoughNetwork extends NetworkX {
 
     @Override
     protected String getProtocolVersion() {
-        return "2";
+        return "3";
     }
 
     @Override

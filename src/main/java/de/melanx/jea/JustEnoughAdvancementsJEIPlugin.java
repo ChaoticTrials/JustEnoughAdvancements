@@ -1,17 +1,17 @@
 package de.melanx.jea;
 
-import de.melanx.jea.client.data.AdvancementInfo;
-import de.melanx.jea.client.data.ClientAdvancements;
-import de.melanx.jea.ingredient.AdvancementCategory;
+import de.melanx.jea.api.client.Jea;
+import de.melanx.jea.client.ClientAdvancements;
 import de.melanx.jea.ingredient.AdvancementIngredientHelper;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
-import mezz.jei.Internal;
+import de.melanx.jea.recipe.AdvancementCategory;
+import de.melanx.jea.recipe.AdvancementRecipeRenderer;
+import de.melanx.jea.recipe.AdvancementRecipeRendererTiny;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.util.ResourceLocation;
 
@@ -20,13 +20,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @JeiPlugin
-public class JEAPlugin implements IModPlugin {
+public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
     public static final ResourceLocation ID = new ResourceLocation(JustEnoughAdvancements.getInstance().modid, "jeiplugin");
-    public static final IIngredientType<AdvancementInfo> ADVANCEMENT_TYPE = () -> AdvancementInfo.class;
 
+    public static final AdvancementRecipeRenderer ADVANCEMENT_RECIPE_RENDERER = new AdvancementRecipeRenderer();
+    public static final AdvancementRecipeRendererTiny ADVANCEMENT_RECIPE_RENDERER_TINY = new AdvancementRecipeRendererTiny();
+    
     private static IJeiRuntime runtime;
-
+    
     @Override
     @Nonnull
     public ResourceLocation getPluginUid() {
@@ -35,26 +37,32 @@ public class JEAPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registration) {
-        registration.register(ADVANCEMENT_TYPE, ClientAdvancements.getAdvancements(), new AdvancementIngredientHelper(), new AdvancementIngredientRenderer());
+        registration.register(Jea.ADVANCEMENT_TYPE, ClientAdvancements.getIAdvancements(), new AdvancementIngredientHelper(), new AdvancementIngredientRenderer());
     }
 
     @Override
     public void registerCategories(@Nonnull IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(
-                new AdvancementCategory(registration.getJeiHelpers().getGuiHelper(), Internal.getTextures())
+                new AdvancementCategory(registration.getJeiHelpers().getGuiHelper())
         );
     }
 
     @Override
-    public void registerAdvanced(@Nonnull IAdvancedRegistration registration) {
-
+    public void registerRecipes(@Nonnull IRecipeRegistration registration) {
+        registration.addRecipes(ClientAdvancements.collectRecipes(), AdvancementCategory.UID);
     }
 
     @Override
     public void onRuntimeAvailable(@Nonnull IJeiRuntime runtime) {
-        JEAPlugin.runtime = runtime;
+        JustEnoughAdvancementsJEIPlugin.runtime = runtime;
     }
 
+    public static void runtimeOptional(Consumer<IJeiRuntime> action) {
+        if (runtime != null) {
+            action.accept(runtime);
+        }
+    }
+    
     public static void runtime(Consumer<IJeiRuntime> action) {
         if (runtime != null) {
             action.accept(runtime);
