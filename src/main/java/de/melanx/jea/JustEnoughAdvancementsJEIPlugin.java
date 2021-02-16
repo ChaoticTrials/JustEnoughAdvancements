@@ -4,11 +4,15 @@ import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.client.ClientAdvancements;
 import de.melanx.jea.ingredient.AdvancementIngredientHelper;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
+import de.melanx.jea.plugins.vanilla.render.ChannelingLightningInfo;
 import de.melanx.jea.recipe.AdvancementCategory;
 import de.melanx.jea.recipe.AdvancementRecipeRenderer;
 import de.melanx.jea.recipe.AdvancementRecipeRendererTiny;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -23,11 +27,10 @@ import java.util.function.Function;
 public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
     public static final ResourceLocation ID = new ResourceLocation(JustEnoughAdvancements.getInstance().modid, "jeiplugin");
-
-    public static final AdvancementRecipeRenderer ADVANCEMENT_RECIPE_RENDERER = new AdvancementRecipeRenderer();
-    public static final AdvancementRecipeRendererTiny ADVANCEMENT_RECIPE_RENDERER_TINY = new AdvancementRecipeRendererTiny();
     
     private static IJeiRuntime runtime;
+    private static IDrawableStatic slot;
+    private static IDrawable lightning;
     
     @Override
     @Nonnull
@@ -45,6 +48,8 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
         registration.addRecipeCategories(
                 new AdvancementCategory(registration.getJeiHelpers().getGuiHelper())
         );
+        slot = registration.getJeiHelpers().getGuiHelper().getSlotDrawable();
+        lightning = registration.getJeiHelpers().getGuiHelper().drawableBuilder(ChannelingLightningInfo.LIGHTNING_TEXTURE, 0, 0, 84, 84).setTextureSize(128, 128).buildAnimated(8, IDrawableAnimated.StartDirection.TOP, false);
     }
 
     @Override
@@ -71,11 +76,19 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
         }
     }
 
-    public static <T> T runtime(Function<IJeiRuntime, T> action) {
+    public static <T> T runtimeResult(Function<IJeiRuntime, T> action) {
         if (runtime != null) {
             return action.apply(runtime);
         } else {
             throw new IllegalStateException("JEI runtime is not yet available.");
         }
+    }
+
+    public static IDrawableStatic getSlot() {
+        return slot;
+    }
+
+    public static IDrawable getLightning() {
+        return lightning;
     }
 }

@@ -6,6 +6,10 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.util.text.ITextComponent;
+
+import java.util.List;
 
 /**
  * A criteron info is used to draw data for one criterion on a recipe.
@@ -51,5 +55,10 @@ public interface ICriterionInfo<T extends ICriterionInstance> {
     /**
      * Just like in a recipe category.
      */
-    void draw(MatrixStack matrixStack, Minecraft mc, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
+    void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
+
+    /**
+     * Adds the tooltip text for a mouse location.
+     */
+    void addTooltip(List<ITextComponent> tooltip, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
 }

@@ -2,33 +2,41 @@ package de.melanx.jea.recipe;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.melanx.jea.AdvancementInfo;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import de.melanx.jea.client.AdvancementDisplayHelper;
+import de.melanx.jea.client.ClientAdvancementProgress;
 import de.melanx.jea.client.ClientAdvancements;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
+import io.github.noeppi_noeppi.libx.render.RenderHelper;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
+import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.advancements.CriterionProgress;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CriterionRecipe {
-    
-    private static Class<?> guiIngredientClass;
-    private static Field rectangleField;
-    private static Field ingredientRenderField;
-    
+
     private final AdvancementInfo info;
     private final String criterionKey;
     private final ICriterionInstance criterion;
@@ -64,39 +72,73 @@ public class CriterionRecipe {
         ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).setRecipe(layout, this.info, this.criterionKey, this.criterion, ii);
         group.init(group.getGuiIngredients().size(), false, (ICriterionInfo.RECIPE_WIDTH / 2) - (26 / 2), 0);
         if (this.parent != null) {
-            group.init(group.getGuiIngredients().size(), true, JustEnoughAdvancementsJEIPlugin.ADVANCEMENT_RECIPE_RENDERER_TINY, 5, 5, 16, 16, 0, 0);
+            group.init(group.getGuiIngredients().size(), true, Jea.ADVANCEMENT_RECIPE_RENDERER_TINY, 5, 5, 16, 16, 0, 0);
         }
         group.set(ii);
-        for (IGuiIngredient<IAdvancementInfo> ingredient : group.getGuiIngredients().values()) {
-            try {
-                if (guiIngredientClass == null || rectangleField == null || ingredientRenderField == null) {
-                    guiIngredientClass = Class.forName("mezz.jei.gui.ingredients.GuiIngredient");
-                    rectangleField = guiIngredientClass.getDeclaredField("rect");
-                    rectangleField.setAccessible(true);
-                    ingredientRenderField = guiIngredientClass.getDeclaredField("ingredientRenderer");
-                    ingredientRenderField.setAccessible(true);
-                }
-                if (guiIngredientClass.isAssignableFrom(ingredient.getClass())) {
-                    IIngredientRenderer<?> render = (IIngredientRenderer<?>) ingredientRenderField.get(ingredient);
-                    if (render == null || render instanceof AdvancementIngredientRenderer) {
-                        ingredientRenderField.set(ingredient, JustEnoughAdvancementsJEIPlugin.ADVANCEMENT_RECIPE_RENDERER);
-                        Rectangle2d rect = (Rectangle2d) rectangleField.get(ingredient);
-                        rectangleField.set(ingredient, new Rectangle2d(rect.getX(), rect.getY(), 26, 26));
-                    }
-                }
-            } catch (ReflectiveOperationException | NoClassDefFoundError | ClassCastException e) {
-                guiIngredientClass = null;
-                rectangleField = null;
-            }
-        }
+        RecipeRenderSizeAdjust.changeRecipeSizes(layout, VanillaTypes.ITEM);
+        RecipeRenderSizeAdjust.changeRecipeSizes(layout, Jea.ADVANCEMENT_TYPE);
+        
     }
 
-    public void draw(MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(MatrixStack matrixStack, double mouseX, double mouseY, IDrawable complete, IDrawable incomplete) {
         Minecraft mc = Minecraft.getInstance();
         FontRenderer font = mc.fontRenderer;
         int width = font.getStringPropertyWidth(this.info.getFormattedDisplayName());
         font.func_243246_a(matrixStack, this.info.getFormattedDisplayName(), (ICriterionInfo.RECIPE_WIDTH / 2f) - (width / 2f), 27, 0xFFFFFF);
+        AdvancementProgress progress = ClientAdvancementProgress.getProgress(mc, this.info.getId());
+        IDrawable completedDrawable = incomplete;
+        if (progress != null) {
+            CriterionProgress criterionProgress = progress.getCriterionProgress(this.criterionKey);
+            if (criterionProgress != null && criterionProgress.isObtained()) {
+                completedDrawable = complete;
+            }
+        }
+        matrixStack.push();
+        matrixStack.translate(ICriterionInfo.RECIPE_WIDTH - 16 - 5, 5, 0);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        //noinspection deprecation
+        RenderSystem.color4f(1, 1, 1, 1);
+        if (mouseX >= ICriterionInfo.RECIPE_WIDTH - 16 - 5 && mouseX <= ICriterionInfo.RECIPE_WIDTH - 5
+                && mouseY >= 5 && mouseY <= 5 + 16) {
+            //noinspection deprecation
+            RenderSystem.disableLighting();
+            RenderSystem.disableDepthTest();
+            //noinspection deprecation
+            RenderSystem.color4f(1, 1, 1, 0.5f);
+            mc.getTextureManager().bindTexture(RenderHelper.TEXTURE_WHITE);
+            AbstractGui.blit(matrixStack, 0, 0, 0, 0, 16, 16, 256, 256);
+            //noinspection deprecation
+            RenderSystem.color4f(1, 1, 1, 1);
+        }
+        matrixStack.translate(0, 0, 10);
+        matrixStack.scale(16 / 17f, 16 / 17f, 0);
+        matrixStack.translate(1, 1, 0);
+        completedDrawable.draw(matrixStack);
+        RenderSystem.disableBlend();
+        matrixStack.pop();
         //noinspection unchecked
-        ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).draw(matrixStack, mc, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
+        ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).draw(matrixStack, mc.getRenderTypeBuffers().getBufferSource(), mc, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
+        mc.getRenderTypeBuffers().getBufferSource().finish();
+    }
+
+    public List<ITextComponent> getTooltip(double mouseX, double mouseY) {
+        ArrayList<ITextComponent> tooltip = new ArrayList<>();
+        if (mouseX >= ICriterionInfo.RECIPE_WIDTH - 16 - 5 && mouseX <= ICriterionInfo.RECIPE_WIDTH - 5
+                && mouseY >= 5 && mouseY <= 5 + 16) {
+            ITextComponent tc = new TranslationTextComponent("jea.criterion.incomplete");
+            AdvancementProgress progress = ClientAdvancementProgress.getProgress(this.info.getId());
+            if (progress != null) {
+                CriterionProgress criterionProgress = progress.getCriterionProgress(this.criterionKey);
+                if (criterionProgress != null && criterionProgress.isObtained()) {
+                    tc = new TranslationTextComponent("jea.criterion.complete");
+                }
+            }
+            tooltip.add(tc);
+        } else {
+            //noinspection unchecked
+            ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).addTooltip(tooltip, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
+        }
+        return tooltip;
     }
 }

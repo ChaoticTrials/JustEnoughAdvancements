@@ -1,7 +1,15 @@
 package de.melanx.jea.api.client;
 
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
+import de.melanx.jea.recipe.AdvancementRecipeRenderer;
+import de.melanx.jea.recipe.AdvancementRecipeRendererTiny;
+import de.melanx.jea.render.LargeBlockBreakingIngredientRender;
+import de.melanx.jea.render.LargeBlockIngredientRender;
+import de.melanx.jea.render.LargeItemIngredientRender;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
@@ -21,6 +29,16 @@ public class Jea {
 
     public static final IIngredientType<IAdvancementInfo> ADVANCEMENT_TYPE = () -> IAdvancementInfo.class;
     
+    public static final IIngredientRenderer<IAdvancementInfo> ADVANCEMENT_RECIPE_RENDERER = new AdvancementRecipeRenderer();
+    public static final IIngredientRenderer<IAdvancementInfo> ADVANCEMENT_RECIPE_RENDERER_TINY = new AdvancementRecipeRendererTiny();
+    
+    public static final IIngredientRenderer<ItemStack> SLIGHTLY_LARGE_ITEM = new LargeItemIngredientRender(24);
+    public static final IIngredientRenderer<ItemStack> LARGE_ITEM = new LargeItemIngredientRender(48);
+    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK = new LargeBlockIngredientRender();
+    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_BREAK_SLOW = new LargeBlockBreakingIngredientRender(12);
+    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_BREAK_FAST = new LargeBlockBreakingIngredientRender(3);
+
+
     private static final Map<ResourceLocation, ICriterionInfo<?>> criteria = new HashMap<>();
 
     /**
