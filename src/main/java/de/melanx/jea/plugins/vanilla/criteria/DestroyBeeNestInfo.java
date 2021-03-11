@@ -1,4 +1,4 @@
-package de.melanx.jea.plugins.vanilla.render;
+package de.melanx.jea.plugins.vanilla.criteria;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -44,13 +44,13 @@ public class DestroyBeeNestInfo implements ICriterionInfo<BeeNestDestroyedTrigge
     @Override
     public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, BeeNestDestroyedTrigger.Instance instance, IIngredients ii) {
         layout.getItemStacks().init(0, true, Jea.LARGE_BLOCK_BREAK_SLOW, 82, SPACE_TOP + 42, 48, 48, 0, 0);
-        layout.getItemStacks().init(1, true, 55, SPACE_TOP + 74);
+        layout.getItemStacks().init(1, true, 55, SPACE_TOP + 72);
         layout.getItemStacks().set(ii);
     }
 
     @Override
     public void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, BeeNestDestroyedTrigger.Instance instance, double mouseX, double mouseY) {
-        JeaRender.slotAt(matrixStack, 55, SPACE_TOP + 74);
+        JeaRender.slotAt(matrixStack, 55, SPACE_TOP + 72);
         ItemStack stack = JeaRender.cycle(IngredientUtil.fromItemPredicate(instance.itemPredicate, Items.IRON_HOE));
         matrixStack.push();
         matrixStack.translate(30, SPACE_TOP + 90, 0);

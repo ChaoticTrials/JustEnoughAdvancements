@@ -10,6 +10,7 @@ import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import de.melanx.jea.recipe.CriterionRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
@@ -30,16 +31,7 @@ public class ClientAdvancements {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             //noinspection UnstableApiUsage
             advancements = info.stream().collect(ImmutableMap.toImmutableMap(x -> x.id, Function.identity()));
-            JustEnoughAdvancementsJEIPlugin.runtimeOptional(runtime -> {
-                IIngredientManager imgr = runtime.getIngredientManager();
-                Collection<IAdvancementInfo> ingredients = imgr.getAllIngredients(Jea.ADVANCEMENT_TYPE);
-                if (!ingredients.isEmpty()) {
-                    imgr.removeIngredientsAtRuntime(Jea.ADVANCEMENT_TYPE, ingredients);
-                }
-                if (!advancements.isEmpty()) {
-                    imgr.addIngredientsAtRuntime(Jea.ADVANCEMENT_TYPE, getIAdvancements());
-                }
-            });
+            JustEnoughAdvancementsJEIPlugin.runtimeOptional(runtime -> updateAdvancementIngredientsJEI(runtime, 3));
             // We trigger a recipes updated event here so JEI will reload recipes and show our
             // new advancement information.
             ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
@@ -48,6 +40,26 @@ public class ClientAdvancements {
                 MinecraftForge.EVENT_BUS.post(new RecipesUpdatedEvent(connection.getRecipeManager()));
             }
             JeiUtil.triggerReload();
+        }
+    }
+    
+    private static void updateAdvancementIngredientsJEI(IJeiRuntime runtime, int tries) {
+        try {
+            IIngredientManager imgr = runtime.getIngredientManager();
+            Collection<IAdvancementInfo> ingredients = ImmutableList.copyOf(imgr.getAllIngredients(Jea.ADVANCEMENT_TYPE));
+            if (!ingredients.isEmpty()) {
+                imgr.removeIngredientsAtRuntime(Jea.ADVANCEMENT_TYPE, ingredients);
+            }
+            if (!advancements.isEmpty()) {
+                imgr.addIngredientsAtRuntime(Jea.ADVANCEMENT_TYPE, getIAdvancements());
+            }
+        } catch (ConcurrentModificationException e) {
+            if (tries > 0) {
+                JustEnoughAdvancements.logger.warn("Failed to update advancement ingredients for JEI. Trying again.");
+                updateAdvancementIngredientsJEI(runtime, tries - 1);
+            } else {
+                JustEnoughAdvancements.logger.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
+            }
         }
     }
     
@@ -69,18 +81,15 @@ public class ClientAdvancements {
     }
 
     public static List<CriterionRecipe> collectRecipes() {
-        Map<ResourceLocation, ICriterionInfo<?>> criteria = Jea.getCriteria();
         List<CriterionRecipe> recipes = new ArrayList<>();
         for (AdvancementInfo info : ClientAdvancements.getAdvancements()) {
             for (Map.Entry<String, Criterion> criterion : info.getCriteria().entrySet()) {
                 if (criterion.getValue().getCriterionInstance() != null) {
                     if (info.getCriteriaSerializerIds().containsKey(criterion.getKey())) {
                         ResourceLocation serializerId = info.getCriteriaSerializerIds().get(criterion.getKey());
-                        if (criteria.containsKey(serializerId)) {
-                            ICriterionInfo<?> c = criteria.get(criterion.getValue().getCriterionInstance().getId());
-                            if (c.criterionClass().isAssignableFrom(criterion.getValue().getCriterionInstance().getClass())) {
-                                recipes.add(new CriterionRecipe(info, criterion.getKey(), c));
-                            }
+                        ICriterionInfo<?> c = Jea.getCriterionInfo(info, criterion.getKey(), serializerId);
+                        if (c != null && c.criterionClass().isAssignableFrom(criterion.getValue().getCriterionInstance().getClass())) {
+                            recipes.add(new CriterionRecipe(info, criterion.getKey(), c));
                         }
                     }
                 }

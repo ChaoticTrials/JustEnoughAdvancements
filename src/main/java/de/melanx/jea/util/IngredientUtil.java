@@ -1,15 +1,17 @@
 package de.melanx.jea.util;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.advancements.criterion.EnchantmentPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.criterion.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
+import net.minecraft.state.Property;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
@@ -23,7 +25,11 @@ public class IngredientUtil {
     
     public static List<ItemStack> ingredients(@Nullable IItemProvider input, IItemProvider... defaults) {
         if (input == null) {
-            return Arrays.stream(defaults).map(item -> new ItemStack(item.asItem())).collect(Collectors.toList());
+            return Arrays.stream(defaults).map(item -> {
+                ItemStack stack = new ItemStack(item.asItem());
+                stack.setDisplayName(new TranslationTextComponent("jea.item.tooltip.any_item").mergeStyle(TextFormatting.GOLD));
+                return stack;
+            }).collect(Collectors.toList());
         } else {
             return ImmutableList.of(new ItemStack(input.asItem()));
         }
@@ -101,13 +107,22 @@ public class IngredientUtil {
         if (bounds.isUnbounded() || (bounds.getMin() == null && bounds.getMax() == null)) {
             return new TranslationTextComponent("jea.range.unbounded");
         } else if (bounds.getMin() == null) {
-            return new TranslationTextComponent("jea.range.lower", Objects.requireNonNull(bounds.getMax()).toString());
+            return new TranslationTextComponent("jea.range.lower", numberToString(Objects.requireNonNull(bounds.getMax())));
         } else if (bounds.getMax() == null) {
-            return new TranslationTextComponent("jea.range.greater", Objects.requireNonNull(bounds.getMin()).toString());
+            return new TranslationTextComponent("jea.range.greater", numberToString(Objects.requireNonNull(bounds.getMin())));
         } else if (bounds.getMin().equals(bounds.getMax())) {
-            return new StringTextComponent(bounds.getMin().toString());
+            return new StringTextComponent(numberToString(bounds.getMin()));
         } else {
-            return new TranslationTextComponent("jea.range.bounded", Objects.requireNonNull(bounds.getMin()).toString(), Objects.requireNonNull(bounds.getMax()).toString());
+            return new TranslationTextComponent("jea.range.bounded", numberToString(Objects.requireNonNull(bounds.getMin())), numberToString(Objects.requireNonNull(bounds.getMax())));
+        }
+    }
+    
+    private static String numberToString(Number number) {
+        String string = number.toString();
+        if (string.endsWith(".0")) {
+            return string.substring(0, string.length() - 2);
+        } else {
+            return string;
         }
     }
     
@@ -140,6 +155,53 @@ public class IngredientUtil {
             return location.getPath();
         } else {
             return location.toString();
+        }
+    }
+    
+    // T exists because Comparable must hav itself as a type parameter so a Property can not be cast to Property<Comparable<?>>
+    public static <T extends Comparable<T>> BlockState getState(@Nullable Block block, @Nullable StatePropertiesPredicate predicate) {
+        if (block == null) {
+            return Blocks.AIR.getDefaultState();
+        } else {
+            BlockState state = block.getDefaultState();
+            if (predicate != null) {
+                for (StatePropertiesPredicate.Matcher matcher : predicate.matchers) {
+                    Property<?> property = state.getProperties().stream().filter(p -> p.getName().equals(matcher.propertyName)).findFirst().orElse(null);
+                    if (property != null) {
+                        String valueToMatch = null;
+                        if (matcher instanceof StatePropertiesPredicate.ExactMatcher) {
+                            valueToMatch = ((StatePropertiesPredicate.ExactMatcher) matcher).valueToMatch;
+                        } else if (matcher instanceof StatePropertiesPredicate.RangedMacher) {
+                            if (((StatePropertiesPredicate.RangedMacher) matcher).minimum != null) {
+                                valueToMatch = ((StatePropertiesPredicate.RangedMacher) matcher).minimum;
+                            } else if (((StatePropertiesPredicate.RangedMacher) matcher).maximum != null) {
+                                valueToMatch = ((StatePropertiesPredicate.RangedMacher) matcher).maximum;
+                            }
+                        }
+                        if (valueToMatch != null) {
+                            Object value = property.parseValue(valueToMatch).orElse(null);
+                            if (value != null) {
+                                //noinspection unchecked
+                                state = state.with((Property<T>) property, (T) value);
+                            }
+                        }
+                    }
+                }
+            }
+            return state;
+        }
+    }
+    
+    public static List<ItemStack> getBlockIngredients(BlockPredicate predicate) {
+        if (predicate.block != null) {
+            return ImmutableList.of(new ItemStack(predicate.block.asItem()));
+        } else if (predicate.tag != null && !predicate.tag.getAllElements().isEmpty()) {
+            //noinspection UnstableApiUsage
+            return predicate.tag.getAllElements().stream().map(Block::asItem).map(ItemStack::new).collect(ImmutableList.toImmutableList());
+        } else {
+            ItemStack stack = new ItemStack(Blocks.COBBLESTONE);
+            stack.setDisplayName(new TranslationTextComponent("jea.item.tooltip.any_block").mergeStyle(TextFormatting.GOLD));
+            return ImmutableList.of(stack);
         }
     }
 }

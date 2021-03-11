@@ -12,20 +12,18 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
 
 public class SteveRender {
-
-    private static final PlayerModel<FakeClientPlayer> MODEL = new PlayerModel<>(0, false);
     
     private static ClientWorld currentWorld;
     private static FakeClientPlayer fakePlayer;
+    private static FakeFishingBobber fakeBobber;
     
     public static void defaultPose(Minecraft mc) {
-        setPose(mc, 0, 0, 0, 0, Pose.STANDING, Hand.MAIN_HAND, false, false, 0);
+        setPose(mc, 0, 0, 0, 0, Pose.STANDING, Hand.MAIN_HAND, false, false, 0, false);
     }
     
-    public static void setPose(Minecraft mc, float yaw, float pitch, float swingProgress, int usingTick, Pose pose, Hand hand, boolean sneaking, boolean sprinting, float limbSwingAmount) {
+    public static void setPose(Minecraft mc, float yaw, float pitch, float swingProgress, int usingTick, Pose pose, Hand hand, boolean sneaking, boolean sprinting, float limbSwingAmount, boolean sitting) {
         updateFakePlayer(mc);
         fakePlayer.rotationYaw = 0;
         fakePlayer.prevRotationYaw = 0;
@@ -44,13 +42,26 @@ public class SteveRender {
         fakePlayer.setSprinting(sprinting);
         fakePlayer.limbSwingAmount = limbSwingAmount;
         fakePlayer.prevLimbSwingAmount = limbSwingAmount;
+        if (sitting) {
+            fakePlayer.ridingEntity = fakePlayer;
+        } else {
+            fakePlayer.ridingEntity = null;
+        }
+        
+        // Technically not the pose but still used together with it
+        fakePlayer.forceFireTicks(0);
+        fakePlayer.hurtTime = 0;
+        fakePlayer.fishingBobber = null;
     }
     
     public static void swing(float swingProgress, Hand hand) {
         if (fakePlayer != null) {
             fakePlayer.swingProgress = swingProgress;
             fakePlayer.prevSwingProgress = swingProgress;
-            fakePlayer.swingingHand = hand;
+            if (swingProgress != 0) {
+                fakePlayer.swingingHand = hand;
+                fakePlayer.setActiveHand(hand);
+            }
         }
     }
 
@@ -58,6 +69,44 @@ public class SteveRender {
         if (fakePlayer != null) {
             fakePlayer.limbSwingAmount = limbSwingAmount;
             fakePlayer.prevLimbSwingAmount = limbSwingAmount;
+        }
+    }
+
+    public static void use(int useTick, Hand hand) {
+        if (fakePlayer != null) {
+            fakePlayer.activeItemStackUseCount = useTick;
+            if (useTick != 0) {
+                fakePlayer.swingingHand = hand;
+                fakePlayer.setActiveHand(hand);
+            }
+        }
+    }
+    
+    public static void fireTicks(int fire) {
+        if (fakePlayer != null) {
+            fakePlayer.forceFireTicks(fire);
+        }
+    }
+    
+    public static void hurtTime(int hurt) {
+        if (fakePlayer != null) {
+            fakePlayer.hurtTime = hurt;
+        }
+    }
+    
+    public static void fishingBobber(boolean bobber) {
+        if (fakePlayer != null) {
+            fakePlayer.fishingBobber = bobber ? fakeBobber : null;
+        }
+    }
+    
+    public static void sitting(boolean sitting) {
+        if (fakePlayer != null) {
+            if (sitting) {
+                fakePlayer.ridingEntity = fakePlayer;
+            } else {
+                fakePlayer.ridingEntity = null;
+            }
         }
     }
     
@@ -78,7 +127,7 @@ public class SteveRender {
         fakePlayer.inventory.armorInventory.set(EquipmentSlotType.CHEST.getIndex(), chest.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : chest);
         fakePlayer.inventory.armorInventory.set(EquipmentSlotType.LEGS.getIndex(), legs.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : legs);
         fakePlayer.inventory.armorInventory.set(EquipmentSlotType.FEET.getIndex(), feet.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : feet);
-        fakePlayer.activeItemStack = fakePlayer.swingingHand == Hand.MAIN_HAND ? mainHand : offHand;
+        fakePlayer.activeItemStack = fakePlayer.getActiveHand() == Hand.MAIN_HAND ? mainHand : offHand;
     }
     
     public static void renderSteve(Minecraft mc, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
@@ -99,6 +148,8 @@ public class SteveRender {
         if (currentWorld == null || mc.world != currentWorld) {
             currentWorld = mc.world;
             fakePlayer = new FakeClientPlayer(mc.world);
+            fakeBobber = new FakeFishingBobber(fakePlayer);
+            fakePlayer.fishingBobber = null;
         }
     }
 }

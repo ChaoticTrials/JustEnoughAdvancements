@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
@@ -17,16 +18,21 @@ import java.util.List;
 public class LargeItemIngredientRender implements IIngredientRenderer<ItemStack> {
 
     public final int size;
+    public final float rotationDegrees;
 
-    public LargeItemIngredientRender(int size) {
+    public LargeItemIngredientRender(int size, float rotationDegrees) {
         this.size = size;
+        this.rotationDegrees = rotationDegrees;
     }
     
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int x, int y, @Nullable ItemStack stack) {
         if (stack != null) {
             matrixStack.push();
-            matrixStack.translate(x, y, -(this.size  * (this.size / 16d)));
+            int half = this.size / 2;
+            matrixStack.translate(x + half, y + half, -(this.size  * (this.size / 16d)));
+            matrixStack.rotate(Vector3f.ZP.rotationDegrees(this.rotationDegrees));
+            matrixStack.translate(-half, -half, 0);
             matrixStack.scale(this.size / 16f, this.size / 16f, this.size / 16f);
             //noinspection deprecation
             RenderSystem.pushMatrix();

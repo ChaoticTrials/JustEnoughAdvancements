@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface ICriterionInfo<T extends ICriterionInstance> {
 
+    // TODO a way for implementations to easily mrk thing selected on hover likes slots.
+    
     /**
      * The total width you have to draw your recipe.
      */

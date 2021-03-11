@@ -3,11 +3,14 @@ package de.melanx.jea.render;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.List;
 
 public class JeaRender {
+    
+    public static final BlockPos BELOW_WORLD = new BlockPos(0, -2, 0);
 
     public static double normalScale(double totalScale) {
         return 16 * totalScale;

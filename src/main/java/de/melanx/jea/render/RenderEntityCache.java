@@ -14,20 +14,14 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.monster.ZombieEntity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.passive.PandaEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.tags.ITag;
+import net.minecraft.util.Hand;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3f;
@@ -37,7 +31,10 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RenderEntityCache {
     
@@ -66,6 +63,9 @@ public class RenderEntityCache {
                 if (entity instanceof SnowGolemEntity) {
                     ((SnowGolemEntity) entity).setPumpkinEquipped(false);
                 }
+                if (entity instanceof WaterMobEntity) {
+                    entity.inWater = true;
+                }
             }
             CACHE.put(type, entity);
             return entity;
@@ -73,7 +73,7 @@ public class RenderEntityCache {
     }
 
     @Nullable
-    public static Entity getRenderEntity(Minecraft mc, EntityPredicate predicate) {
+    public static Entity getRenderEntity(Minecraft mc, EntityPredicate predicate, DefaultEntityProperties properties) {
         Entity entity = null;
         if (predicate.type instanceof EntityTypePredicate.TypePredicate
                 && ((EntityTypePredicate.TypePredicate) predicate.type).type != null) {
@@ -83,6 +83,8 @@ public class RenderEntityCache {
                 && !((EntityTypePredicate.TagPredicate) predicate.type).tag.getAllElements().isEmpty()) {
             List<EntityType<?>> list = ((EntityTypePredicate.TagPredicate) predicate.type).tag.getAllElements();
             entity = getRenderEntity(mc, list.get((ClientTickHandler.ticksInGame / 60) % list.size()));
+        } else if (properties.type != null) {
+            entity = getRenderEntity(mc, properties.type);
         }
         return entity;
     }
@@ -108,14 +110,25 @@ public class RenderEntityCache {
             if (entity instanceof CatEntity) {
                 ((CatEntity) entity).setCatType(0);
             }
+            if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).swingProgress = 0;
+                ((LivingEntity) entity).swingingHand = Hand.MAIN_HAND;
+                ((LivingEntity) entity).limbSwing = 0;
+                ((LivingEntity) entity).setActiveHand(Hand.MAIN_HAND);
+                ((LivingEntity) entity).activeItemStackUseCount = 0;
+                ((LivingEntity) entity).hurtTime = 0;
+                ((LivingEntity) entity).deathTime = 0;
+            }
             //noinspection unchecked
             EntityRenderer<Entity> render = (EntityRenderer<Entity>) mc.getRenderManager().renderers.get(entity.getType());
             if (render != null) {
+                matrixStack.push();
                 AxisAlignedBB bb = entity.getRenderBoundingBox();
                 float scale = (float) Math.min(Math.min(WIDTH / bb.getXSize(), HEIGHT / bb.getYSize()), WIDTH / bb.getZSize());
                 matrixStack.scale(scale, scale, scale);
                 entity.ticksExisted = ClientTickHandler.ticksInGame;
                 render.render(entity, 0, 0, matrixStack, buffer, LightTexture.packLight(15, 15));
+                matrixStack.pop();
             }
         }
     }
@@ -144,7 +157,7 @@ public class RenderEntityCache {
     
     public static void renderEntity(Minecraft mc, EntityPredicate.AndPredicate entityPredicate, MatrixStack matrixStack, IRenderTypeBuffer buffer, EntityTransformation transform, DefaultEntityProperties properties) {
         EntityPredicate predicate = LootUtil.asEntity(entityPredicate);
-        Entity entity = getRenderEntity(mc, predicate);
+        Entity entity = getRenderEntity(mc, predicate, properties);
         if (entity == null) {
             matrixStack.push();
             transform.applyForMissing(matrixStack);
@@ -164,7 +177,7 @@ public class RenderEntityCache {
                             OverlayTexture.NO_OVERLAY);
             matrixStack.pop();
         } else {
-            entity.forceFireTicks((predicate.flags.onFire == null ? properties.fire : predicate.flags.onFire) ? 1 : 0);
+            entity.forceFireTicks((predicate.flags.onFire == null ? properties.fire : predicate.flags.onFire) ? 10 : 0);
             entity.setSneaking(predicate.flags.sneaking == Boolean.valueOf(true));
             entity.setSprinting(predicate.flags.sprinting == Boolean.valueOf(true));
             entity.setSwimming(predicate.flags.swimming == Boolean.valueOf(true));
@@ -177,7 +190,11 @@ public class RenderEntityCache {
             } else if (entity instanceof ZombieEntity) {
                 ((ZombieEntity) entity).setChild(baby);
             }
-            entity.setItemStackToSlot(EquipmentSlotType.MAINHAND, JeaRender.cycle(IngredientUtil.fromItemPredicate(predicate.equipment.mainHand, (IItemProvider) null)));
+            if (IngredientUtil.fromItemPredicate(predicate.equipment.mainHand).isEmpty() && !properties.getHeld().isEmpty()) {
+                entity.setItemStackToSlot(EquipmentSlotType.MAINHAND, properties.getHeld());
+            } else {
+                entity.setItemStackToSlot(EquipmentSlotType.MAINHAND, JeaRender.cycle(IngredientUtil.fromItemPredicate(predicate.equipment.mainHand, (IItemProvider) null)));
+            }
             entity.setItemStackToSlot(EquipmentSlotType.OFFHAND, JeaRender.cycle(IngredientUtil.fromItemPredicate(predicate.equipment.offHand, (IItemProvider) null)));
             entity.setItemStackToSlot(EquipmentSlotType.HEAD, JeaRender.cycle(IngredientUtil.fromItemPredicate(predicate.equipment.head, (IItemProvider) null)));
             entity.setItemStackToSlot(EquipmentSlotType.CHEST, JeaRender.cycle(IngredientUtil.fromItemPredicate(predicate.equipment.chest, (IItemProvider) null)));
@@ -189,6 +206,15 @@ public class RenderEntityCache {
                 } else {
                     ((CatEntity) entity).setCatType((ClientTickHandler.ticksInGame / 10) % CatEntity.TEXTURE_BY_ID.size());
                 }
+            }
+            if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).swingProgress = properties.swing;
+                ((LivingEntity) entity).swingingHand = Hand.MAIN_HAND;
+                ((LivingEntity) entity).limbSwing = properties.limbSwing;
+                ((LivingEntity) entity).setActiveHand(Hand.MAIN_HAND);
+                ((LivingEntity) entity).activeItemStackUseCount = properties.useTick;
+                ((LivingEntity) entity).hurtTime = properties.hurtTime;
+                ((LivingEntity) entity).deathTime = properties.deathTime;
             }
             //noinspection unchecked
             EntityRenderer<Entity> render = (EntityRenderer<Entity>) mc.getRenderManager().renderers.get(entity.getType());
@@ -210,7 +236,7 @@ public class RenderEntityCache {
     
     public static void addTooltipForEntity(Minecraft mc, List<ITextComponent> tooltip, EntityPredicate.AndPredicate entityPredicate, double absoluteX, double absoluteY, double totalScale, DefaultEntityProperties properties, double mouseX, double mouseY) {
         EntityPredicate predicate = LootUtil.asEntity(entityPredicate);
-        Entity entity = getRenderEntity(mc, predicate);
+        Entity entity = getRenderEntity(mc, predicate, properties);
         AxisAlignedBB bb;
         float entityScale;
         if (entity == null) {
@@ -231,9 +257,10 @@ public class RenderEntityCache {
             entityScale = getEntityScale(entity, baby);
         }
         double scale = totalScale * entityScale;
+        // Animal entities often have a head outside the bounding box and a multiplier of 1.6 ist the best match there.
         boolean insideBox = (mouseX > absoluteX - (0.7 * scale * bb.getXSize()) || mouseX > absoluteX - (0.7 * scale * bb.getZSize()))
                 && (mouseX < absoluteX + (0.7 * scale * bb.getXSize()) || mouseX < absoluteX + (0.7 * scale * bb.getZSize()))
-                && mouseY > absoluteY + HEIGHT - (1.8 * scale * bb.getYSize())
+                && mouseY > absoluteY + HEIGHT - ((entity instanceof AnimalEntity && !(entity instanceof LlamaEntity) ? 1.6 : 1.1) * scale * bb.getYSize())
                 && mouseY < absoluteY;
         if (insideBox) {
             if (predicate.type instanceof EntityTypePredicate.TypePredicate
@@ -243,6 +270,8 @@ public class RenderEntityCache {
                     && ((EntityTypePredicate.TagPredicate) predicate.type).tag != null
                     && !(((EntityTypePredicate.TagPredicate) predicate.type).tag instanceof ITag.INamedTag)) {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", ((ITag.INamedTag<EntityType<?>>) ((EntityTypePredicate.TagPredicate) predicate.type).tag).getName().toString()).mergeStyle(TextFormatting.GOLD));
+            } else if (properties.type != null && !properties.typeDisplayOnly) {
+                tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", properties.type.getName()).mergeStyle(TextFormatting.GOLD));
             } else {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.any_entity").mergeStyle(TextFormatting.GOLD));
             }
@@ -250,7 +279,7 @@ public class RenderEntityCache {
             List<IFormattableTextComponent> additional = new ArrayList<>();
             
             TooltipUtil.addEffectValues(additional, predicate.effects);
-            TooltipUtil.addDistanceValues(additional, predicate.distance);
+            TooltipUtil.addDistanceValuesPlayerRelative(additional, predicate.distance);
             TooltipUtil.addLocationValues(additional, predicate.location);
             
             for (IFormattableTextComponent tc : additional) {

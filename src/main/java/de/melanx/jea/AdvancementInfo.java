@@ -67,7 +67,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
     }
     
     public static Optional<AdvancementInfo> create(Advancement advancement) {
-        if (advancement.getDisplay() != null && !advancement.getDisplay().isHidden()) {
+        if (advancement.getDisplay() != null/* && !advancement.getDisplay().isHidden()*/) {
             return Optional.of(new AdvancementInfo(advancement));
         } else {
             return Optional.empty();

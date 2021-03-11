@@ -2,6 +2,7 @@ package de.melanx.jea.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class EntityTransformation {
     
@@ -18,6 +19,7 @@ public class EntityTransformation {
     public void applyForEntity(MatrixStack matrixStack) {
         matrixStack.scale(this.entityScale, -this.entityScale, this.entityScale);
         matrixStack.rotate(this.quaternion);
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
     }
     
     public void applyForMissing(MatrixStack matrixStack) {

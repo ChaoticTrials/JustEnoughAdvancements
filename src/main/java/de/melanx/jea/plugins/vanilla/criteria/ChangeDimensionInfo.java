@@ -1,4 +1,4 @@
-package de.melanx.jea.plugins.vanilla.render;
+package de.melanx.jea.plugins.vanilla.criteria;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -98,13 +98,13 @@ public class ChangeDimensionInfo implements ICriterionInfo<ChangeDimensionTrigge
             matrixStack.translate(RECIPE_WIDTH - 30, SPACE_TOP + 90, 0);
             JeaRender.normalize(matrixStack);
             JeaRender.transformForEntityRenderSide(matrixStack, true, 0.8f);
-            this.renderNetherPortal(matrixStack, buffer, mc);
+            renderNetherPortal(matrixStack, buffer, mc);
             matrixStack.pop();
         }
     }
     
     @SuppressWarnings("deprecation")
-    private void renderNetherPortal(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc) {
+    public static void renderNetherPortal(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc) {
         BlockRendererDispatcher brd = mc.getBlockRendererDispatcher();
         BlockState obsidian = Blocks.OBSIDIAN.getDefaultState();
         BlockState portal = Blocks.NETHER_PORTAL.getDefaultState().with(BlockStateProperties.HORIZONTAL_AXIS, Direction.Axis.X);

@@ -1,5 +1,6 @@
-package de.melanx.jea.plugins.vanilla.render;
+package de.melanx.jea.plugins.vanilla.criteria;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.melanx.jea.JustEnoughAdvancements;
@@ -10,17 +11,16 @@ import de.melanx.jea.render.JeaRender;
 import de.melanx.jea.render.RenderEntityCache;
 import de.melanx.jea.render.SteveRender;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.advancements.criterion.ChanneledLightningTrigger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Pose;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.TridentItem;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
@@ -45,23 +45,27 @@ public class ChannelingLightningInfo implements ICriterionInfo<ChanneledLightnin
 
     @Override
     public void setIngredients(IAdvancementInfo advancement, String criterionKey, ChanneledLightningTrigger.Instance instance, IIngredients ii) {
-
+        ii.setInputLists(VanillaTypes.ITEM, ImmutableList.of(
+                ImmutableList.of(this.trident.copy())
+        ));
     }
 
     @Override
     public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, ChanneledLightningTrigger.Instance instance, IIngredients ii) {
-
+        layout.getItemStacks().init(0, true, 3, SPACE_TOP + RECIPE_HEIGHT - 21);
+        layout.getItemStacks().set(ii);
     }
 
     @Override
     public void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, ChanneledLightningTrigger.Instance instance, double mouseX, double mouseY) {
+        JeaRender.slotAt(matrixStack, 3, SPACE_TOP + RECIPE_HEIGHT - 21);
         matrixStack.push();
         matrixStack.translate(10, SPACE_TOP + 55, 0);
         JeaRender.normalize(matrixStack);
         matrixStack.rotate(Vector3f.ZP.rotationDegrees(60));
         JeaRender.transformForEntityRenderSide(matrixStack, true, 2);
         matrixStack.rotate(Vector3f.YP.rotationDegrees(-45));
-        SteveRender.setPose(mc, 180, -70, 0, 1, Pose.STANDING, Hand.MAIN_HAND, false, false, 0);
+        SteveRender.setPose(mc, 180, -70, 0, 1, Pose.STANDING, Hand.MAIN_HAND, false, false, 0, false);
         SteveRender.setEquipmentHand(mc, this.trident);
         SteveRender.renderSteveStatic(mc, matrixStack, buffer);
         matrixStack.pop();

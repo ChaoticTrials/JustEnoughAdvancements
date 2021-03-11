@@ -13,13 +13,20 @@ import java.util.stream.Collectors;
 
 public class JustEnoughNetwork extends NetworkX {
     
+    // Increment when sth changed with the base networking.
+    public static final int BASE_PROTOCOL_VERSION = 4;
+    
+    // Increment when sth changed with the plugins networking.
+    // Set to 0 when BASE_PROTOCOL_VERSION is incremented.
+    public static final int PLUGIN_PROTOCOL_VERSION = 0;
+    
     public JustEnoughNetwork(ModX mod) {
         super(mod);
     }
 
     @Override
     protected String getProtocolVersion() {
-        return "3";
+        return BASE_PROTOCOL_VERSION + "." + PLUGIN_PROTOCOL_VERSION;
     }
 
     @Override

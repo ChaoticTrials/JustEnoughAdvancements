@@ -31,16 +31,21 @@ public class LargeBlockIngredientRender implements IIngredientRenderer<ItemStack
             //noinspection deprecation
             if (!state.isAir()) {
                 matrixStack.push();
-                matrixStack.translate(x + SIZE, y + TRANSLATE_DOWN, 100);
-                matrixStack.translate(0.5, 0, 0.5);
-                matrixStack.translate(-0.5, 0, -0.5);
-                matrixStack.scale(SCALE, -SCALE, SCALE);
-                matrixStack.rotate(Vector3f.XP.rotationDegrees(22.5f));
-                matrixStack.rotate(Vector3f.YP.rotationDegrees(180 + 45));
+                matrixStack.translate(x, y, 0);
+                modifyMatrixStack(matrixStack);
                 this.renderBlock(matrixStack, state);
                 matrixStack.pop();
             }
         }
+    }
+    
+    public static void modifyMatrixStack(@Nonnull MatrixStack matrixStack) {
+        matrixStack.translate(SIZE, TRANSLATE_DOWN, 100);
+        matrixStack.translate(0.5, 0, 0.5);
+        matrixStack.translate(-0.5, 0, -0.5);
+        matrixStack.scale(SCALE, -SCALE, SCALE);
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(22.5f));
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(180 + 45));
     }
     
     protected void renderBlock(@Nonnull MatrixStack matrixStack, BlockState state) {

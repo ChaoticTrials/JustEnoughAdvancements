@@ -1,4 +1,4 @@
-package de.melanx.jea.plugins.vanilla.render;
+package de.melanx.jea.plugins.vanilla.criteria;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -84,11 +84,11 @@ public class BreedAnimalsInfo implements ICriterionInfo<BredAnimalsTrigger.Insta
     }
     
     private List<ItemStack> getBreedingItems(Minecraft mc, EntityPredicate.AndPredicate parent, EntityPredicate.AndPredicate partner, EntityPredicate.AndPredicate child) {
-        Optional<List<ItemStack>> option = this.getBreedingItemsOption(RenderEntityCache.getRenderEntity(mc, LootUtil.asEntity(parent)));
+        Optional<List<ItemStack>> option = this.getBreedingItemsOption(RenderEntityCache.getRenderEntity(mc, LootUtil.asEntity(parent), DefaultEntityProperties.DEFAULT));
         if (!option.isPresent()) {
-            option = this.getBreedingItemsOption(RenderEntityCache.getRenderEntity(mc, LootUtil.asEntity(partner)));
+            option = this.getBreedingItemsOption(RenderEntityCache.getRenderEntity(mc, LootUtil.asEntity(partner), DefaultEntityProperties.DEFAULT));
             if (!option.isPresent()) {
-                option = this.getBreedingItemsOption(RenderEntityCache.getRenderEntity(mc, LootUtil.asEntity(child)));
+                option = this.getBreedingItemsOption(RenderEntityCache.getRenderEntity(mc, LootUtil.asEntity(child), DefaultEntityProperties.DEFAULT));
             }
         }
         return option.orElse(this.DEFAULT_BREEDING_ITEMS);
