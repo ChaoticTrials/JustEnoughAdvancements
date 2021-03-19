@@ -8,7 +8,6 @@ import de.melanx.jea.util.IngredientUtil;
 import de.melanx.jea.util.TooltipUtil;
 import net.minecraft.advancements.criterion.LocationPredicate;
 import net.minecraft.advancements.criterion.MobEffectsPredicate;
-import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

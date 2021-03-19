@@ -1,7 +1,6 @@
 package de.melanx.jea.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import de.melanx.jea.JustEnoughAdvancements;
 import io.github.noeppi_noeppi.libx.render.RenderHelper;

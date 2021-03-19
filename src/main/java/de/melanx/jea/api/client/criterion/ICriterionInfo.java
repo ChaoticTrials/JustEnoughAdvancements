@@ -12,7 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.List;
 
 /**
- * A criteron info is used to draw data for one criterion on a recipe.
+ * A criterion info is used to draw data for one criterion on a recipe.
  */
 public interface ICriterionInfo<T extends ICriterionInstance> {
 

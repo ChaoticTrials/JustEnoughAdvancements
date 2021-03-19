@@ -4,7 +4,6 @@ import net.minecraft.advancements.criterion.DistancePredicate;
 import net.minecraft.advancements.criterion.LocationPredicate;
 import net.minecraft.advancements.criterion.MobEffectsPredicate;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.fonts.TexturedGlyph;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.potion.Effect;
 import net.minecraft.tags.ITag;

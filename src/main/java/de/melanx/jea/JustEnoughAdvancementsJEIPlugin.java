@@ -40,8 +40,9 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
     private static IDrawableStatic hungerSaturation;
     private static IDrawableStatic effectSlot;
     private static IDrawableStatic rightArrow;
+    private static IDrawableStatic leftArrow;
     private static IDrawableStatic xpOrb;
-    private static IDrawableStatic arrow;
+    private static IDrawableStatic shotArrow;
     
     @Override
     @Nonnull
@@ -70,8 +71,9 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
         hungerSaturation = registration.getJeiHelpers().getGuiHelper().createDrawable(MISC_TEXTURE, 12, 0, 9, 9);
         effectSlot = registration.getJeiHelpers().getGuiHelper().createDrawable(MISC_TEXTURE, 12, 9, 20, 20);
         rightArrow = registration.getJeiHelpers().getGuiHelper().createDrawable(MISC_TEXTURE, 0, 29, 32, 16);
+        leftArrow = registration.getJeiHelpers().getGuiHelper().createDrawable(MISC_TEXTURE, 0, 45, 32, 16);
         xpOrb = registration.getJeiHelpers().getGuiHelper().createDrawable(MISC_TEXTURE, 21, 0, 9, 9);
-        arrow = registration.getJeiHelpers().getGuiHelper().drawableBuilder(ShootCrossbowInfo.AROW_TEXTURE, 0, 0, 16, 5).setTextureSize(32, 32).build();
+        shotArrow = registration.getJeiHelpers().getGuiHelper().drawableBuilder(ShootCrossbowInfo.ARROW_TEXTURE, 0, 0, 16, 5).setTextureSize(32, 32).build();
     }
 
     @Override
@@ -138,15 +140,15 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
         return effectSlot;
     }
 
-    public static IDrawableStatic getRightArrow() {
-        return rightArrow;
+    public static IDrawableStatic getArrow(boolean left) {
+        return left ? leftArrow : rightArrow;
     }
 
     public static IDrawableStatic getXpOrb() {
         return xpOrb;
     }
 
-    public static IDrawableStatic getArrow() {
-        return arrow;
+    public static IDrawableStatic getShotArrow() {
+        return shotArrow;
     }
 }

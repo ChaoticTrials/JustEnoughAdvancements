@@ -2,9 +2,10 @@ package de.melanx.jea.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import de.melanx.jea.LootUtil;
 import de.melanx.jea.util.IngredientUtil;
+import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.util.TooltipUtil;
+import de.melanx.jea.util.Util;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.EntityTypePredicate;
@@ -15,10 +16,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.*;
-import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
+import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.Hand;
@@ -75,7 +79,9 @@ public class RenderEntityCache {
     @Nullable
     public static Entity getRenderEntity(Minecraft mc, EntityPredicate predicate, DefaultEntityProperties properties) {
         Entity entity = null;
-        if (predicate.type instanceof EntityTypePredicate.TypePredicate
+        if (properties.forcedType && properties.type != null) {
+            entity = getRenderEntity(mc, properties.type);
+        } else if (predicate.type instanceof EntityTypePredicate.TypePredicate
                 && ((EntityTypePredicate.TypePredicate) predicate.type).type != null) {
             entity = getRenderEntity(mc, ((EntityTypePredicate.TypePredicate) predicate.type).type);
         } else if (predicate.type instanceof EntityTypePredicate.TagPredicate
@@ -85,6 +91,10 @@ public class RenderEntityCache {
             entity = getRenderEntity(mc, list.get((ClientTickHandler.ticksInGame / 60) % list.size()));
         } else if (properties.type != null) {
             entity = getRenderEntity(mc, properties.type);
+        } else if (predicate.catType != null) {
+            // Minecraft does not give an entity type when giving a cat type
+            // It is still always a cat though
+            entity = getRenderEntity(mc, EntityType.CAT);
         }
         return entity;
     }
@@ -119,6 +129,17 @@ public class RenderEntityCache {
                 ((LivingEntity) entity).hurtTime = 0;
                 ((LivingEntity) entity).deathTime = 0;
             }
+            if (entity instanceof TameableEntity) {
+                ((TameableEntity) entity).setTamed(false);
+                ((TameableEntity) entity).setOwnerId(null);
+                // setSitting
+                ((TameableEntity) entity).func_233687_w_(false);
+                // Whoever named the sitting method for th data manger 'sleeping'...
+                ((TameableEntity) entity).setSleeping(false);
+            }
+            if (entity instanceof AbstractHorseEntity) {
+                ((AbstractHorseEntity) entity).setHorseTamed(false);
+            }
             //noinspection unchecked
             EntityRenderer<Entity> render = (EntityRenderer<Entity>) mc.getRenderManager().renderers.get(entity.getType());
             if (render != null) {
@@ -131,24 +152,6 @@ public class RenderEntityCache {
                 matrixStack.pop();
             }
         }
-    }
-
-    private static float getEntityScale(Entity entity, boolean baby) {
-        AxisAlignedBB bb = entity.getRenderBoundingBox();
-        float scale = (float) Math.min(Math.min(WIDTH / bb.getXSize(), HEIGHT / bb.getYSize()), WIDTH / bb.getZSize());
-        if (baby) {
-            scale *= 0.75f;
-        }
-        if (entity instanceof ChickenEntity) {
-            scale *= 0.6;
-        }
-        if (entity instanceof LlamaEntity) {
-            scale *= 0.9;
-        }
-        if (entity instanceof PandaEntity) {
-            scale *= 1.4;
-        }
-        return scale;
     }
     
     public static void renderEntity(Minecraft mc, EntityPredicate.AndPredicate entityPredicate, MatrixStack matrixStack, IRenderTypeBuffer buffer, EntityTransformation transform) {
@@ -216,6 +219,17 @@ public class RenderEntityCache {
                 ((LivingEntity) entity).hurtTime = properties.hurtTime;
                 ((LivingEntity) entity).deathTime = properties.deathTime;
             }
+            if (entity instanceof TameableEntity) {
+                ((TameableEntity) entity).setTamed(properties.tamed);
+                ((TameableEntity) entity).setOwnerId(properties.tamed ? Util.PLACEHOLDER_UUID : null);
+                // setSitting
+                ((TameableEntity) entity).func_233687_w_(properties.tamed);
+                // Whoever named the sitting method for th data manger 'sleeping'...
+                ((TameableEntity) entity).setSleeping(properties.tamed);
+            }
+            if (entity instanceof AbstractHorseEntity) {
+                ((AbstractHorseEntity) entity).setHorseTamed(properties.tamed);
+            }
             //noinspection unchecked
             EntityRenderer<Entity> render = (EntityRenderer<Entity>) mc.getRenderManager().renderers.get(entity.getType());
             if (render != null) {
@@ -223,6 +237,10 @@ public class RenderEntityCache {
                 transform.applyForEntity(matrixStack);
                 float scale = getEntityScale(entity, baby);
                 matrixStack.scale(scale, scale, scale);
+                if (entity instanceof EnderDragonEntity) {
+                    matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
+                }
+                matrixStack.translate(0, horizontalOffset(entity), 0);
                 entity.ticksExisted = ClientTickHandler.ticksInGame;
                 render.render(entity, 0, 0, matrixStack, buffer, LightTexture.packLight(15, 15));
                 matrixStack.pop();
@@ -260,10 +278,12 @@ public class RenderEntityCache {
         // Animal entities often have a head outside the bounding box and a multiplier of 1.6 ist the best match there.
         boolean insideBox = (mouseX > absoluteX - (0.7 * scale * bb.getXSize()) || mouseX > absoluteX - (0.7 * scale * bb.getZSize()))
                 && (mouseX < absoluteX + (0.7 * scale * bb.getXSize()) || mouseX < absoluteX + (0.7 * scale * bb.getZSize()))
-                && mouseY > absoluteY + HEIGHT - ((entity instanceof AnimalEntity && !(entity instanceof LlamaEntity) ? 1.6 : 1.1) * scale * bb.getYSize())
-                && mouseY < absoluteY;
+                && mouseY > (absoluteY + HEIGHT - horizontalTooltipScale(entity) * scale * bb.getYSize() - (horizontalOffset(entity) * scale))
+                && mouseY < (absoluteY - (horizontalOffset(entity) * scale));
         if (insideBox) {
-            if (predicate.type instanceof EntityTypePredicate.TypePredicate
+            if (properties.forcedType && properties.type != null) {
+                tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", properties.type).mergeStyle(TextFormatting.GOLD));
+            } else if (predicate.type instanceof EntityTypePredicate.TypePredicate
                     && ((EntityTypePredicate.TypePredicate) predicate.type).type != null) {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", ((EntityTypePredicate.TypePredicate) predicate.type).type.getName()).mergeStyle(TextFormatting.GOLD));
             } else if (predicate.type instanceof EntityTypePredicate.TagPredicate
@@ -272,6 +292,10 @@ public class RenderEntityCache {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", ((ITag.INamedTag<EntityType<?>>) ((EntityTypePredicate.TagPredicate) predicate.type).tag).getName().toString()).mergeStyle(TextFormatting.GOLD));
             } else if (properties.type != null && !properties.typeDisplayOnly) {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", properties.type.getName()).mergeStyle(TextFormatting.GOLD));
+            } else if (predicate.catType != null && entity instanceof CatEntity) {
+                // Minecraft does not specify a type when setting the catType predicate
+                // However it must be a cat to work
+                tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", EntityType.CAT.getName()).mergeStyle(TextFormatting.GOLD));
             } else {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.any_entity").mergeStyle(TextFormatting.GOLD));
             }
@@ -282,9 +306,88 @@ public class RenderEntityCache {
             TooltipUtil.addDistanceValuesPlayerRelative(additional, predicate.distance);
             TooltipUtil.addLocationValues(additional, predicate.location);
             
+            if (predicate.catType != null) {
+                additional.add(new TranslationTextComponent("jea.item.tooltip.entity.type.cat", IngredientUtil.rlFile(predicate.catType)));
+            }
+            
             for (IFormattableTextComponent tc : additional) {
                 tooltip.add(tc.mergeStyle(TextFormatting.AQUA));
             }
+        }
+    }
+
+    private static float getEntityScale(Entity entity, boolean baby) {
+        AxisAlignedBB bb = entity.getRenderBoundingBox();
+        float scale = (float) Math.min(Math.min(WIDTH / bb.getXSize(), HEIGHT / bb.getYSize()), WIDTH / bb.getZSize());
+        if (baby) {
+            scale *= 0.75f;
+        }
+        if (entity instanceof ChickenEntity) {
+            scale *= 0.6;
+        }
+        if (entity instanceof PandaEntity) {
+            scale *= 1.4;
+        }
+        if (entity instanceof LlamaEntity) {
+            scale *= 0.9;
+        }
+        if (entity instanceof WitchEntity) {
+            scale *= 0.8;
+        }
+        if (entity instanceof SlimeEntity) {
+            scale *= 2.5;
+        }
+        if (entity instanceof CaveSpiderEntity) {
+            scale *= 0.85;
+        }
+        if (entity instanceof CreeperEntity) {
+            scale *= 0.95;
+        }
+        if (entity instanceof SilverfishEntity) {
+            scale *= 0.6;
+        }
+        if (entity instanceof EndermiteEntity) {
+            scale *= 0.7;
+        }
+        if (entity instanceof EnderDragonEntity) {
+            scale *= 2.5;
+        }
+        if (entity instanceof LivingEntity && ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() instanceof BannerItem) {
+            scale *= 0.6;
+        }
+        if (entity instanceof CatEntity && ((CatEntity) entity).isEntitySleeping()) {
+            // Again someone called the sitting methods sleeping for cats...
+            // Sitting cats are really large compared to standing cats so we
+            // scale them down a bit.
+            scale *= 0.9;
+        }
+        return scale;
+    }
+    
+    private static float horizontalTooltipScale(Entity entity) {
+        // A method to best guess whether this entity has a head that sticks out of the hitbox.
+        // In that case the tooltip must be calculated differently
+        if (entity instanceof CatEntity && !((CatEntity) entity).isEntitySleeping()) {
+            // The sitting methods are called sleeping for cats...
+            // Cats are really weird with their bounding box but only if they're not sitting...
+            return 0.8f;
+        } else if (entity instanceof AnimalEntity && !(entity instanceof LlamaEntity)) {
+            // Mostly only animals have their head stick out.
+            // Llamas are exceptions
+            return 1.6f;
+        } else {
+            // All other animals are probably fine
+            return 1.1f;
+        }
+    }
+    
+    private static double horizontalOffset(Entity entity) {
+        if (entity instanceof GhastEntity) {
+            return 3;
+        } else if (entity instanceof SquidEntity) {
+            return 1.5;
+        } else {
+            return 0;
         }
     }
 }

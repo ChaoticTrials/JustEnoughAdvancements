@@ -1,5 +1,6 @@
 package de.melanx.jea.network;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,9 +10,6 @@ import de.melanx.jea.api.JeaRegistries;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.advancements.criterion.*;
-import net.minecraft.loot.ConditionArrayParser;
-import net.minecraft.loot.ConditionArraySerializer;
-import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -80,13 +78,37 @@ public class PacketUtil {
             ResourceLocation serializerId = buffer.readResourceLocation();
             CriterionSerializer<?> serializer = JeaRegistries.CRITERION_SERIALIZER.getValue(serializerId);
             if (serializer == null) {
-                throw new IllegalStateException("Server sent unknown advancement criterion instance. Can't deserialise: serialiser unknown: '" + serializerId + "'");
+                throw new IllegalStateException("Server sent unknown advancement criterion instance. Can't deserialize: serializer unknown: '" + serializerId + "'");
             }
             ICriterionInstance criterion = serializer.read(buffer);
             criteria.put(key, new Criterion(criterion));
             criteriaSerializers.put(key, serializerId);
         }
         return Pair.of(ImmutableMap.copyOf(criteria), ImmutableMap.copyOf(criteriaSerializers));
+    }
+    
+    public static void writeCompletion(PacketBuffer buffer, List<List<String>> completion) {
+        buffer.writeVarInt(completion.size());
+        for (List<String> entry : completion) {
+            buffer.writeVarInt(entry.size());
+            for (String value : entry) {
+                buffer.writeString(value, 0x40000);
+            }
+        }
+    }
+    
+    public static List<List<String>> readCompletion(PacketBuffer buffer) {
+        ImmutableList.Builder<List<String>> builder = new ImmutableList.Builder<>();
+        int size = buffer.readVarInt();
+        for (int i = 0; i < size; i++) {
+            int length = buffer.readVarInt();
+            ImmutableList.Builder<String> sublist = new ImmutableList.Builder<>();
+            for (int j = 0; j < length; j++) {
+                sublist.add(buffer.readString(0x40000));
+            }
+            builder.add(sublist.build());
+        }
+        return builder.build();
     }
     
     public static void writeBlockPredicate(BlockPredicate predicate, PacketBuffer buffer) {
@@ -279,6 +301,7 @@ public class PacketUtil {
         RegistryKey<Registry<Object>> registry = RegistryKey.getOrCreateRootKey(registryId);
         //noinspection unchecked
         return (RegistryKey<T>) RegistryKey.getOrCreateKey(registry, buffer.readResourceLocation());
-        
     }
+    
+    
 }

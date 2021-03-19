@@ -42,8 +42,6 @@ public class VanillaCriteriaSerializers {
                 new SummonEntitySerializer(),
                 new TameAnimalSerializer(),
                 new TargetHitSerializer(),
-                new EntityPickupItemSerializer(),
-                new UseEnderEyeSerializer(),
                 new UseTotemSerializer(),
                 new VillagerTradeSerializer()
         );

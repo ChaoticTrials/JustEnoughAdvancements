@@ -1,4 +1,4 @@
-package de.melanx.jea;
+package de.melanx.jea.util;
 
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.loot.LootContext;

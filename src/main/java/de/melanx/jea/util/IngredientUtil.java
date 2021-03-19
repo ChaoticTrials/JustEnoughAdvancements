@@ -36,6 +36,10 @@ public class IngredientUtil {
     }
     
     public static List<ItemStack> fromItemPredicate(ItemPredicate predicate, IItemProvider... defaults) {
+        return fromItemPredicate(predicate, false, defaults);
+    }
+    
+    public static List<ItemStack> fromItemPredicate(ItemPredicate predicate, boolean noAny, IItemProvider... defaults) {
         List<Item> items;
         boolean anyItemTitle = false;
         if (predicate.item != null) {
@@ -43,7 +47,7 @@ public class IngredientUtil {
         } else if (predicate.tag != null && !predicate.tag.getAllElements().isEmpty()) {
             items = predicate.tag.getAllElements();
         } else {
-            anyItemTitle = true;
+            anyItemTitle = !noAny;
             items = Arrays.stream(defaults).map(p -> p == null ? null : p.asItem()).collect(Collectors.toList());
         }
         List<IFormattableTextComponent> tooltip = new ArrayList<>();
@@ -155,6 +159,23 @@ public class IngredientUtil {
             return location.getPath();
         } else {
             return location.toString();
+        }
+    }
+    
+    // Sometimes minecraft uses a ResourceLocation with a file name as path.
+    // We cut that off here
+    public static String rlFile(ResourceLocation location) {
+        String pathStr = location.getPath();
+        if (pathStr.contains("/")) {
+            pathStr = pathStr.substring(pathStr.lastIndexOf('/') + 1);
+        }
+        if (pathStr.contains(".") && pathStr.lastIndexOf(".") < pathStr.length()) {
+            pathStr = pathStr.substring(0, pathStr.lastIndexOf('.'));
+        }
+        if (location.getNamespace().equals("minecraft")) {
+            return pathStr;
+        } else {
+            return location.getNamespace() + ":" + pathStr;
         }
     }
     

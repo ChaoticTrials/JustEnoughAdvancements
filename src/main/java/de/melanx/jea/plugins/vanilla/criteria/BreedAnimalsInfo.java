@@ -2,7 +2,7 @@ package de.melanx.jea.plugins.vanilla.criteria;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import de.melanx.jea.LootUtil;
+import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import de.melanx.jea.render.DefaultEntityProperties;

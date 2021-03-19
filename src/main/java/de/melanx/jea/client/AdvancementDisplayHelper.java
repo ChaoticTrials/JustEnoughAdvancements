@@ -43,7 +43,7 @@ public class AdvancementDisplayHelper {
         if (progress != null && progress.getPercent() >= 1) {
             list.add(info.getDisplay().getFrame().getTranslatedToast().deepCopy().mergeStyle(TextFormatting.YELLOW));
         } else if (progress != null && progress.getPercent() < 1 && progress.getPercent() > 0) {
-            list.add(new TranslationTextComponent("jea.advancement.partial", Integer.toString(MathHelper.clamp(Math.round(progress.getPercent() * 100), 1, 99))).mergeStyle(TextFormatting.YELLOW));
+            list.add(new TranslationTextComponent("jea.advancement.partial", MathHelper.clamp(Math.round(progress.getPercent() * 100), 1, 99) + "%").mergeStyle(TextFormatting.YELLOW));
         } else {
             list.add(new TranslationTextComponent("jea.advancement.incomplete").mergeStyle(TextFormatting.YELLOW));
         }

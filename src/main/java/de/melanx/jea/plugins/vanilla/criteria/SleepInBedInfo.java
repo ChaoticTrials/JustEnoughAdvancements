@@ -21,7 +21,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.List;

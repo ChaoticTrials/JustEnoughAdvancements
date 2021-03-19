@@ -1,5 +1,6 @@
 package de.melanx.jea;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.network.PacketUtil;
@@ -12,9 +13,7 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public final class AdvancementInfo implements IAdvancementInfo {
@@ -22,6 +21,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
     public final ResourceLocation id;
     private final DisplayInfo display;
     private final Map<String, Criterion> criteria;
+    private final List<List<String>> completion;
     @Nullable
     private final ResourceLocation parent;
     private final IFormattableTextComponent formattedDisplayName;
@@ -32,6 +32,10 @@ public final class AdvancementInfo implements IAdvancementInfo {
         this.display = Objects.requireNonNull(advancement.getDisplay());
         //noinspection ConstantConditions
         this.criteria = advancement.getCriteria() != null ? ImmutableMap.copyOf(advancement.getCriteria()) : ImmutableMap.of();
+        //noinspection UnstableApiUsage
+        this.completion = Arrays.stream(advancement.getRequirements()).map(array ->
+                Arrays.stream(array).filter(this.criteria::containsKey).collect(ImmutableList.toImmutableList())
+        ).collect(ImmutableList.toImmutableList());
         this.parent = advancement.getParent() == null ? null : advancement.getParent().getId();
         this.formattedDisplayName = this.display.getTitle().deepCopy().mergeStyle(this.display.getFrame().getFormat());
         this.criteriaSerializerIds = PacketUtil.getCriteriaSerializers(this.criteria);
@@ -43,6 +47,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
         Pair<Map<String, Criterion>, Map<String, ResourceLocation>> criteriaData = PacketUtil.readCriteria(buffer);
         this.criteria = criteriaData.getLeft();
         this.criteriaSerializerIds = criteriaData.getRight();
+        this.completion = PacketUtil.readCompletion(buffer);
         this.parent = buffer.readBoolean() ? buffer.readResourceLocation() : null;
         this.formattedDisplayName = this.display.getTitle().deepCopy().mergeStyle(this.display.getFrame().getFormat());
     }
@@ -51,6 +56,8 @@ public final class AdvancementInfo implements IAdvancementInfo {
         this.id = wrap.getId();
         this.display = wrap.getDisplay();
         this.criteria = ImmutableMap.copyOf(wrap.getCriteria());
+        //noinspection UnstableApiUsage
+        this.completion = wrap.getCompletion().stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList());
         this.parent = wrap.getParent();
         this.formattedDisplayName = this.display.getTitle().deepCopy().mergeStyle(this.display.getFrame().getFormat());
         this.criteriaSerializerIds = PacketUtil.getCriteriaSerializers(this.criteria);
@@ -60,6 +67,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
         buffer.writeResourceLocation(this.id);
         this.display.write(buffer);
         PacketUtil.writeCriteria(buffer, this.criteria, this.criteriaSerializerIds);
+        PacketUtil.writeCompletion(buffer, this.completion);
         buffer.writeBoolean(this.parent != null);
         if (this.parent != null) {
             buffer.writeResourceLocation(this.parent);
@@ -104,6 +112,11 @@ public final class AdvancementInfo implements IAdvancementInfo {
     @Override
     public Map<String, Criterion> getCriteria() {
         return this.criteria;
+    }
+
+    @Override
+    public List<List<String>> getCompletion() {
+        return this.completion;
     }
 
     @Nullable

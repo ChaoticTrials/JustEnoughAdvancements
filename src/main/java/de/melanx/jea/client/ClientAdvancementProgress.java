@@ -19,9 +19,9 @@ public class ClientAdvancementProgress {
     public static AdvancementProgress getProgress(Minecraft mc, ResourceLocation advancement) {
         if (mc.getConnection() != null) {
             ClientAdvancementManager mgr = mc.getConnection().getAdvancementManager();
-            Advancement clientAdvacement = mgr.getAdvancementList().getAdvancement(advancement);
-            if (clientAdvacement != null) {
-                AdvancementProgress progress = mgr.advancementToProgress.get(clientAdvacement);
+            Advancement clientAdvancement = mgr.getAdvancementList().getAdvancement(advancement);
+            if (clientAdvancement != null) {
+                AdvancementProgress progress = mgr.advancementToProgress.get(clientAdvancement);
                 //noinspection RedundantIfStatement
                 if (progress != null) {
                     return progress;

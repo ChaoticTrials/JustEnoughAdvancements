@@ -28,7 +28,7 @@ import java.util.List;
 
 public class ShootCrossbowInfo implements ICriterionInfo<ShotCrossbowTrigger.Instance> {
 
-    public static final ResourceLocation AROW_TEXTURE = new ResourceLocation("minecraft", "textures/entity/arrow.png");
+    public static final ResourceLocation ARROW_TEXTURE = new ResourceLocation("minecraft", "textures/entity/arrow.png");
     
     @Override
     public Class<ShotCrossbowTrigger.Instance> criterionClass() {
@@ -80,19 +80,16 @@ public class ShootCrossbowInfo implements ICriterionInfo<ShotCrossbowTrigger.Ins
         SteveRender.renderSteve(mc, matrixStack, buffer);
         matrixStack.pop();
         if (animationTime < 10) {
-            // Function for how far the arrow travelled down: 0.2*x^2
             float arrowDist = animationTime / 10f;
-            float arrowDown = 0.2f * (arrowDist * arrowDist);
+            float arrowDown = 0.4f * (arrowDist * arrowDist);
             matrixStack.push();
             matrixStack.translate(45 + (80 * arrowDist), SPACE_TOP + 25 + (20 * arrowDown), 0);
-            // Use the derivative of our arrow-don function to determine the rotation:
-            // 0.4*x -> Angle is the arc sine of that value
-            float angle = (float) Math.asin(0.4 * arrowDist);
-            matrixStack.translate(10, 2.5, 0);
+            float angle = (float) Math.atan(0.2 * arrowDist);
+            matrixStack.translate(8, 2.5, 0);
             matrixStack.rotate(Vector3f.ZP.rotation(angle));
-            matrixStack.translate(-10, -2.5, 0);
+            matrixStack.translate(-8, -2.5, 0);
             RenderSystem.enableBlend();
-            JustEnoughAdvancementsJEIPlugin.getArrow().draw(matrixStack, 0, 0);
+            JustEnoughAdvancementsJEIPlugin.getShotArrow().draw(matrixStack, 0, 0);
             RenderSystem.disableBlend();
             matrixStack.pop();
         }

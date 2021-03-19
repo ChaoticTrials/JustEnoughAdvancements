@@ -37,11 +37,11 @@ public class ItemDurabilityInfo implements ICriterionInfo<ItemDurabilityTrigger.
 
     @Override
     public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, ItemDurabilityTrigger.Instance instance, IIngredients ii) {
-        /*if (instance.durability.isUnbounded() && instance.delta.isUnbounded()) {
+        if (instance.durability.isUnbounded() && instance.delta.isUnbounded()) {
             layout.getItemStacks().init(0, true, Jea.LARGE_ITEM, (RECIPE_WIDTH / 2) - 24, SPACE_TOP + (RECIPE_HEIGHT / 2) - 18, 48, 48, 0, 0);
-        } else {*/
+        } else {
             layout.getItemStacks().init(0, true, Jea.LARGE_ITEM, (RECIPE_WIDTH / 2) - 24, SPACE_TOP + 8, 48, 48, 0, 0);
-        //}
+        }
         layout.getItemStacks().set(ii);
     }
 

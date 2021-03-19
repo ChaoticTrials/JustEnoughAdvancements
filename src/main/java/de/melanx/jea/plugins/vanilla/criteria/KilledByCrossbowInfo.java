@@ -16,7 +16,6 @@ import net.minecraft.advancements.criterion.KilledByCrossbowTrigger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;

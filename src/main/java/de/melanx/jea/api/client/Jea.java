@@ -39,7 +39,6 @@ public class Jea {
     public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_BREAK_SLOW = new LargeBlockBreakingIngredientRender(12);
     public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_BREAK_FAST = new LargeBlockBreakingIngredientRender(3);
     public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_APPEARING = new LargeBlockAppearingIngredientRender(20, 20);
-    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_EMPTY = new LargeBlockEmptyIngredientRender(null);
 
 
     private static final Map<ResourceLocation, ICriterionInfo<?>> criteria = new HashMap<>();
@@ -60,7 +59,7 @@ public class Jea {
      * checked first. Allows you to create a special render for an advancement. If multiple calls
      * to this are made with the same advancement, the last one replaces all other calls.
      * You can pass a null {@link ICriterionInfo} in which case the recipe for that criterion is suppressed.
-     * This should only be used if relly required.
+     * This should only be used if really required.
      */
     public static void registerSpecial(ResourceLocation advancement, String criterionKey, ICriterionInfo<?> criterion) {
         if (criterion == null) {
@@ -85,7 +84,7 @@ public class Jea {
 
     /**
      * Gets the {@link ICriterionInfo} that should be used for an {@link IAdvancementInfo}
-     * that was serialised with a given serialiser
+     * that was serialised with a given serializer
      */
      @Nullable
     public static ICriterionInfo<?> getCriterionInfo(IAdvancementInfo info, String criterionKey, ResourceLocation serializerId) {

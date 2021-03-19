@@ -49,6 +49,6 @@ public class AdvancementIngredientHelper implements IIngredientHelper<IAdvanceme
     @Nonnull
     @Override
     public String getErrorInfo(@Nullable IAdvancementInfo advancement) {
-        return advancement == null ? "Unknwon advancement" : advancement.toString();
+        return advancement == null ? "Unknown advancement" : advancement.toString();
     }
 }

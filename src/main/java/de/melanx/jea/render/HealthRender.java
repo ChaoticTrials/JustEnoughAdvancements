@@ -45,22 +45,22 @@ public class HealthRender {
     }
     
     public enum HeartEffect {
-        WITHER(124, true),
-        POISON(88, true),
         NORMAL(52, true),
+        POISON(88, true),
+        WITHER(124, true),
         ABSORPTION(160, false);
 
         private static IDrawableStatic background;
-
         private static IDrawableStatic backgroundDamaging;
+        
         private final int xValue;
-
         private final boolean hasDamaging;
+        
         private IDrawableStatic normal;
-
         private IDrawableStatic half;
         private IDrawableStatic damaging;
         private IDrawableStatic damagingHalf;
+        
         HeartEffect(int xValue, boolean hasDamaging) {
             this.xValue = xValue;
             this.hasDamaging = hasDamaging;

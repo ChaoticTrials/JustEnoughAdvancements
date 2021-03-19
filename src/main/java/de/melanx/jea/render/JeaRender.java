@@ -27,6 +27,7 @@ public class JeaRender {
     
     public static void transformForEntityRenderFront(MatrixStack matrixStack, boolean right, float entityScale) {
         matrixStack.scale(entityScale, -entityScale, entityScale);
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
         if (right) {
             matrixStack.rotate(Vector3f.YP.rotationDegrees(-15));
         } else {
@@ -36,6 +37,7 @@ public class JeaRender {
     
     public static void transformForEntityRenderSide(MatrixStack matrixStack, boolean right, float entityScale) {
         matrixStack.scale(entityScale, -entityScale, entityScale);
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
         if (right) {
             matrixStack.rotate(Vector3f.YP.rotationDegrees(-65));
         } else {

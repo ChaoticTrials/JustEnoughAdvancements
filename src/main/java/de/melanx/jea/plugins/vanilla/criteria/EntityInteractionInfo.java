@@ -13,7 +13,6 @@ import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.PlayerEntityInteractionTrigger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -52,7 +51,7 @@ public class EntityInteractionInfo implements ICriterionInfo<PlayerEntityInterac
         if (animationTime < 20) {
             stack = JeaRender.cycle(IngredientUtil.fromItemPredicate(instance.stack, Items.STRUCTURE_VOID));
         } else {
-            properties = new DefaultEntityProperties(null, false, false, false, JeaRender.cycle(IngredientUtil.fromItemPredicate(instance.stack, Items.STRUCTURE_VOID)), 0, 0, 0, 0, 0);
+            properties = new DefaultEntityProperties(null, false, false, false, JeaRender.cycle(IngredientUtil.fromItemPredicate(instance.stack, Items.STRUCTURE_VOID)), 0, 0, 0, 0, 0, false, false);
         }
         if (animationTime > 17 && animationTime < 23) {
             swing = (animationTime - 17) / 6f;

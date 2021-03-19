@@ -2,7 +2,7 @@ package de.melanx.jea.plugins.vanilla.criteria;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import de.melanx.jea.LootUtil;
+import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import de.melanx.jea.render.EntityTransformation;
@@ -79,8 +79,7 @@ public class SummonEntityInfo implements ICriterionInfo<SummonedEntityTrigger.In
         EntityTransformation transformation = JeaRender.entityRenderFront(false, 2.6f);
         if (this.renderBlockPattern(matrixStack, buffer, mc, type, transformation)) {
             if (type == EntityType.ENDER_DRAGON) {
-                matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
-                matrixStack.scale(4.5f, 4.5f, 4.5f);
+                matrixStack.scale(1.8f, 1.8f, 1.8f);
             } else if (type == EntityType.WITHER) {
                 matrixStack.translate(0, 0.6, 0);
             }

@@ -18,8 +18,8 @@ public class EntityTransformation {
     
     public void applyForEntity(MatrixStack matrixStack) {
         matrixStack.scale(this.entityScale, -this.entityScale, this.entityScale);
-        matrixStack.rotate(this.quaternion);
         matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
+        matrixStack.rotate(this.quaternion);
     }
     
     public void applyForMissing(MatrixStack matrixStack) {

@@ -17,23 +17,19 @@ public class VanillaCriteriaIds {
     public static final ResourceLocation CHANGE_EFFECTS = EffectsChangedTrigger.ID;
     public static final ResourceLocation ENCHANT_ITEM = EnchantedItemTrigger.ID;
     public static final ResourceLocation ENTER_BLOCK = EnterBlockTrigger.ID;
-    // TODO needs redo
     public static final ResourceLocation HURT_BY_ENTITY = EntityHurtPlayerTrigger.ID;
     public static final ResourceLocation FILL_BUCKET = FilledBucketTrigger.ID;
     public static final ResourceLocation FISHING_ROD_HOOK = FishingRodHookedTrigger.ID;
     public static final ResourceLocation INVENTORY_CHANGE = InventoryChangeTrigger.ID;
     public static final ResourceLocation ITEM_DURABILITY = ItemDurabilityTrigger.ID;
     public static final ResourceLocation KILLED_BY_CROSSBOW = KilledByCrossbowTrigger.ID;
-    // TODO currently missing
     public static final ResourceLocation KILLED_BY_ENTITY = CriteriaTriggers.ENTITY_KILLED_PLAYER.id;
-    // TODO currently missing
     public static final ResourceLocation KILLED_ENTITY = CriteriaTriggers.PLAYER_KILLED_ENTITY.id;
     public static final ResourceLocation LEVITATION = LevitationTrigger.ID;
     public static final ResourceLocation NETHER_TRAVEL = NetherTravelTrigger.ID;
     public static final ResourceLocation PLACE_BLOCK = PlacedBlockTrigger.ID;
     public static final ResourceLocation ENTITY_INTERACTION = PlayerEntityInteractionTrigger.ID;
     public static final ResourceLocation GENERATE_CONTAINER_LOOT = PlayerGeneratesContainerLootTrigger.ID;
-    // TODO currently missing
     public static final ResourceLocation HURT_ENTITY = PlayerHurtEntityTrigger.ID;
     public static final ResourceLocation LOCATION = CriteriaTriggers.LOCATION.id;
     public static final ResourceLocation SLEEP_IN_BED = CriteriaTriggers.SLEPT_IN_BED.id;
@@ -44,8 +40,6 @@ public class VanillaCriteriaIds {
     public static final ResourceLocation SUMMON_ENTITY = SummonedEntityTrigger.ID;
     public static final ResourceLocation TAME_ANIMAL = TameAnimalTrigger.ID;
     public static final ResourceLocation TARGET_HIT = TargetHitTrigger.ID;
-    public static final ResourceLocation ENTITY_PICKUP_ITEM = ThrownItemPickedUpByEntityTrigger.ID;
-    public static final ResourceLocation USE_ENDER_EYE = UsedEnderEyeTrigger.ID;
     public static final ResourceLocation USE_TOTEM = UsedTotemTrigger.ID;
     public static final ResourceLocation VILLAGER_TRADE = VillagerTradeTrigger.ID;
 }

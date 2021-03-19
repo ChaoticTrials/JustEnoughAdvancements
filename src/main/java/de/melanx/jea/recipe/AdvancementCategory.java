@@ -5,6 +5,7 @@ import de.melanx.jea.JustEnoughAdvancements;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -21,8 +22,8 @@ public class AdvancementCategory implements IRecipeCategory<CriterionRecipe> {
     
     private final IDrawable background;
     private final IDrawable icon;
-    private final IDrawable complete;
-    private final IDrawable incomplete;
+    private final IDrawableStatic complete;
+    private final IDrawableStatic incomplete;
     private final String localizedName;
     
     public AdvancementCategory(IGuiHelper guiHelper) {

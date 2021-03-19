@@ -37,13 +37,12 @@ public class InventoryChangeInfo implements ICriterionInfo<InventoryChangeTrigge
     public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, InventoryChangeTrigger.Instance instance, IIngredients ii) {
         if (instance.items.length == 1) {
             layout.getItemStacks().init(0, true, Jea.LARGE_ITEM, (RECIPE_WIDTH / 2) - 24, SPACE_TOP + 36, 48, 48, 0, 0);
-            layout.getItemStacks().set(ii);
         } else {
             for (int i = 0; i < instance.items.length; i++) {
                 layout.getItemStacks().init(i, true, 5 + ((i % 9) * 18), SPACE_TOP + 24 + ((i / 9) * 18));
             }
-            layout.getItemStacks().set(ii);
         }
+        layout.getItemStacks().set(ii);
     }
 
     @Override

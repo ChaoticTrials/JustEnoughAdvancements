@@ -1,7 +1,6 @@
 package de.melanx.jea.api;
 
 import net.minecraft.advancements.ICriterionInstance;
-import net.minecraft.advancements.criterion.KilledTrigger;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 

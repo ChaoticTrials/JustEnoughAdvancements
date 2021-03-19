@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Pose;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -30,8 +29,8 @@ public class SteveRender {
         fakePlayer.rotationYawHead = yaw;
         fakePlayer.prevRotationYawHead = yaw;
         fakePlayer.rotationPitch = pitch;
-        fakePlayer.activeItemStackUseCount = usingTick;
         fakePlayer.prevRotationPitch = pitch;
+        fakePlayer.activeItemStackUseCount = usingTick;
         fakePlayer.swingProgress = swingProgress;
         fakePlayer.prevSwingProgress = swingProgress;
         fakePlayer.swingProgressInt = (int) (6 * swingProgress);
@@ -107,6 +106,15 @@ public class SteveRender {
             } else {
                 fakePlayer.ridingEntity = null;
             }
+        }
+    }
+    
+    public static void rotationHead(float yaw, float pitch) {
+        if (fakePlayer != null) {
+            fakePlayer.rotationYawHead = yaw;
+            fakePlayer.prevRotationYawHead = yaw;
+            fakePlayer.rotationPitch = pitch;
+            fakePlayer.prevRotationPitch = pitch;
         }
     }
     

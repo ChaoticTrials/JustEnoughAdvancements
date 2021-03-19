@@ -1,13 +1,11 @@
 package de.melanx.jea.plugins.vanilla.serializer;
 
-import de.melanx.jea.LootUtil;
+import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.advancements.criterion.*;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 
 public class KilledEntitySerializer extends CriterionSerializer<KilledTrigger.Instance> {
 

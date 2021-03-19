@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +29,13 @@ public interface IAdvancementInfo {
      * Gets the criteria for the advancement.
      */
     Map<String, Criterion> getCriteria();
+
+    /**
+     * Gets which criteria must be completed to complete the advancement.
+     * To compete an advancement, there must be at least one criterion completed from
+     * each sub-list.
+     */
+    List<List<String>> getCompletion();
 
     /**
      * Gets the formatted component used as title for the advancement. Use this instead of

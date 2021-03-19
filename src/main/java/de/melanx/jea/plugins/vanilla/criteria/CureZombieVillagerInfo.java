@@ -51,7 +51,7 @@ public class CureZombieVillagerInfo implements ICriterionInfo<CuredZombieVillage
         JeaRender.slotAt(matrixStack, (RECIPE_WIDTH / 2) + 2, SPACE_TOP + 47);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        JustEnoughAdvancementsJEIPlugin.getRightArrow().draw(matrixStack, (RECIPE_WIDTH / 2) - 16, SPACE_TOP + 29);
+        JustEnoughAdvancementsJEIPlugin.getArrow(false).draw(matrixStack, (RECIPE_WIDTH / 2) - 16, SPACE_TOP + 29);
         RenderSystem.disableBlend();
         matrixStack.push();
         matrixStack.translate(30, SPACE_TOP + 80, 0);

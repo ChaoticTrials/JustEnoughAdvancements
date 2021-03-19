@@ -2,9 +2,9 @@ package de.melanx.jea.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import de.melanx.jea.AdvancementInfo;
 import de.melanx.jea.JustEnoughAdvancements;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
-import de.melanx.jea.AdvancementInfo;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
@@ -89,7 +89,17 @@ public class ClientAdvancements {
                         ResourceLocation serializerId = info.getCriteriaSerializerIds().get(criterion.getKey());
                         ICriterionInfo<?> c = Jea.getCriterionInfo(info, criterion.getKey(), serializerId);
                         if (c != null && c.criterionClass().isAssignableFrom(criterion.getValue().getCriterionInstance().getClass())) {
-                            recipes.add(new CriterionRecipe(info, criterion.getKey(), c));
+                            List<String> criterionGroup = null;
+                            for (List<String> completionGroup : info.getCompletion()) {
+                                if (completionGroup.contains(criterion.getKey())) {
+                                    criterionGroup = completionGroup;
+                                    break;
+                                }
+                            }
+                            if (criterionGroup == null) {
+                                criterionGroup = ImmutableList.of(criterion.getKey());
+                            }
+                            recipes.add(new CriterionRecipe(info, criterion.getKey(), c, criterionGroup));
                         }
                     }
                 }

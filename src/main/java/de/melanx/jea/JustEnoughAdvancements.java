@@ -93,9 +93,13 @@ public class JustEnoughAdvancements extends ModX {
         Jea.register(VanillaCriteriaIds.SLIDE_BLOCK, new SlideBlockInfo());
         Jea.register(VanillaCriteriaIds.SUMMON_ENTITY, new SummonEntityInfo());
         Jea.register(VanillaCriteriaIds.TAME_ANIMAL, new TameAnimalInfo());
+        Jea.register(VanillaCriteriaIds.TARGET_HIT, new TargetHitInfo());
+        Jea.register(VanillaCriteriaIds.USE_TOTEM, new UseTotemInfo());
+        Jea.register(VanillaCriteriaIds.VILLAGER_TRADE, new VillagerTradeInfo());
+        Jea.register(VanillaCriteriaIds.HURT_ENTITY, new HurtEntityInfo());
+        Jea.register(VanillaCriteriaIds.KILLED_BY_ENTITY, new KilledByEntityInfo());
+        Jea.register(VanillaCriteriaIds.KILLED_ENTITY, new KilledEntityInfo());
         
         Jea.registerSpecial(RideStriderInfo.ADVANCEMENT, RideStriderInfo.CRITERION, new RideStriderInfo());
-        // TODO special info for distract piglin
-        // TODO special info for loot bastion
     }
 }
