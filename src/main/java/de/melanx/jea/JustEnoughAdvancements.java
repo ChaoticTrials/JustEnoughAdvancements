@@ -3,12 +3,14 @@ package de.melanx.jea;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.api.JeaRegistries;
 import de.melanx.jea.api.client.Jea;
+import de.melanx.jea.config.JeaConfig;
 import de.melanx.jea.network.JustEnoughNetwork;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaSerializers;
 import de.melanx.jea.plugins.vanilla.criteria.*;
 import de.melanx.jea.plugins.vanilla.special.RideStriderInfo;
 import de.melanx.jea.render.SpecialModels;
+import io.github.noeppi_noeppi.libx.config.ConfigManager;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
@@ -33,6 +35,8 @@ public class JustEnoughAdvancements extends ModX {
         super("jea", null);
         instance = this;
         network = new JustEnoughNetwork(this);
+
+        ConfigManager.registerConfig(this.modid, JeaConfig.class, false);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(JeaRegistries::initRegistries);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, VanillaCriteriaSerializers::init);

@@ -3,6 +3,7 @@ package de.melanx.jea;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.melanx.jea.api.client.IAdvancementInfo;
+import de.melanx.jea.config.JeaConfig;
 import de.melanx.jea.network.PacketUtil;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.Criterion;
@@ -75,7 +76,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
     }
     
     public static Optional<AdvancementInfo> create(Advancement advancement) {
-        if (advancement.getDisplay() != null/* && !advancement.getDisplay().isHidden()*/) {
+        if (advancement.getDisplay() != null && (JeaConfig.hiddenAdvancements || !advancement.getDisplay().isHidden())) {
             return Optional.of(new AdvancementInfo(advancement));
         } else {
             return Optional.empty();
