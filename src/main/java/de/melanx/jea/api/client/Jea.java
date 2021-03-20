@@ -2,9 +2,13 @@ package de.melanx.jea.api.client;
 
 import de.melanx.jea.JustEnoughAdvancements;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
+import de.melanx.jea.client.ClientAdvancements;
 import de.melanx.jea.recipe.AdvancementRecipeRenderer;
 import de.melanx.jea.recipe.AdvancementRecipeRendererTiny;
-import de.melanx.jea.render.*;
+import de.melanx.jea.render.LargeBlockAppearingIngredientRender;
+import de.melanx.jea.render.LargeBlockBreakingIngredientRender;
+import de.melanx.jea.render.LargeBlockIngredientRender;
+import de.melanx.jea.render.LargeItemIngredientRender;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.item.ItemStack;
@@ -48,6 +52,7 @@ public class Jea {
      * Registers a new {@link ICriterionInfo}.
      */
     public static void register(ResourceLocation id, ICriterionInfo<?> criterion) {
+        JustEnoughAdvancements.getInstance().checkRegistryResourceLocation(id, "criterion info registration");
         if (criteria.containsKey(id)) {
             throw new IllegalArgumentException("Duplicate id for JEA criterion registry");
         }
@@ -62,6 +67,7 @@ public class Jea {
      * This should only be used if really required.
      */
     public static void registerSpecial(ResourceLocation advancement, String criterionKey, ICriterionInfo<?> criterion) {
+        // No `checkRegistryResourceLocation` as this may also be used for advancements from advancement packs and such
         if (criterion == null) {
             JustEnoughAdvancements.logger.warn("Advancement criterion recipe was suppressed: " + advancement.toString() + "#" + criterionKey);
         }
@@ -94,5 +100,13 @@ public class Jea {
          } else {
              return criteria.getOrDefault(serializerId, null);
          }
+    }
+
+    /**
+     * Gets the advancement for a resource location or null if not found.
+     */
+    @Nullable
+    public static IAdvancementInfo getAdvancement(ResourceLocation location) {
+        return ClientAdvancements.getInfo(location);
     }
 }

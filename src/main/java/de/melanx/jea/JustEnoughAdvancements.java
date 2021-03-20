@@ -8,8 +8,10 @@ import de.melanx.jea.plugins.vanilla.VanillaPlugin;
 import de.melanx.jea.render.SpecialModels;
 import io.github.noeppi_noeppi.libx.config.ConfigManager;
 import io.github.noeppi_noeppi.libx.mod.ModX;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -35,7 +37,6 @@ public class JustEnoughAdvancements extends ModX {
         ConfigManager.registerConfig(this.modid, JeaConfig.class, false);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(JeaRegistries::initRegistries);
-        
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, VanillaPlugin::init);
 
         DistExecutor.unsafeRunForDist(() -> () -> {
@@ -65,5 +66,14 @@ public class JustEnoughAdvancements extends ModX {
     @Override
     protected void clientSetup(FMLClientSetupEvent event) {
         VanillaPlugin.register();
+    }
+    
+    public void checkRegistryResourceLocation(ResourceLocation location, String where) {
+        // Jea may register serializers and criterion infos for every other mod.
+        String namespace = ModLoadingContext.get().getActiveNamespace();
+        if (namespace != null && !namespace.equals("minecraft") && !namespace.equals(this.modid)
+                && !namespace.equals(location.getNamespace())) {
+            logger.info("Potentially Dangerous alternative prefix `{}` for name `{}`, expected `{}` for {}.", location.getNamespace(), location.getPath(), namespace, where);
+        }
     }
 }

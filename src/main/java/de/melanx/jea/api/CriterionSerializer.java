@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  * If the criterion instance uses dynamic ids such as {@code KilledTrigger} you
  * should override {@code checkValidity}
  */
-public abstract class CriterionSerializer<T extends ICriterionInstance> extends ForgeRegistryEntry<CriterionSerializer<?>> {
+public abstract class CriterionSerializer<T extends ICriterionInstance> extends ForgeRegistryEntry.UncheckedRegistryEntry<CriterionSerializer<?>> {
 
     public final Class<T> criterionClass;
 
