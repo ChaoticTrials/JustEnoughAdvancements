@@ -40,7 +40,7 @@ public class PlaceBlockInfo implements ICriterionInfo<PlacedBlockTrigger.Instanc
 
     @Override
     public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, PlacedBlockTrigger.Instance instance, IIngredients ii) {
-        layout.getItemStacks().init(0, true, Jea.LARGE_BLOCK_APPEARING, 92, SPACE_TOP + 42, 48, 48, 0, 0);
+        layout.getItemStacks().init(0, true, Jea.LARGE_BLOCK_APPEARING_FAST, 92, SPACE_TOP + 42, 48, 48, 0, 0);
         layout.getItemStacks().init(1, true, 55, SPACE_TOP + 72);
         layout.getItemStacks().set(ii);
     }

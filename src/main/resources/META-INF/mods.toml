@@ -24,14 +24,24 @@ An addon for JEI to view advancements.
 [[dependencies.jea]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4, 1.17)"
+    versionRange="[1.16.5,)"
 
 [[dependencies.jea]]
     modId="jei"
     mandatory=true
-    versionRange="[7.6.0.58, 8)"
+    versionRange="[7.6.0.58,)"
 
 [[dependencies.jea]]
     modId="libx"
     mandatory=true
-    versionRange="[1.16.3-1.0.22,)"
+    versionRange="[1.16.3-1.0.63,)"
+
+[[dependencies.jea]]
+    modId="botania"
+    mandatory=false
+    versionRange="[1.16.5-415,)"
+
+[[dependencies.jea]]
+    modId="botania"
+    mandatory=false
+    versionRange="[1.16.4-1.3.5,)"

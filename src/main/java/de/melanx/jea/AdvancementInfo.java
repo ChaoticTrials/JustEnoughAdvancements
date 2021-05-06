@@ -95,7 +95,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
         if (info instanceof AdvancementInfo) {
             return (AdvancementInfo) info;
         } else {
-            JustEnoughAdvancements.logger.warn("IAdvancementInfo found that is not an instance of AdvancementInfo. This should nt happen. Another mod may have created their own implementation of IAdvancementInfo which is not supported. CLass is " + info.getClass());
+            JustEnoughAdvancements.logger.warn("IAdvancementInfo found that is not an instance of AdvancementInfo. This should nt happen. Another mod may have created their own implementation of IAdvancementInfo which is not supported. Class is " + info.getClass());
             return new AdvancementInfo(info);
         }
     }

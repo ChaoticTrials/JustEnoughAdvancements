@@ -22,6 +22,7 @@ import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
@@ -60,7 +61,7 @@ public class CriterionRecipe {
         IGuiIngredientGroup<IAdvancementInfo> group = layout.getIngredientsGroup(Jea.ADVANCEMENT_TYPE);
         group.addTooltipCallback((slot, type, info, list) -> {
             if (list.isEmpty()) {
-                AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list);
+                AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, ITooltipFlag.TooltipFlags.NORMAL);
             }
         });
         //noinspection unchecked

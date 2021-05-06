@@ -6,6 +6,7 @@ import de.melanx.jea.util.IngredientUtil;
 import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.util.TooltipUtil;
 import de.melanx.jea.util.Util;
+import io.github.noeppi_noeppi.libx.annotation.Model;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.EntityTypePredicate;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -24,9 +26,11 @@ import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IItemProvider;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.IFormattableTextComponent;
@@ -42,9 +46,13 @@ import java.util.Map;
 
 public class RenderEntityCache {
     
+    @Model("special/unknown_entity")
+    public static IBakedModel UNKNOWN_ENTITY = null;
+    
     private static final double HEIGHT = 1.8;
     private static final double WIDTH = 0.8;
     private static final AxisAlignedBB UNKNOWN_ENTITY_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+    private static final ResourceLocation BOTANIA_GAIA = new ResourceLocation("botania", "doppleganger");
     
     private static final Map<EntityType<?>, Entity> CACHE = new HashMap<>();
     
@@ -174,8 +182,7 @@ public class RenderEntityCache {
             //noinspection deprecation
             Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer()
                     .renderModelBrightnessColor(matrixStack.getLast(), vertex, null,
-                            SpecialModels.getModel(SpecialModels.UNKNOWN_ENTITY),
-                            1, 1, 1,
+                            UNKNOWN_ENTITY, 1, 1, 1,
                             LightTexture.packLight(15, 15),
                             OverlayTexture.NO_OVERLAY);
             matrixStack.pop();
@@ -282,7 +289,7 @@ public class RenderEntityCache {
                 && mouseY < (absoluteY - (horizontalOffset(entity) * scale));
         if (insideBox) {
             if (properties.forcedType && properties.type != null) {
-                tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", properties.type).mergeStyle(TextFormatting.GOLD));
+                tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", properties.type.getName()).mergeStyle(TextFormatting.GOLD));
             } else if (predicate.type instanceof EntityTypePredicate.TypePredicate
                     && ((EntityTypePredicate.TypePredicate) predicate.type).type != null) {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.entity.type.type", ((EntityTypePredicate.TypePredicate) predicate.type).type.getName()).mergeStyle(TextFormatting.GOLD));
@@ -310,6 +317,13 @@ public class RenderEntityCache {
                 additional.add(new TranslationTextComponent("jea.item.tooltip.entity.type.cat", IngredientUtil.rlFile(predicate.catType)));
             }
             
+            if (entity != null && BOTANIA_GAIA.equals(entity.getType().getRegistryName())) {
+                CompoundNBT nbt = predicate.nbt.tag;
+                if (nbt != null && nbt.contains("hardMode")) {
+                    additional.add(new TranslationTextComponent("jea.item.tooltip.botania.gaia.hardmode", TooltipUtil.yesNo(nbt.getBoolean("hardMode"))));
+                }
+            }
+
             for (IFormattableTextComponent tc : additional) {
                 tooltip.add(tc.mergeStyle(TextFormatting.AQUA));
             }

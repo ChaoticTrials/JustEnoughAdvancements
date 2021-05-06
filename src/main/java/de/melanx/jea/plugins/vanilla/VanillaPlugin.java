@@ -13,6 +13,7 @@ public class VanillaPlugin {
 
     public static void init(RegistryEvent.Register<CriterionSerializer<?>> event) {
         event.getRegistry().registerAll(
+                new ImpossibleSerializer(),
                 new DestroyBeeNestSerializer(),
                 new BreedAnimalsSerializer(),
                 new BrewPotionSerializer(),

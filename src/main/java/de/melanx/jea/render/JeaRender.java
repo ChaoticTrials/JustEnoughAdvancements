@@ -62,7 +62,20 @@ public class JeaRender {
     }
     
     public static <T> T cycle(List<T> list) {
-        return list.get((((ClientTickHandler.ticksInGame / 20) % list.size()) + list.size()) % list.size());
+        return cycle(list, 20);
+    }
+
+    public static <T> T cycle(List<T> list, int time) {
+        return list.get((((ClientTickHandler.ticksInGame / time) % list.size()) + list.size()) % list.size());
+    }
+    
+    public static <T extends Enum<T>> T cycle(Class<T> enumClass) {
+        return cycle(enumClass, 20);
+    }
+    
+    public static <T extends Enum<T>> T cycle(Class<T> enumClass, int time) {
+        T[] constants = enumClass.getEnumConstants();
+        return constants[(((ClientTickHandler.ticksInGame / time) % constants.length) + constants.length) % constants.length];
     }
     
     public static void slotAt(MatrixStack matrixStack, int x, int y) {

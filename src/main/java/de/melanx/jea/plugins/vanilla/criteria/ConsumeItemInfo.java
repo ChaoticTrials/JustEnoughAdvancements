@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class ConsumeItemInfo implements ICriterionInfo<ConsumeItemTrigger.Instan
     public void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, ConsumeItemTrigger.Instance instance, double mouseX, double mouseY) {
         ItemStack stack = JeaRender.cycle(IngredientUtil.fromItemPredicate(instance.item, Items.BREAD));
         Food food = stack.getItem().getFood();
-        if (food != null) {
+        if (food != null && food.getHealing() > 0) {
             matrixStack.push();
             matrixStack.translate(10, SPACE_TOP + 74, 0);
             RenderMisc.renderFood(matrixStack, food, 5);
@@ -62,6 +63,9 @@ public class ConsumeItemInfo implements ICriterionInfo<ConsumeItemTrigger.Instan
                 matrixStack.pop();
                 if (x < 3) { x += 1; } else if (y < 3) { x = 0; y += 1; } else { break; }
             }
+        } else {
+            ITextComponent text = new TranslationTextComponent("jea.item.tooltip.consume_item.tooltip");
+            mc.fontRenderer.func_243248_b(matrixStack, text, 5, SPACE_TOP + 74, 0x000000);
         }
     }
 

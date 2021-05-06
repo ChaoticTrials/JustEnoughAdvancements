@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class VanillaCriteriaIds {
 
+    public static final ResourceLocation IMPOSSIBLE = ImpossibleTrigger.ID;
     public static final ResourceLocation DESTROY_BEE_NEST = BeeNestDestroyedTrigger.ID;
     public static final ResourceLocation BREED_ANIMALS = BredAnimalsTrigger.ID;
     public static final ResourceLocation BREW_POTION = BrewedPotionTrigger.ID;

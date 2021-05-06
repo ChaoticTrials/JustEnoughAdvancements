@@ -10,8 +10,10 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.advancements.AdvancementEntryGui;
 import net.minecraft.client.gui.advancements.AdvancementState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -36,7 +38,7 @@ public class AdvancementDisplayHelper {
         matrixStack.pop();
     }
     
-    public static void addAdvancementTooltipToList(AdvancementInfo info, List<ITextComponent> list) {
+    public static void addAdvancementTooltipToList(AdvancementInfo info, List<ITextComponent> list, ITooltipFlag flag) {
         list.add(info.getFormattedDisplayName());
         list.add(info.getDisplay().getDescription());
         AdvancementProgress progress = ClientAdvancementProgress.getProgress(info.id);
@@ -46,6 +48,9 @@ public class AdvancementDisplayHelper {
             list.add(new TranslationTextComponent("jea.advancement.partial", MathHelper.clamp(Math.round(progress.getPercent() * 100), 1, 99) + "%").mergeStyle(TextFormatting.YELLOW));
         } else {
             list.add(new TranslationTextComponent("jea.advancement.incomplete").mergeStyle(TextFormatting.YELLOW));
+        }
+        if (flag.isAdvanced()) {
+            list.add(new StringTextComponent(info.getId().toString()).mergeStyle(TextFormatting.DARK_GRAY));
         }
     }
 }

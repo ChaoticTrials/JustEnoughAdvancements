@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
+import de.melanx.jea.plugins.botania.AlfPortalRenderer;
 import de.melanx.jea.render.JeaRender;
 import de.melanx.jea.render.SteveRender;
 import de.melanx.jea.util.IngredientUtil;
@@ -25,17 +26,21 @@ import net.minecraft.item.Items;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.EndPortalTileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.ModList;
 
 import java.util.List;
 import java.util.Objects;
 
 public class ChangeDimensionInfo implements ICriterionInfo<ChangeDimensionTrigger.Instance> {
 
+    private static final ResourceLocation MYTHICBOTANY_ALFHEIM = new ResourceLocation("mythicbotany", "alfheim");
+    
     private final EndPortalTileEntity tile = new EndPortalTileEntity();
     private TileEntityRenderer<EndPortalTileEntity> tileRender = null;
     
@@ -67,12 +72,12 @@ public class ChangeDimensionInfo implements ICriterionInfo<ChangeDimensionTrigge
     public void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, ChangeDimensionTrigger.Instance instance, double mouseX, double mouseY) {
         int y = 6;
         if (instance.from != null) {
-            ITextComponent text = new TranslationTextComponent("jea.item.tooltip.change_dimension.from", IngredientUtil.rl(instance.from.getLocation()));
+            ITextComponent text = new TranslationTextComponent("jea.item.tooltip.change_dimension.from", IngredientUtil.dim(instance.from.getLocation()));
             mc.fontRenderer.func_243248_b(matrixStack, text, 5, SPACE_TOP + y, 0x000000);
             y += (3 + mc.fontRenderer.FONT_HEIGHT);
         }
         if (instance.to != null) {
-            ITextComponent text = new TranslationTextComponent("jea.item.tooltip.change_dimension.to", IngredientUtil.rl(instance.to.getLocation()));
+            ITextComponent text = new TranslationTextComponent("jea.item.tooltip.change_dimension.to", IngredientUtil.dim(instance.to.getLocation()));
             mc.fontRenderer.func_243248_b(matrixStack, text, 5, SPACE_TOP + y, 0x000000);
         }
         matrixStack.push();
@@ -92,6 +97,14 @@ public class ChangeDimensionInfo implements ICriterionInfo<ChangeDimensionTrigge
             JeaRender.transformForEntityRenderSide(matrixStack, true, 0.8f);
             matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
             this.renderEndPortal(matrixStack, buffer, mc);
+            matrixStack.pop();
+        } else if (ModList.get().isLoaded("mythicbotany") && instance.to != null
+                && MYTHICBOTANY_ALFHEIM.equals(instance.to.getLocation())) {
+            matrixStack.push();
+            matrixStack.translate(RECIPE_WIDTH - 30, SPACE_TOP + 90, 0);
+            JeaRender.normalize(matrixStack);
+            JeaRender.transformForEntityRenderSide(matrixStack, true, 0.7f);
+            AlfPortalRenderer.renderAlfPortal(matrixStack, buffer, mc, true);
             matrixStack.pop();
         } else {
             matrixStack.push();

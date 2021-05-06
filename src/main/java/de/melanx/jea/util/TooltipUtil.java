@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class TooltipUtil {
     
-    public static void addDistanceValuesPlayerRelative(List<IFormattableTextComponent> tooltip, DistancePredicate predicate) {
+    public static void addDistanceValuesPlayerRelative(List<? super IFormattableTextComponent> tooltip, DistancePredicate predicate) {
         if (!predicate.absolute.isUnbounded()) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.distance.absolute", IngredientUtil.text(predicate.absolute)));
         }
@@ -37,7 +37,7 @@ public class TooltipUtil {
         }
     }
     
-    public static void addDistanceValues(List<IFormattableTextComponent> tooltip, DistancePredicate predicate) {
+    public static void addDistanceValues(List<? super IFormattableTextComponent> tooltip, DistancePredicate predicate) {
         if (!predicate.absolute.isUnbounded()) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.distance2.absolute", IngredientUtil.text(predicate.absolute)));
         }
@@ -55,7 +55,7 @@ public class TooltipUtil {
         }
     }
     
-    public static void addLocationValues(List<IFormattableTextComponent> tooltip, LocationPredicate predicate) {
+    public static void addLocationValues(List<? super IFormattableTextComponent> tooltip, LocationPredicate predicate) {
         if (predicate.biome != null) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.location.biome", new TranslationTextComponent(Util.makeTranslationKey("biome", predicate.biome.getLocation()))));
         }
@@ -63,7 +63,7 @@ public class TooltipUtil {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.location.feature", predicate.feature.getStructureName()));
         }
         if (predicate.dimension != null) {
-            tooltip.add(new TranslationTextComponent("jea.item.tooltip.location.dimension", IngredientUtil.rl(predicate.dimension.getLocation())));
+            tooltip.add(new TranslationTextComponent("jea.item.tooltip.location.dimension", IngredientUtil.dim(predicate.dimension.getLocation())));
         }
         if (predicate.smokey != null) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.location.smokey", yesNo(predicate.smokey)));
@@ -92,7 +92,7 @@ public class TooltipUtil {
         }
     }
     
-    public static void addLocationValuesNoIn(List<IFormattableTextComponent> tooltip, LocationPredicate predicate) {
+    public static void addLocationValuesNoIn(List<? super IFormattableTextComponent> tooltip, LocationPredicate predicate) {
         if (predicate.biome != null) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.location2.biome", new TranslationTextComponent(Util.makeTranslationKey("biome", predicate.biome.getLocation()))));
         }
@@ -100,7 +100,7 @@ public class TooltipUtil {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.location2.feature", predicate.feature.getStructureName()));
         }
         if (predicate.dimension != null) {
-            tooltip.add(new TranslationTextComponent("jea.item.tooltip.location2.dimension", IngredientUtil.rl(predicate.dimension.getLocation())));
+            tooltip.add(new TranslationTextComponent("jea.item.tooltip.location2.dimension", IngredientUtil.dim(predicate.dimension.getLocation())));
         }
         if (predicate.smokey != null) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.location.smokey", yesNo(predicate.smokey)));
@@ -133,7 +133,7 @@ public class TooltipUtil {
         return new TranslationTextComponent(value ? "jea.item.tooltip.location.yes" : "jea.item.tooltip.location.no");
     }
 
-    public static void addEffectValues(List<IFormattableTextComponent> tooltip, MobEffectsPredicate predicate) {
+    public static void addEffectValues(List<? super IFormattableTextComponent> tooltip, MobEffectsPredicate predicate) {
         for (Map.Entry<Effect, MobEffectsPredicate.InstancePredicate> entry : predicate.effects.entrySet()) {
             Effect effect = entry.getKey();
             MobEffectsPredicate.InstancePredicate instance = entry.getValue();

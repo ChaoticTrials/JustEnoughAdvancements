@@ -5,6 +5,7 @@ import net.minecraft.advancements.criterion.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -40,6 +41,10 @@ public class IngredientUtil {
     }
     
     public static List<ItemStack> fromItemPredicate(ItemPredicate predicate, boolean noAny, IItemProvider... defaults) {
+        return fromItemPredicate(predicate, null, noAny, defaults);
+    }
+    
+    public static List<ItemStack> fromItemPredicate(ItemPredicate predicate, @Nullable IFormattableTextComponent additionalLine, boolean noAny, IItemProvider... defaults) {
         List<Item> items;
         boolean anyItemTitle = false;
         if (predicate.item != null) {
@@ -73,6 +78,9 @@ public class IngredientUtil {
         }
         if (predicate.potion != null) {
             tooltip.add(new TranslationTextComponent("jea.item.tooltip.potion", new TranslationTextComponent(predicate.potion.getNamePrefixed("item." + Objects.requireNonNull(predicate.potion.getRegistryName()).getNamespace() + ".potion.effect."))));
+        }
+        if (additionalLine != null) {
+            tooltip.add(additionalLine);
         }
         ListNBT tooltipNBT = new ListNBT();
         for (IFormattableTextComponent tc : tooltip) {
@@ -159,6 +167,15 @@ public class IngredientUtil {
             return location.getPath();
         } else {
             return location.toString();
+        }
+    }
+    
+    public static String dim(ResourceLocation location) {
+        String key = "dimension." + location.getNamespace() + "." + location.getPath().replace('/', '.') + ".name";
+        if (I18n.hasKey(key)) {
+            return I18n.format(key);
+        } else {
+            return rl(location);
         }
     }
     

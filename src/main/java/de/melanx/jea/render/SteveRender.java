@@ -61,6 +61,7 @@ public class SteveRender {
                 fakePlayer.swingingHand = hand;
                 fakePlayer.setActiveHand(hand);
             }
+            fakePlayer.activeItemStackUseCount = 0;
         }
     }
 
@@ -73,11 +74,11 @@ public class SteveRender {
 
     public static void use(int useTick, Hand hand) {
         if (fakePlayer != null) {
-            fakePlayer.activeItemStackUseCount = useTick;
             if (useTick != 0) {
                 fakePlayer.swingingHand = hand;
                 fakePlayer.setActiveHand(hand);
             }
+            fakePlayer.activeItemStackUseCount = useTick;
         }
     }
     

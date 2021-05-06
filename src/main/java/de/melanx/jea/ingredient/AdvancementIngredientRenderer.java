@@ -44,9 +44,9 @@ public class AdvancementIngredientRenderer implements IIngredientRenderer<IAdvan
 
     @Nonnull
     @Override
-    public List<ITextComponent> getTooltip(@Nonnull IAdvancementInfo info, @Nonnull ITooltipFlag tooltipFlag) {
+    public List<ITextComponent> getTooltip(@Nonnull IAdvancementInfo info, @Nonnull ITooltipFlag flag) {
         List<ITextComponent> list = new ArrayList<>();
-        AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list);
+        AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, flag);
         return list;
     }
 }

@@ -38,7 +38,7 @@ public class RenderMisc {
     
     public static void renderFood(MatrixStack matrixStack, Food food, int minIcons) {
         int value = MathHelper.clamp(food.getHealing(), 0, 20);
-        float saturation = MathHelper.clamp(food.getSaturation() * 3, 0, value);
+        float saturation = MathHelper.clamp(food.getSaturation() * food.getHealing(), 0, value);
         int icons = MathHelper.clamp((int) Math.ceil(value / 2d), minIcons, 10);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

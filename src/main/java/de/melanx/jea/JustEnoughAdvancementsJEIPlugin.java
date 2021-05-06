@@ -32,6 +32,7 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
     private static IJeiRuntime runtime;
     private static IDrawableStatic slot;
+    private static IDrawableStatic lightningStatic;
     private static IDrawableAnimated lightning;
     private static IDrawableStatic potionBubbles;
     private static IDrawableStatic hungerEmpty;
@@ -63,6 +64,7 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
         
         HealthRender.HeartEffect.init(registration.getJeiHelpers().getGuiHelper());
         slot = registration.getJeiHelpers().getGuiHelper().getSlotDrawable();
+        lightningStatic = registration.getJeiHelpers().getGuiHelper().drawableBuilder(ChannelingLightningInfo.LIGHTNING_TEXTURE, 0, 0, 84, 84).setTextureSize(128, 128).build();
         lightning = registration.getJeiHelpers().getGuiHelper().drawableBuilder(ChannelingLightningInfo.LIGHTNING_TEXTURE, 0, 0, 84, 84).setTextureSize(128, 128).buildAnimated(8, IDrawableAnimated.StartDirection.TOP, false);
         potionBubbles = registration.getJeiHelpers().getGuiHelper().createDrawable(MISC_TEXTURE, 0, 0, 12, 29);
         hungerEmpty = registration.getJeiHelpers().getGuiHelper().createDrawable(ICONS_TEXTURE, 16, 27, 9, 9);
@@ -110,6 +112,10 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
     public static IDrawableStatic getSlot() {
         return slot;
+    }
+
+    public static IDrawableStatic getLightningStatic() {
+        return lightningStatic;
     }
 
     public static IDrawableAnimated getLightning() {

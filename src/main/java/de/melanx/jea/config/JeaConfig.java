@@ -1,7 +1,9 @@
 package de.melanx.jea.config;
 
+import io.github.noeppi_noeppi.libx.annotation.RegisterConfig;
 import io.github.noeppi_noeppi.libx.config.Config;
 
+@RegisterConfig
 public class JeaConfig {
 
     @Config({

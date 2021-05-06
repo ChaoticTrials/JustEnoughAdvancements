@@ -1,4 +1,9 @@
 {
+  "dimension.minecraft.overworld.name": "Overworld",
+  "dimension.minecraft.the_nether.name": "The Nether",
+  "dimension.minecraft.the_end.name": "The End",
+  "dimension.mythicbotany.alfheim.name": "Alfheim",
+  
   "jea.advancement.incomplete": "Advancement not completed yet.",
   "jea.advancement.partial": "Advancement %s completed.",
   "jea.category.advancement": "Advancement",
@@ -16,6 +21,7 @@
   "jea.item.tooltip.book_enchantment": "Book Enchantment: %s %s",
   "jea.item.tooltip.change_dimension.from": "Travelling from: %s",
   "jea.item.tooltip.change_dimension.to": "Travelling to: %s",
+  "jea.item.tooltip.consume_item.tooltip": "Eat / Drink Item",
   "jea.item.tooltip.crossbow.unique": "Unique Entity Types: %s",
   "jea.item.tooltip.damage.any": "Damage Item",
   "jea.item.tooltip.damage.blocked": "Damage must be blocked",
@@ -71,6 +77,7 @@
   "jea.item.tooltip.inventory.one": "Collect Item",
   "jea.item.tooltip.levitate.duration": "Duration: %s",
   "jea.item.tooltip.location.biome": "In biome: %s",
+  "jea.item.tooltip.location.any_title": "Location",
   "jea.item.tooltip.location.block": "With block: %s",
   "jea.item.tooltip.location.block_tag": "With block from tag: %s",
   "jea.item.tooltip.location.dimension": "In dimension: %s",
@@ -106,5 +113,14 @@
   "jea.range.bounded": "%s - %s",
   "jea.range.greater": "≥ %s",
   "jea.range.lower": "≤ %s",
-  "jea.range.unbounded": "Unbounded"
+  "jea.range.unbounded": "Unbounded",
+
+  "jea.item.tooltip.botania.alf_portal.location": "Portal Location",
+  "jea.item.tooltip.botania.gaia.hardmode": "Hard Mode Gaia Guardian: %s",
+  "jea.item.tooltip.botania.kill_no_armor": "Kill without Armor",
+  "jea.item.tooltip.botania.loki_block_amount": "Placed Blocks: %s",
+  "jea.item.tooltip.botania.corporea_request_amount": "Requested Items: %s",
+  "jea.item.tooltip.botania.corporea_location": "Corporea Index Location",
+  "jea.item.tooltip.botania.desu_gun": "Desu Gun: %s",
+  "jea.item.tooltip.botania.terra_rank": "Requires Rank: SS"
 }

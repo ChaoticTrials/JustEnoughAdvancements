@@ -1,4 +1,9 @@
 {
+  "dimension.minecraft.overworld.name": "Oberwelt",
+  "dimension.minecraft.the_nether.name": "Der Nether",
+  "dimension.minecraft.the_end.name": "Das Ende",
+  "dimension.mythicbotany.alfheim.name": "Alfheim",
+
   "jea.advancement.incomplete": "Fortschritt nicht erreicht.",
   "jea.advancement.partial": "Fortschritt zu %s erreicht.",
   "jea.category.advancement": "Fortschritte",
@@ -16,6 +21,7 @@
   "jea.item.tooltip.book_enchantment": "Buch-Verzauberung: %s %s",
   "jea.item.tooltip.change_dimension.from": "Start-Dimension: %s",
   "jea.item.tooltip.change_dimension.to": "Ziel-Dimension: %s",
+  "jea.item.tooltip.consume_item.tooltip": "Gegenstand essen / trinken",
   "jea.item.tooltip.crossbow.unique": "Verschiedene Kreatur-Typen: %s",
   "jea.item.tooltip.damage.any": "Gegenstand Beschädigen",
   "jea.item.tooltip.damage.blocked": "Schaden muss blockiert werden.",
@@ -71,6 +77,7 @@
   "jea.item.tooltip.inventory.one": "Sammle Gegenstand",
   "jea.item.tooltip.levitate.duration": "Dauer: %s",
   "jea.item.tooltip.location.biome": "Im Biom: %s",
+  "jea.item.tooltip.location.any_title": "Position",
   "jea.item.tooltip.location.block": "Bei Block: %s",
   "jea.item.tooltip.location.block_tag": "Bei Block aus der Gruppe: %s",
   "jea.item.tooltip.location.dimension": "In Dimension: %s",
@@ -106,5 +113,14 @@
   "jea.range.bounded": "%s - %s",
   "jea.range.greater": "≥ %s",
   "jea.range.lower": "≤ %s",
-  "jea.range.unbounded": "Uneingeschränkt"
+  "jea.range.unbounded": "Uneingeschränkt",
+
+  "jea.item.tooltip.botania.alf_portal.location": "Standort des Portals",
+  "jea.item.tooltip.botania.gaia.hardmode": "Hard Mode Gaia Guardian: %s",
+  "jea.item.tooltip.botania.kill_no_armor": "Töte ohne Rüstung",
+  "jea.item.tooltip.botania.loki_block_amount": "Platzierte Blöcke: %s",
+  "jea.item.tooltip.botania.corporea_request_amount": "Angeforderte Gegenstände: %s",
+  "jea.item.tooltip.botania.corporea_location": "Position des Corporea Index",
+  "jea.item.tooltip.botania.desu_gun": "Desu Gun: %s",
+  "jea.item.tooltip.botania.terra_rank": "Benötigter Rang: SS"
 }

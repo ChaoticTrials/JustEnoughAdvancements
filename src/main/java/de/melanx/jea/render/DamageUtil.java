@@ -60,7 +60,7 @@ public class DamageUtil {
         }
         float entityScale = (yValue - SPACE_TOP - 4) / 32f;
         if (forcedSource != null) { source.type = forcedSource; source.forcedType = true; }
-        if (forcedTarget != null) { target.type = forcedSource; target.forcedType = true; }
+        if (forcedTarget != null) { target.type = forcedTarget; target.forcedType = true; }
         if (!projectile.isEmpty()) {
             matrixStack.push();
             //noinspection IntegerDivisionInFloatingPointContext
@@ -116,7 +116,7 @@ public class DamageUtil {
         }
         float entityScale = (yValue - SPACE_TOP - 4) / 32f;
         if (forcedSource != null) { source.type = forcedSource; source.forcedType = true; }
-        if (forcedTarget != null) { target.type = forcedSource; target.forcedType = true; }
+        if (forcedTarget != null) { target.type = forcedTarget; target.forcedType = true; }
         source.addTooltip(tooltip, mc, LootUtil.asLootPredicate(predicate.sourceEntity), RECIPE_WIDTH - 30, yValue - 2, JeaRender.normalScale(entityScale), mouseX, mouseY);
         target.addTooltip(tooltip, mc, targetEntity, 30, yValue - 2, JeaRender.normalScale(entityScale), mouseX, mouseY);
     }

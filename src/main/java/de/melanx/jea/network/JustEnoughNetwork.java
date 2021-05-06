@@ -18,7 +18,7 @@ public class JustEnoughNetwork extends NetworkX {
     
     // Increment when sth changed with the plugins networking.
     // Set to 0 when BASE_PROTOCOL_VERSION is incremented.
-    public static final int PLUGIN_PROTOCOL_VERSION = 0;
+    public static final int PLUGIN_PROTOCOL_VERSION = 1;
     
     public JustEnoughNetwork(ModX mod) {
         super(mod);

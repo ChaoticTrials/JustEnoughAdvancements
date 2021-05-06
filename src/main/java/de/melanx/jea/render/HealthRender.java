@@ -85,7 +85,6 @@ public class HealthRender {
         public HeartValues create(int health, int damaging, int minHearts) {
             return new HeartValues(this, health, damaging, minHearts);
         }
-
     }
     
     public static class HeartValues {

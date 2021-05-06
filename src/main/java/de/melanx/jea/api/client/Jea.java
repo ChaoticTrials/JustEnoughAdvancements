@@ -42,7 +42,9 @@ public class Jea {
     public static final IIngredientRenderer<ItemStack> LARGE_BLOCK = new LargeBlockIngredientRender();
     public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_BREAK_SLOW = new LargeBlockBreakingIngredientRender(12);
     public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_BREAK_FAST = new LargeBlockBreakingIngredientRender(3);
-    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_APPEARING = new LargeBlockAppearingIngredientRender(20, 20);
+    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_APPEARING_FAST = new LargeBlockAppearingIngredientRender(20, 20);
+    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_APPEARING = new LargeBlockAppearingIngredientRender(30, 30);
+    public static final IIngredientRenderer<ItemStack> LARGE_BLOCK_APPEARING_SLOW = new LargeBlockAppearingIngredientRender(40, 40);
 
 
     private static final Map<ResourceLocation, ICriterionInfo<?>> criteria = new HashMap<>();
