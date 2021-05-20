@@ -69,9 +69,9 @@ public class EnchantItemInfo implements ICriterionInfo<EnchantedItemTrigger.Inst
             JustEnoughAdvancementsJEIPlugin.getXpOrb().draw(matrixStack, 98, SPACE_TOP + 17);
             RenderSystem.disableBlend();
             ITextComponent text1 = new TranslationTextComponent("jea.item.tooltip.enchant.level");
-            mc.fontRenderer.func_243248_b(matrixStack, text1, 109, SPACE_TOP + 17, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text1, 109, SPACE_TOP + 17, 0x000000);
             ITextComponent text2 = IngredientUtil.text(instance.levels);
-            mc.fontRenderer.func_243248_b(matrixStack, text2, 99, SPACE_TOP + mc.fontRenderer.FONT_HEIGHT + 19, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text2, 99, SPACE_TOP + mc.fontRenderer.FONT_HEIGHT + 19, 0x000000);
         }
         float animationTime = (ClientTickHandler.ticksInGame + mc.getRenderPartialTicks()) % 110;
         float bookOpen;

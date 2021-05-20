@@ -65,7 +65,7 @@ public class LevitationInfo implements ICriterionInfo<LevitationTrigger.Instance
         TooltipUtil.addDistanceValues(text, instance.distance);
         int y = SPACE_TOP + 6;
         for (IFormattableTextComponent tc : text) {
-            mc.fontRenderer.func_243248_b(matrixStack, tc, 30, y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, tc, 30, y, 0x000000);
             y += (mc.fontRenderer.FONT_HEIGHT + 2);
         }
     }

@@ -68,8 +68,8 @@ public class DestroyBeeNestInfo implements ICriterionInfo<BeeNestDestroyedTrigge
             JeaRender.transformForEntityRenderSide(matrixStack, false, 1);
             RenderEntityCache.renderPlainEntity(mc, EntityType.BEE, matrixStack, buffer);
             matrixStack.pop();
-            ITextComponent text = new StringTextComponent(": ").append(IngredientUtil.text(instance.beesContained));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 105, SPACE_TOP + 25, 0x000000);
+            ITextComponent text = new StringTextComponent(": ").appendSibling(IngredientUtil.text(instance.beesContained));
+            mc.fontRenderer.drawText(matrixStack, text, 105, SPACE_TOP + 25, 0x000000);
         }
     }
 

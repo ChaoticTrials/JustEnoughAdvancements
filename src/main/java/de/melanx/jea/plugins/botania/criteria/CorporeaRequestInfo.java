@@ -81,7 +81,7 @@ public class CorporeaRequestInfo implements ICriterionInfo<CorporeaRequestTrigge
 
         if (!instance.getCount().isUnbounded()) {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.botania.corporea_request_amount", IngredientUtil.text(instance.getCount()));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 10, SPACE_TOP + 80, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 10, SPACE_TOP + 80, 0x000000);
         }
     }
 

@@ -73,12 +73,12 @@ public class ChangeDimensionInfo implements ICriterionInfo<ChangeDimensionTrigge
         int y = 6;
         if (instance.from != null) {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.change_dimension.from", IngredientUtil.dim(instance.from.getLocation()));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 5, SPACE_TOP + y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 5, SPACE_TOP + y, 0x000000);
             y += (3 + mc.fontRenderer.FONT_HEIGHT);
         }
         if (instance.to != null) {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.change_dimension.to", IngredientUtil.dim(instance.to.getLocation()));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 5, SPACE_TOP + y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 5, SPACE_TOP + y, 0x000000);
         }
         matrixStack.push();
         matrixStack.translate(30, SPACE_TOP + 90, 0);

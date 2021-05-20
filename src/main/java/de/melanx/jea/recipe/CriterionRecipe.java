@@ -80,7 +80,7 @@ public class CriterionRecipe {
         Minecraft mc = Minecraft.getInstance();
         FontRenderer font = mc.fontRenderer;
         int width = font.getStringPropertyWidth(this.info.getFormattedDisplayName());
-        font.func_243246_a(matrixStack, this.info.getFormattedDisplayName(), (ICriterionInfo.RECIPE_WIDTH / 2f) - (width / 2f), 27, 0xFFFFFF);
+        font.drawText(matrixStack, this.info.getFormattedDisplayName(), (ICriterionInfo.RECIPE_WIDTH / 2f) - (width / 2f), 27, 0xFFFFFF);
         CriterionCompletion criterionCompletion = this.getCriterionCompletion();
         matrixStack.push();
         matrixStack.translate(ICriterionInfo.RECIPE_WIDTH - 16 - 5, 5, 0);

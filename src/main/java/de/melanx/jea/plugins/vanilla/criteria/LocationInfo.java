@@ -49,10 +49,10 @@ public class LocationInfo implements ICriterionInfo<PositionTrigger.Instance> {
         matrixStack.pop();
         List<IFormattableTextComponent> text = new ArrayList<>();
         TooltipUtil.addLocationValuesNoIn(text, instance.location);
-        mc.fontRenderer.func_243248_b(matrixStack, new TranslationTextComponent("jea.item.tooltip.location_trigger").mergeStyle(TextFormatting.DARK_RED), 42, SPACE_TOP + 14, 0x000000);
+        mc.fontRenderer.drawText(matrixStack, new TranslationTextComponent("jea.item.tooltip.location_trigger").mergeStyle(TextFormatting.DARK_RED), 42, SPACE_TOP + 14, 0x000000);
         int y = SPACE_TOP + 28;
         for (IFormattableTextComponent line : text) {
-            mc.fontRenderer.func_243248_b(matrixStack, line, 38, y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, line, 38, y, 0x000000);
             y += (mc.fontRenderer.FONT_HEIGHT + 2);
         }
     }

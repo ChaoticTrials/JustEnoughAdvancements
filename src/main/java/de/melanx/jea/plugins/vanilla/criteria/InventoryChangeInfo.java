@@ -56,22 +56,22 @@ public class InventoryChangeInfo implements ICriterionInfo<InventoryChangeTrigge
             IFormattableTextComponent text = new TranslationTextComponent(instance.items.length == 1 ? "jea.item.tooltip.inventory.one" : "jea.item.tooltip.inventory.multiple");
             int width = mc.fontRenderer.getStringPropertyWidth(text);
             //noinspection IntegerDivisionInFloatingPointContext
-            mc.fontRenderer.func_243248_b(matrixStack, text, (RECIPE_WIDTH / 2) - (width / 2), SPACE_TOP + 9, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, (RECIPE_WIDTH / 2) - (width / 2), SPACE_TOP + 9, 0x000000);
         }
         int y = SPACE_TOP + RECIPE_HEIGHT - 5 - mc.fontRenderer.FONT_HEIGHT;
         if (!instance.full.isUnbounded()) {
             IFormattableTextComponent text = new TranslationTextComponent("jea.item.tooltip.inventory.full", IngredientUtil.text(instance.full));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 5, y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 5, y, 0x000000);
             y -= (mc.fontRenderer.FONT_HEIGHT + 2);
         }
         if (!instance.occupied.isUnbounded()) {
             IFormattableTextComponent text = new TranslationTextComponent("jea.item.tooltip.inventory.occupied", IngredientUtil.text(instance.occupied));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 5, y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 5, y, 0x000000);
             y -= (mc.fontRenderer.FONT_HEIGHT + 2);
         }
         if (!instance.empty.isUnbounded()) {
             IFormattableTextComponent text = new TranslationTextComponent("jea.item.tooltip.inventory.empty", IngredientUtil.text(instance.empty));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 5, y, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 5, y, 0x000000);
         }
     }
 

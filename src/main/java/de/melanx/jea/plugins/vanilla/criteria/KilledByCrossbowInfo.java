@@ -59,7 +59,7 @@ public class KilledByCrossbowInfo implements ICriterionInfo<KilledByCrossbowTrig
             IFormattableTextComponent text = new TranslationTextComponent("jea.item.tooltip.crossbow.unique", IngredientUtil.text(instance.bounds));
             int width = mc.fontRenderer.getStringPropertyWidth(text);
             //noinspection IntegerDivisionInFloatingPointContext
-            mc.fontRenderer.func_243248_b(matrixStack, text, (RECIPE_WIDTH / 2) - (width / 2), SPACE_TOP + RECIPE_HEIGHT - 2 - mc.fontRenderer.FONT_HEIGHT, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, (RECIPE_WIDTH / 2) - (width / 2), SPACE_TOP + RECIPE_HEIGHT - 2 - mc.fontRenderer.FONT_HEIGHT, 0x000000);
         }
         if (instance.entities.length > 0) {
             int x;

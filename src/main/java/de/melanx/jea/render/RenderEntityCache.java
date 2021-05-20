@@ -140,10 +140,8 @@ public class RenderEntityCache {
             if (entity instanceof TameableEntity) {
                 ((TameableEntity) entity).setTamed(false);
                 ((TameableEntity) entity).setOwnerId(null);
-                // setSitting
-                ((TameableEntity) entity).func_233687_w_(false);
-                // Whoever named the sitting method for th data manger 'sleeping'...
-                ((TameableEntity) entity).setSleeping(false);
+                ((TameableEntity) entity).setSitting(false);
+                ((TameableEntity) entity).setQueuedToSit(false);
             }
             if (entity instanceof AbstractHorseEntity) {
                 ((AbstractHorseEntity) entity).setHorseTamed(false);
@@ -229,10 +227,8 @@ public class RenderEntityCache {
             if (entity instanceof TameableEntity) {
                 ((TameableEntity) entity).setTamed(properties.tamed);
                 ((TameableEntity) entity).setOwnerId(properties.tamed ? Util.PLACEHOLDER_UUID : null);
-                // setSitting
-                ((TameableEntity) entity).func_233687_w_(properties.tamed);
-                // Whoever named the sitting method for th data manger 'sleeping'...
-                ((TameableEntity) entity).setSleeping(properties.tamed);
+                ((TameableEntity) entity).setSitting(properties.tamed);
+                ((TameableEntity) entity).setQueuedToSit(properties.tamed);
             }
             if (entity instanceof AbstractHorseEntity) {
                 ((AbstractHorseEntity) entity).setHorseTamed(properties.tamed);

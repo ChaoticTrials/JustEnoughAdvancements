@@ -59,7 +59,7 @@ public class ConstructBeaconInfo implements ICriterionInfo<ConstructBeaconTrigge
             level = instance.level;
         }
         ITextComponent text = new TranslationTextComponent("jea.item.tooltip.beacon.level", IngredientUtil.text(level));
-        mc.fontRenderer.func_243248_b(matrixStack, text, 2, SPACE_TOP + RECIPE_HEIGHT - 2 - mc.fontRenderer.FONT_HEIGHT, 0x000000);
+        mc.fontRenderer.drawText(matrixStack, text, 2, SPACE_TOP + RECIPE_HEIGHT - 2 - mc.fontRenderer.FONT_HEIGHT, 0x000000);
         int renderLevel = IngredientUtil.getExampleValue(level).orElse(1);
         matrixStack.push();
         matrixStack.translate(RECIPE_WIDTH - 60, SPACE_TOP + RECIPE_HEIGHT - 30, 0);

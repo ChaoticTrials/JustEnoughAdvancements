@@ -51,7 +51,7 @@ public class ItemDurabilityInfo implements ICriterionInfo<ItemDurabilityTrigger.
             IFormattableTextComponent text = new TranslationTextComponent("jea.item.tooltip.damage.any");
             int width = mc.fontRenderer.getStringPropertyWidth(text);
             //noinspection IntegerDivisionInFloatingPointContext
-            mc.fontRenderer.func_243248_b(matrixStack, text, (RECIPE_WIDTH / 2) - (width / 2), SPACE_TOP + 9, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, (RECIPE_WIDTH / 2) - (width / 2), SPACE_TOP + 9, 0x000000);
         } else {
             MinMaxBounds.IntBound durability = new MinMaxBounds.IntBound(2, 5);
             MinMaxBounds.IntBound delta = new MinMaxBounds.IntBound(0, 0);
@@ -59,7 +59,7 @@ public class ItemDurabilityInfo implements ICriterionInfo<ItemDurabilityTrigger.
             int y = SPACE_TOP + 65;
             if (!durability.isUnbounded()) {
                 IFormattableTextComponent text = new TranslationTextComponent("jea.item.tooltip.damage.total", IngredientUtil.text(durability));
-                mc.fontRenderer.func_243248_b(matrixStack, text, 5, y, 0x000000);
+                mc.fontRenderer.drawText(matrixStack, text, 5, y, 0x000000);
                 y += (2 + mc.fontRenderer.FONT_HEIGHT);
             }
             if (!delta.isUnbounded()) {
@@ -71,7 +71,7 @@ public class ItemDurabilityInfo implements ICriterionInfo<ItemDurabilityTrigger.
                 } else {
                     text = new TranslationTextComponent("jea.item.tooltip.damage.delta.any", IngredientUtil.text(delta));
                 }
-                mc.fontRenderer.func_243248_b(matrixStack, text, 5, y, 0x000000);
+                mc.fontRenderer.drawText(matrixStack, text, 5, y, 0x000000);
             }
         }
     }

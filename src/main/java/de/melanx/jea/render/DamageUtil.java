@@ -81,7 +81,7 @@ public class DamageUtil {
         target.render(matrixStack, buffer, mc, targetEntity, JeaRender.entityRenderSide(false, entityScale));
         matrixStack.pop();
         for (ITextComponent text : list) {
-            mc.fontRenderer.func_243248_b(matrixStack, text, xValue, yValue, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, xValue, yValue, 0x000000);
             yValue += (2 + mc.fontRenderer.FONT_HEIGHT);
         }
     }

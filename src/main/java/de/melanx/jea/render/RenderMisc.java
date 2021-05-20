@@ -92,7 +92,7 @@ public class RenderMisc {
     
     public static void addMobEffectTooltip(List<ITextComponent> tooltip, EffectInstance effect, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Float> chance, int x, int y, int size, double mouseX, double mouseY) {
         if (mouseX >= x && mouseX <= x + size && mouseY >= y && mouseY <= y + size) {
-            tooltip.add(effect.getPotion().getDisplayName().deepCopy().append(new StringTextComponent(" ")).append(new TranslationTextComponent("potion.potency." + effect.getAmplifier())).mergeStyle(effect.getPotion().getEffectType().getColor()));
+            tooltip.add(effect.getPotion().getDisplayName().deepCopy().appendSibling(new StringTextComponent(" ")).appendSibling(new TranslationTextComponent("potion.potency." + effect.getAmplifier())).mergeStyle(effect.getPotion().getEffectType().getColor()));
             chance.ifPresent(c -> tooltip.add(new TranslationTextComponent("jea.item.tooltip.effect.chance", TooltipUtil.formatChance(c))));
             if (!effect.getPotion().isInstant() && effect.getDuration() != 0) {
                 tooltip.add(new TranslationTextComponent("jea.item.tooltip.effect.duration", TooltipUtil.formatTimeTicks(effect.getDuration())));

@@ -86,9 +86,9 @@ public class GenerateContainerLootInfo implements ICriterionInfo<PlayerGenerates
         int width1 = mc.fontRenderer.getStringPropertyWidth(text1);
         int width2 = mc.fontRenderer.getStringPropertyWidth(text2);
         //noinspection IntegerDivisionInFloatingPointContext
-        mc.fontRenderer.func_243248_b(matrixStack, text1, (RECIPE_WIDTH / 2) - (width1 / 2), SPACE_TOP + 71, 0x000000);
+        mc.fontRenderer.drawText(matrixStack, text1, (RECIPE_WIDTH / 2) - (width1 / 2), SPACE_TOP + 71, 0x000000);
         //noinspection IntegerDivisionInFloatingPointContext
-        mc.fontRenderer.func_243248_b(matrixStack, text2, (RECIPE_WIDTH / 2) - (width2 / 2), SPACE_TOP + 73 + mc.fontRenderer.FONT_HEIGHT, 0x000000);
+        mc.fontRenderer.drawText(matrixStack, text2, (RECIPE_WIDTH / 2) - (width2 / 2), SPACE_TOP + 73 + mc.fontRenderer.FONT_HEIGHT, 0x000000);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class EnterBlockInfo implements ICriterionInfo<EnterBlockTrigger.Instance
         if (state.isAir()) {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.in_block.any");
             int width = mc.fontRenderer.getStringPropertyWidth(text);
-            mc.fontRenderer.func_243248_b(matrixStack, text, (RECIPE_WIDTH / 2f) - (width / 2f), SPACE_TOP + (RECIPE_HEIGHT / 2f) - ((mc.fontRenderer.FONT_HEIGHT + 1) / 2f), 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, (RECIPE_WIDTH / 2f) - (width / 2f), SPACE_TOP + (RECIPE_HEIGHT / 2f) - ((mc.fontRenderer.FONT_HEIGHT + 1) / 2f), 0x000000);
         } else if (state.getBlock() == Blocks.END_GATEWAY) {
             float animationTime = (ClientTickHandler.ticksInGame + mc.getRenderPartialTicks()) % 26;
             float swing;
@@ -120,7 +120,7 @@ public class EnterBlockInfo implements ICriterionInfo<EnterBlockTrigger.Instance
         } else {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.in_block.title");
             int width = mc.fontRenderer.getStringPropertyWidth(text);
-            mc.fontRenderer.func_243248_b(matrixStack, text, (RECIPE_WIDTH / 2f) - (width / 2f), SPACE_TOP + 10, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, (RECIPE_WIDTH / 2f) - (width / 2f), SPACE_TOP + 10, 0x000000);
             matrixStack.push();
             matrixStack.translate(RECIPE_WIDTH / 2d, SPACE_TOP + 90, 0);
             JeaRender.normalize(matrixStack);

@@ -65,7 +65,7 @@ public class ConsumeItemInfo implements ICriterionInfo<ConsumeItemTrigger.Instan
             }
         } else {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.consume_item.tooltip");
-            mc.fontRenderer.func_243248_b(matrixStack, text, 5, SPACE_TOP + 74, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 5, SPACE_TOP + 74, 0x000000);
         }
     }
 

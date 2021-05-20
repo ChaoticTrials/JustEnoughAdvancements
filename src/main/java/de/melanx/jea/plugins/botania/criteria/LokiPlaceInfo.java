@@ -93,7 +93,7 @@ public class LokiPlaceInfo implements ICriterionInfo<LokiPlaceTrigger.Instance> 
         }
         if (!instance.getBlocksPlaced().isUnbounded()) {
             ITextComponent text = new TranslationTextComponent("jea.item.tooltip.botania.loki_block_amount", IngredientUtil.text(instance.getBlocksPlaced()));
-            mc.fontRenderer.func_243248_b(matrixStack, text, 44, SPACE_TOP + 10, 0x000000);
+            mc.fontRenderer.drawText(matrixStack, text, 44, SPACE_TOP + 10, 0x000000);
         }
     }
 

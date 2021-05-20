@@ -54,7 +54,7 @@ public class UseTotemInfo implements ICriterionInfo<UsedTotemTrigger.Instance> {
         SteveRender.renderSteve(mc, matrixStack, buffer);
         matrixStack.pop();
         ITextComponent text = new TranslationTextComponent("jea.item.tooltip.totem");
-        mc.fontRenderer.func_243248_b(matrixStack, text, 60, SPACE_TOP + 15, 0x000000);
+        mc.fontRenderer.drawText(matrixStack, text, 60, SPACE_TOP + 15, 0x000000);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class TameAnimalInfo implements ICriterionInfo<TameAnimalTrigger.Instance
         matrixStack.pop();
         ITextComponent text = new TranslationTextComponent("jea.item.tooltip.tame_animal");
         //noinspection IntegerDivisionInFloatingPointContext
-        mc.fontRenderer.func_243248_b(matrixStack, text, (RECIPE_WIDTH / 2) - (mc.fontRenderer.getStringPropertyWidth(text) / 2), SPACE_TOP + 10, 0xffd100);
+        mc.fontRenderer.drawText(matrixStack, text, (RECIPE_WIDTH / 2) - (mc.fontRenderer.getStringPropertyWidth(text) / 2), SPACE_TOP + 10, 0xffd100);
     }
 
     @Override
