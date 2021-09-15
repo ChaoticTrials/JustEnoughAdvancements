@@ -13,8 +13,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,7 +34,7 @@ public class ClientAdvancements {
             JustEnoughAdvancementsJEIPlugin.runtimeOptional(runtime -> updateAdvancementIngredientsJEI(runtime, 3));
             // We trigger a recipes updated event here so JEI will reload recipes and show our
             // new advancement information.
-            ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+            ClientPacketListener connection = Minecraft.getInstance().getConnection();
             //noinspection ConstantConditions
             if (connection != null && connection.getRecipeManager() != null) {
                 MinecraftForge.EVENT_BUS.post(new RecipesUpdatedEvent(connection.getRecipeManager()));
@@ -84,11 +84,11 @@ public class ClientAdvancements {
         List<CriterionRecipe> recipes = new ArrayList<>();
         for (AdvancementInfo info : ClientAdvancements.getAdvancements()) {
             for (Map.Entry<String, Criterion> criterion : info.getCriteria().entrySet()) {
-                if (criterion.getValue().getCriterionInstance() != null) {
+                if (criterion.getValue().getTrigger() != null) {
                     if (info.getCriteriaSerializerIds().containsKey(criterion.getKey())) {
                         ResourceLocation serializerId = info.getCriteriaSerializerIds().get(criterion.getKey());
                         ICriterionInfo<?> c = Jea.getCriterionInfo(info, criterion.getKey(), serializerId);
-                        if (c != null && c.criterionClass().isAssignableFrom(criterion.getValue().getCriterionInstance().getClass())) {
+                        if (c != null && c.criterionClass().isAssignableFrom(criterion.getValue().getTrigger().getClass())) {
                             List<String> criterionGroup = null;
                             for (List<String> completionGroup : info.getCompletion()) {
                                 if (completionGroup.contains(criterion.getKey())) {
@@ -97,7 +97,7 @@ public class ClientAdvancements {
                                 }
                             }
                             if (criterionGroup == null) {
-                                criterionGroup = ImmutableList.of(criterion.getKey());
+                                criterionGroup = List.of(criterion.getKey());
                             }
                             recipes.add(new CriterionRecipe(info, criterion.getKey(), c, criterionGroup));
                         }

@@ -8,7 +8,7 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 import java.lang.reflect.Field;
 
@@ -34,8 +34,8 @@ public class RecipeRenderSizeAdjust {
                         ingredientRenderField.set(ingredient, Jea.ADVANCEMENT_RECIPE_RENDERER);
                         render = Jea.ADVANCEMENT_RECIPE_RENDERER;
                     }
-                    Rectangle2d rect = (Rectangle2d) rectangleField.get(ingredient);
-                    Rectangle2d newRect = newSize(render, rect);
+                    Rect2i rect = (Rect2i) rectangleField.get(ingredient);
+                    Rect2i newRect = newSize(render, rect);
                     if (newRect != null) {
                         rectangleField.set(ingredient, newRect);
                     }
@@ -47,13 +47,13 @@ public class RecipeRenderSizeAdjust {
         }
     }
     
-    private static Rectangle2d newSize(IIngredientRenderer<?> render, Rectangle2d size) {
+    private static Rect2i newSize(IIngredientRenderer<?> render, Rect2i size) {
         if (render == Jea.ADVANCEMENT_RECIPE_RENDERER) {
-            return new Rectangle2d(size.getX(), size.getY(), 26, 26);
+            return new Rect2i(size.getX(), size.getY(), 26, 26);
         } else if (render instanceof LargeBlockIngredientRender) {
-            return new Rectangle2d(size.getX(), size.getY(), LargeBlockIngredientRender.SIZE, LargeBlockIngredientRender.SIZE);
-        } else if (render instanceof LargeItemIngredientRender) {
-            return new Rectangle2d(size.getX(), size.getY(), ((LargeItemIngredientRender) render).size, ((LargeItemIngredientRender) render).size);
+            return new Rect2i(size.getX(), size.getY(), LargeBlockIngredientRender.SIZE, LargeBlockIngredientRender.SIZE);
+        } else if (render instanceof LargeItemIngredientRender largeItem) {
+            return new Rect2i(size.getX(), size.getY(), largeItem.size, largeItem.size);
 
         } else {
             return null;

@@ -1,15 +1,15 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,34 +26,33 @@ public class LargeItemIngredientRender implements IIngredientRenderer<ItemStack>
     }
     
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int x, int y, @Nullable ItemStack stack) {
+    public void render(@Nonnull PoseStack poseStack, int x, int y, @Nullable ItemStack stack) {
         if (stack != null) {
-            matrixStack.push();
+            poseStack.pushPose();
             int half = this.size / 2;
-            matrixStack.translate(x + half, y + half, -(this.size  * (this.size / 16d)));
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(this.rotationDegrees));
-            matrixStack.translate(-half, -half, 0);
-            matrixStack.scale(this.size / 16f, this.size / 16f, this.size / 16f);
-            //noinspection deprecation
-            RenderSystem.pushMatrix();
-            //noinspection deprecation
-            RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
-            Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGuiWithoutEntity(stack, 0, 0);
-            //noinspection deprecation
-            RenderSystem.popMatrix();
-            matrixStack.pop();
+            poseStack.translate(x + half, y + half, -(this.size  * (this.size / 16d)));
+            poseStack.mulPose(Vector3f.ZP.rotationDegrees(this.rotationDegrees));
+            poseStack.translate(-half, -half, 0);
+            poseStack.scale(this.size / 16f, this.size / 16f, this.size / 16f);
+            RenderSystem.getModelViewStack().pushPose();
+            RenderSystem.getModelViewStack().mulPoseMatrix(poseStack.last().pose());
+            RenderSystem.applyModelViewMatrix();
+            Minecraft.getInstance().getItemRenderer().renderAndDecorateFakeItem(stack, 0, 0);
+            RenderSystem.getModelViewStack().popPose();
+            RenderSystem.applyModelViewMatrix();
+            poseStack.popPose();
         }
     }
 
     @Nonnull
     @Override
-    public List<ITextComponent> getTooltip(@Nonnull ItemStack stack, @Nonnull ITooltipFlag flag) {
+    public List<Component> getTooltip(@Nonnull ItemStack stack, @Nonnull TooltipFlag flag) {
         return JustEnoughAdvancementsJEIPlugin.runtimeResult(runtime -> runtime.getIngredientManager().getIngredientRenderer(stack)).getTooltip(stack, flag);
     }
 
     @Nonnull
     @Override
-    public FontRenderer getFontRenderer(@Nonnull Minecraft mc, @Nonnull ItemStack stack) {
+    public Font getFontRenderer(@Nonnull Minecraft mc, @Nonnull ItemStack stack) {
         return JustEnoughAdvancementsJEIPlugin.runtimeResult(runtime -> runtime.getIngredientManager().getIngredientRenderer(stack)).getFontRenderer(mc, stack);
     }
 }

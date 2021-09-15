@@ -1,27 +1,27 @@
 package de.melanx.jea.plugins.vanilla.serializer;
 
-import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.SummonedEntityTrigger;
-import net.minecraft.network.PacketBuffer;
+import de.melanx.jea.util.LootUtil;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SummonedEntityTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class SummonEntitySerializer extends CriterionSerializer<SummonedEntityTrigger.Instance> {
+public class SummonEntitySerializer extends CriterionSerializer<SummonedEntityTrigger.TriggerInstance> {
 
     public SummonEntitySerializer() {
-        super(SummonedEntityTrigger.Instance.class);
+        super(SummonedEntityTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.SUMMON_ENTITY);
     }
 
     @Override
-    public void write(SummonedEntityTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(SummonedEntityTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeEntityPredicate(LootUtil.asEntity(instance.entity), buffer);
     }
 
     @Override
-    public SummonedEntityTrigger.Instance read(PacketBuffer buffer) {
-        return new SummonedEntityTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer)));
+    public SummonedEntityTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new SummonedEntityTrigger.TriggerInstance(EntityPredicate.Composite.ANY, LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer)));
     }
 }

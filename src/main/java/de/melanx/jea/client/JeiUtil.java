@@ -1,22 +1,21 @@
 package de.melanx.jea.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.SimpleReloadableResourceManager;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+
+import java.lang.reflect.Method;
 
 public class JeiUtil {
     
+    @SuppressWarnings("deprecation")
     public static void triggerReload() {
         try {
-            if (Minecraft.getInstance().getResourceManager() instanceof SimpleReloadableResourceManager) {
-                SimpleReloadableResourceManager resourceManager = (SimpleReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-                Class<?> c = Class.forName("mezz.jei.startup.ClientLifecycleHandler$JeiReloadListener");
-                for (IFutureReloadListener listener : resourceManager.reloadListeners) {
-                    if (listener instanceof ISelectiveResourceReloadListener && c.isInstance(listener)) {
-                        ((ISelectiveResourceReloadListener) listener).onResourceManagerReload(resourceManager);
-                    }
-                }
+            Class<?> internalClass = Class.forName("mezz.jei.Internal");
+            Method getReloadListener = internalClass.getDeclaredMethod("getReloadListener");
+            getReloadListener.setAccessible(true);
+            Object reloadListener = getReloadListener.invoke(null);
+            if (reloadListener instanceof ResourceManagerReloadListener listener) {
+                listener.onResourceManagerReload(Minecraft.getInstance().getResourceManager());
             }
         } catch (ReflectiveOperationException | NoClassDefFoundError e) {
             //

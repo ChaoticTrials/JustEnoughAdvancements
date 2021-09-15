@@ -3,29 +3,29 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.LocationPredicate;
-import net.minecraft.advancements.criterion.RightClickBlockWithItemTrigger;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.ItemUsedOnBlockTrigger;
+import net.minecraft.advancements.critereon.LocationPredicate;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class RightClickBlockSerializer extends CriterionSerializer<RightClickBlockWithItemTrigger.Instance> {
+public class RightClickBlockSerializer extends CriterionSerializer<ItemUsedOnBlockTrigger.TriggerInstance> {
 
     public RightClickBlockSerializer() {
-        super(RightClickBlockWithItemTrigger.Instance.class);
+        super(ItemUsedOnBlockTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.RIGHT_CLICK_BLOCK);
     }
 
     @Override
-    public void write(RightClickBlockWithItemTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(ItemUsedOnBlockTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeLocationPredicate(instance.location, buffer);
-        PacketUtil.writeItemPredicate(instance.stack, buffer);
+        PacketUtil.writeItemPredicate(instance.item, buffer);
     }
 
     @Override
-    public RightClickBlockWithItemTrigger.Instance read(PacketBuffer buffer) {
+    public ItemUsedOnBlockTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         LocationPredicate location = PacketUtil.readLocationPredicate(buffer);
         ItemPredicate item = PacketUtil.readItemPredicate(buffer);
-        return new RightClickBlockWithItemTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, location, item);
+        return new ItemUsedOnBlockTrigger.TriggerInstance(EntityPredicate.Composite.ANY, location, item);
     }
 }

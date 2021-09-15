@@ -1,25 +1,25 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import de.melanx.jea.util.LootUtil;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import de.melanx.jea.util.IngredientUtil;
+import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.util.ProjectileUtil;
 import de.melanx.jea.util.TooltipUtil;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
-import net.minecraft.advancements.criterion.DamagePredicate;
-import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.critereon.DamagePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import org.apache.commons.lang3.tuple.Triple;
 
 import javax.annotation.Nullable;
@@ -31,21 +31,21 @@ import static de.melanx.jea.api.client.criterion.ICriterionInfo.*;
 
 public class DamageUtil {
     
-    public static void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, DamagePredicate predicate, EntityPredicate.AndPredicate targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer) {
-        draw(matrixStack, buffer, mc, predicate, targetEntity, sourceIsPlayer, targetIsPlayer, null, null);
+    public static void draw(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, DamagePredicate predicate, EntityPredicate.Composite targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer) {
+        draw(poseStack, buffer, mc, predicate, targetEntity, sourceIsPlayer, targetIsPlayer, null, null);
     }
     
-    public static void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, DamagePredicate predicate, EntityPredicate.AndPredicate targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer, @Nullable EntityType<?> forcedSource, @Nullable EntityType<?> forcedTarget) {
-        ArrayList<ITextComponent> list = new ArrayList<>();
+    public static void draw(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, DamagePredicate predicate, EntityPredicate.Composite targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer, @Nullable EntityType<?> forcedSource, @Nullable EntityType<?> forcedTarget) {
+        ArrayList<Component> list = new ArrayList<>();
         Triple<EntityInfo, EntityInfo, ItemStack> entities = getInfo(predicate, sourceIsPlayer, targetIsPlayer, list::add);
         EntityInfo source = entities.getLeft();
         EntityInfo target = entities.getMiddle();
         ItemStack projectile = entities.getRight();
         int xValue = RECIPE_WIDTH - 102;
-        for (ITextComponent text : list) {
-            xValue = Math.min(xValue, RECIPE_WIDTH - (mc.fontRenderer.getStringPropertyWidth(text) + 2));
+        for (Component text : list) {
+            xValue = Math.min(xValue, RECIPE_WIDTH - (mc.font.width(text) + 2));
         }
-        int yValue = Math.min(SPACE_TOP + RECIPE_HEIGHT, (SPACE_TOP + RECIPE_HEIGHT + 2) - (list.size() * (mc.fontRenderer.FONT_HEIGHT + 2)));
+        int yValue = Math.min(SPACE_TOP + RECIPE_HEIGHT, (SPACE_TOP + RECIPE_HEIGHT + 2) - (list.size() * (mc.font.lineHeight + 2)));
         HealthRender.HeartValues[] hearts = getHearts(predicate);
         if (hearts != null) {
             int amount = 0;
@@ -53,53 +53,53 @@ public class DamageUtil {
                 amount += values.size();
             }
             yValue -= 10 * Math.ceil(amount / 10d);
-            matrixStack.push();
-            matrixStack.translate(xValue, SPACE_TOP + RECIPE_HEIGHT - 12, 0);
-            HealthRender.renderHealthBar(matrixStack, hearts);
-            matrixStack.pop();
+            poseStack.pushPose();
+            poseStack.translate(xValue, SPACE_TOP + RECIPE_HEIGHT - 12, 0);
+            HealthRender.renderHealthBar(poseStack, hearts);
+            poseStack.popPose();
         }
         float entityScale = (yValue - SPACE_TOP - 4) / 32f;
         if (forcedSource != null) { source.type = forcedSource; source.forcedType = true; }
         if (forcedTarget != null) { target.type = forcedTarget; target.forcedType = true; }
         if (!projectile.isEmpty()) {
-            matrixStack.push();
+            poseStack.pushPose();
             //noinspection IntegerDivisionInFloatingPointContext
-            matrixStack.translate(RECIPE_WIDTH / 2, SPACE_TOP + 30, 0);
-            matrixStack.translate(7 - ((ClientTickHandler.ticksInGame + mc.getRenderPartialTicks()) % 20), 0, 0);
-            ProjectileUtil.rotateCenter(matrixStack, projectile, Vector3f.ZP.rotationDegrees(180));
-            ProjectileUtil.renderProjectile(matrixStack, projectile);
-            matrixStack.pop();
+            poseStack.translate(RECIPE_WIDTH / 2, SPACE_TOP + 30, 0);
+            poseStack.translate(7 - ((ClientTickHandler.ticksInGame + mc.getFrameTime()) % 20), 0, 0);
+            ProjectileUtil.rotateCenter(poseStack, projectile, Vector3f.ZP.rotationDegrees(180));
+            ProjectileUtil.renderProjectile(poseStack, projectile);
+            poseStack.popPose();
         }
-        matrixStack.push();
-        matrixStack.translate(RECIPE_WIDTH - 30, yValue - 2, 0);
-        JeaRender.normalize(matrixStack);
-        source.render(matrixStack, buffer, mc, LootUtil.asLootPredicate(predicate.sourceEntity), JeaRender.entityRenderSide(true, entityScale));
-        matrixStack.pop();
-        matrixStack.push();
-        matrixStack.translate(30, yValue - 2, 0);
-        JeaRender.normalize(matrixStack);
-        target.render(matrixStack, buffer, mc, targetEntity, JeaRender.entityRenderSide(false, entityScale));
-        matrixStack.pop();
-        for (ITextComponent text : list) {
-            mc.fontRenderer.drawText(matrixStack, text, xValue, yValue, 0x000000);
-            yValue += (2 + mc.fontRenderer.FONT_HEIGHT);
+        poseStack.pushPose();
+        poseStack.translate(RECIPE_WIDTH - 30, yValue - 2, 0);
+        JeaRender.normalize(poseStack);
+        source.render(poseStack, buffer, mc, LootUtil.asLootPredicate(predicate.sourceEntity), JeaRender.entityRenderSide(true, entityScale));
+        poseStack.popPose();
+        poseStack.pushPose();
+        poseStack.translate(30, yValue - 2, 0);
+        JeaRender.normalize(poseStack);
+        target.render(poseStack, buffer, mc, targetEntity, JeaRender.entityRenderSide(false, entityScale));
+        poseStack.popPose();
+        for (Component text : list) {
+            mc.font.draw(poseStack, text, xValue, yValue, 0x000000);
+            yValue += (2 + mc.font.lineHeight);
         }
     }
     
-    public static void addTooltip(List<ITextComponent> tooltip, Minecraft mc, DamagePredicate predicate, EntityPredicate.AndPredicate targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer, double mouseX, double mouseY) {
+    public static void addTooltip(List<Component> tooltip, Minecraft mc, DamagePredicate predicate, EntityPredicate.Composite targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer, double mouseX, double mouseY) {
         addTooltip(tooltip, mc, predicate, targetEntity, sourceIsPlayer, targetIsPlayer, null, null, mouseX, mouseY);
     }
     
-    public static void addTooltip(List<ITextComponent> tooltip, Minecraft mc, DamagePredicate predicate, EntityPredicate.AndPredicate targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer, @Nullable EntityType<?> forcedSource, @Nullable EntityType<?> forcedTarget, double mouseX, double mouseY) {
-        ArrayList<ITextComponent> list = new ArrayList<>();
+    public static void addTooltip(List<Component> tooltip, Minecraft mc, DamagePredicate predicate, EntityPredicate.Composite targetEntity, boolean sourceIsPlayer, boolean targetIsPlayer, @Nullable EntityType<?> forcedSource, @Nullable EntityType<?> forcedTarget, double mouseX, double mouseY) {
+        ArrayList<Component> list = new ArrayList<>();
         Triple<EntityInfo, EntityInfo, ItemStack> entities = getInfo(predicate, sourceIsPlayer, targetIsPlayer, list::add);
         EntityInfo source = entities.getLeft();
         EntityInfo target = entities.getMiddle();
         int xValue = RECIPE_WIDTH - 102;
-        for (ITextComponent text : list) {
-            xValue = Math.min(xValue, RECIPE_WIDTH - (mc.fontRenderer.getStringPropertyWidth(text) + 2));
+        for (Component text : list) {
+            xValue = Math.min(xValue, RECIPE_WIDTH - (mc.font.width(text) + 2));
         }
-        int yValue = (SPACE_TOP + RECIPE_HEIGHT) - (list.size() * (mc.fontRenderer.FONT_HEIGHT + 2));
+        int yValue = (SPACE_TOP + RECIPE_HEIGHT) - (list.size() * (mc.font.lineHeight + 2));
         HealthRender.HeartValues[] hearts = getHearts(predicate);
         if (hearts != null && HealthRender.isInHealthBarBox(10, SPACE_TOP + 30, mouseX, mouseY, hearts)) {
             int amount = 0;
@@ -107,11 +107,11 @@ public class DamageUtil {
                 amount += values.size();
             }
             yValue -= 10 * Math.ceil(amount / 10d);
-            if (!predicate.dealt.isUnbounded()) {
-                tooltip.add(new TranslationTextComponent("jea.item.tooltip.damage.dealt", IngredientUtil.text(predicate.dealt)).mergeStyle(TextFormatting.RED));
+            if (!predicate.dealtDamage.isAny()) {
+                tooltip.add(new TranslatableComponent("jea.item.tooltip.damage.dealt", IngredientUtil.text(predicate.dealtDamage)).withStyle(ChatFormatting.RED));
             }
-            if (!predicate.taken.isUnbounded()) {
-                tooltip.add(new TranslationTextComponent("jea.item.tooltip.damage.taken", IngredientUtil.text(predicate.taken)).mergeStyle(TextFormatting.RED));
+            if (!predicate.takenDamage.isAny()) {
+                tooltip.add(new TranslatableComponent("jea.item.tooltip.damage.taken", IngredientUtil.text(predicate.takenDamage)).withStyle(ChatFormatting.RED));
             }
         }
         float entityScale = (yValue - SPACE_TOP - 4) / 32f;
@@ -122,26 +122,26 @@ public class DamageUtil {
     }
     
     private static HealthRender.HeartValues[] getHearts(DamagePredicate predicate) {
-        float dealt = IngredientUtil.getExampleValue(predicate.dealt).orElse(0f);
-        float taken = IngredientUtil.getExampleValue(predicate.taken).orElse(0f);
-        float blocked = Math.max(0, dealt - taken);
+        double dealt = IngredientUtil.getExampleValue(predicate.dealtDamage).orElse(0d);
+        double taken = IngredientUtil.getExampleValue(predicate.takenDamage).orElse(0d);
+        double blocked = Math.max(0, dealt - taken);
         if (Math.round(blocked) +  Math.round(taken) > 0) {
             return new HealthRender.HeartValues[]{
-                    HealthRender.HeartEffect.NORMAL.create(Math.round(blocked), Math.round(taken), 10)
+                    HealthRender.HeartEffect.NORMAL.create((int) Math.round(blocked), (int) Math.round(taken), 10)
             };
         } else {
             return null;
         }
     }
     
-    private static Triple<EntityInfo, EntityInfo, ItemStack> getInfo(DamagePredicate predicate, boolean sourceIsPlayer, boolean targetIsPlayer, Consumer<ITextComponent> lines) {
+    private static Triple<EntityInfo, EntityInfo, ItemStack> getInfo(DamagePredicate predicate, boolean sourceIsPlayer, boolean targetIsPlayer, Consumer<Component> lines) {
         EntityInfo source = new EntityInfo();
         EntityInfo target = new EntityInfo();
         ItemStack projectile = ItemStack.EMPTY;
         target.type = EntityType.ZOMBIE; // Poor zombies are the default target
         target.hurt = true;
         if (predicate.blocked != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent(predicate.blocked ? "jea.item.tooltip.damage.blocked" : "jea.item.tooltip.damage.non_blocked"));
+            if (lines != null) lines.accept(new TranslatableComponent(predicate.blocked ? "jea.item.tooltip.damage.blocked" : "jea.item.tooltip.damage.non_blocked"));
             if (predicate.blocked && target.held.isEmpty()) {
                 target.held = new ItemStack(Items.SHIELD);
                 target.usingStack = true;
@@ -150,7 +150,7 @@ public class DamageUtil {
             }
         }
         if (predicate.type.isFire != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.fire", TooltipUtil.yesNo(predicate.type.isFire)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.fire", TooltipUtil.yesNo(predicate.type.isFire)));
             if (predicate.type.isFire) {
                 target.fire = true;
                 if (source.type == null) {
@@ -159,7 +159,7 @@ public class DamageUtil {
             }
         }
         if (predicate.type.isProjectile != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.projectile", TooltipUtil.yesNo(predicate.type.isProjectile)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.projectile", TooltipUtil.yesNo(predicate.type.isProjectile)));
             if (predicate.type.isProjectile) {
                 if (source.type == null) {
                     source.type = EntityType.SKELETON;
@@ -173,13 +173,13 @@ public class DamageUtil {
             }
         }
         if (predicate.type.isExplosion != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.explosion", TooltipUtil.yesNo(predicate.type.isExplosion)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.explosion", TooltipUtil.yesNo(predicate.type.isExplosion)));
             if (predicate.type.isExplosion) {
                 if (source.type == null) {
                     source.type = EntityType.CREEPER;
                 } else if (source.held.isEmpty()) {
                     source.held = new ItemStack(Items.TNT);
-                    float swingTicker = (ClientTickHandler.ticksInGame + Minecraft.getInstance().getRenderPartialTicks()) % 30;
+                    float swingTicker = (ClientTickHandler.ticksInGame + Minecraft.getInstance().getFrameTime()) % 30;
                     if (swingTicker <= 6) {
                         source.swing = swingTicker / 6f;
                     }
@@ -187,15 +187,15 @@ public class DamageUtil {
             }
         }
         if (predicate.type.isMagic != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.magic", TooltipUtil.yesNo(predicate.type.isMagic)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.magic", TooltipUtil.yesNo(predicate.type.isMagic)));
             if (predicate.type.isMagic) {
                 if (source.type == null) {
                     source.type = EntityType.WITCH;
                 }
                 if (source.held.isEmpty()) {
-                    source.held = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.POISON);
+                    source.held = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON);
                     if (source.type != EntityType.WITCH) {
-                        float swingTicker = (ClientTickHandler.ticksInGame + Minecraft.getInstance().getRenderPartialTicks()) % 30;
+                        float swingTicker = (ClientTickHandler.ticksInGame + Minecraft.getInstance().getFrameTime()) % 30;
                         if (swingTicker <= 6) {
                             source.swing = swingTicker / 6f;
                         }
@@ -204,16 +204,16 @@ public class DamageUtil {
             }
         }
         if (predicate.type.isLightning != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.lightning", TooltipUtil.yesNo(predicate.type.isLightning)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.lightning", TooltipUtil.yesNo(predicate.type.isLightning)));
         }
         if (predicate.type.bypassesArmor != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.bypass_armor", TooltipUtil.yesNo(predicate.type.bypassesArmor)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.bypass_armor", TooltipUtil.yesNo(predicate.type.bypassesArmor)));
         }
         if (predicate.type.bypassesMagic != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.bypass_magic", TooltipUtil.yesNo(predicate.type.bypassesMagic)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.bypass_magic", TooltipUtil.yesNo(predicate.type.bypassesMagic)));
         }
         if (predicate.type.bypassesInvulnerability != null) {
-            if (lines != null) lines.accept(new TranslationTextComponent("jea.item.tooltip.damage.bypass_invulnerability", TooltipUtil.yesNo(predicate.type.bypassesInvulnerability)));
+            if (lines != null) lines.accept(new TranslatableComponent("jea.item.tooltip.damage.bypass_invulnerability", TooltipUtil.yesNo(predicate.type.bypassesInvulnerability)));
         }
         if (sourceIsPlayer) {
             if (source.held.isEmpty()) {
@@ -238,30 +238,26 @@ public class DamageUtil {
         public float swing = 0;
         public boolean forcedType = false;
         
-        public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, @Nullable EntityPredicate.AndPredicate entity, EntityTransformation transformation) {
+        public void render(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, @Nullable EntityPredicate.Composite entity, EntityTransformation transformation) {
             if (this.type != null && this.type == EntityType.PLAYER) {
-                // Minecraft renders trident mirrored so we rotate steve and turn his head
-                boolean rotateForTrident = this.usingStack && this.held.getItem() == Items.TRIDENT;
-                transformation.applyForEntity(matrixStack);
-                if (rotateForTrident) matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
+                transformation.applyForEntity(poseStack);
                 SteveRender.defaultPose(mc);
-                if (rotateForTrident) SteveRender.rotationHead(180, 0);
-                SteveRender.use(this.usingStack ? this.held.getUseDuration() : 0, Hand.MAIN_HAND);
-                SteveRender.swing(this.swing, Hand.MAIN_HAND);
+                SteveRender.use(this.usingStack ? this.held.getUseDuration() : 0, InteractionHand.MAIN_HAND);
+                SteveRender.swing(this.swing, InteractionHand.MAIN_HAND);
                 SteveRender.fireTicks(this.fire ? 10 : 0);
                 SteveRender.hurtTime(this.hurt ? 10 : 0);
                 SteveRender.setEquipmentHand(mc, this.held);
-                SteveRender.renderSteve(mc, matrixStack, buffer);
+                SteveRender.renderSteve(mc, poseStack, buffer);
             } else {
                 DefaultEntityProperties properties = new DefaultEntityProperties(this.type, true, this.fire, false, this.held, this.swing + 0.5f, 0, this.usingStack ? 1 : 0, this.hurt ? 10 : 0, 0, false, this.forcedType);
-                RenderEntityCache.renderEntity(mc, entity == null ? EntityPredicate.AndPredicate.ANY_AND : entity, matrixStack, buffer, transformation, properties);
+                RenderEntityCache.renderEntity(mc, entity == null ? EntityPredicate.Composite.ANY : entity, poseStack, buffer, transformation, properties);
             }
         }
         
-        public void addTooltip(List<ITextComponent> tooltip, Minecraft mc, @Nullable EntityPredicate.AndPredicate entity, double absoluteX, double absoluteY, double totalScale, double mouseX, double mouseY) {
+        public void addTooltip(List<Component> tooltip, Minecraft mc, @Nullable EntityPredicate.Composite entity, double absoluteX, double absoluteY, double totalScale, double mouseX, double mouseY) {
             if (this.type != EntityType.PLAYER) {
                 DefaultEntityProperties properties = new DefaultEntityProperties(this.type, true, this.fire, false, this.held, this.swing, 0, this.usingStack ? this.held.getUseDuration() : 0, this.hurt ? 10 : 0, 0, false, this.forcedType);
-                RenderEntityCache.addTooltipForEntity(mc, tooltip, entity == null ? EntityPredicate.AndPredicate.ANY_AND : entity, absoluteX, absoluteY, totalScale, properties, mouseX, mouseY);
+                RenderEntityCache.addTooltipForEntity(mc, tooltip, entity == null ? EntityPredicate.Composite.ANY : entity, absoluteX, absoluteY, totalScale, properties, mouseX, mouseY);
             }
         }
     }

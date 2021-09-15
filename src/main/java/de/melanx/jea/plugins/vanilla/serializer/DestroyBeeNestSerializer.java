@@ -3,38 +3,38 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.BeeNestDestroyedTrigger;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.block.Block;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.BeeNestDestroyedTrigger;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 
-public class DestroyBeeNestSerializer extends CriterionSerializer<BeeNestDestroyedTrigger.Instance> {
+public class DestroyBeeNestSerializer extends CriterionSerializer<BeeNestDestroyedTrigger.TriggerInstance> {
     
     public DestroyBeeNestSerializer() {
-        super(BeeNestDestroyedTrigger.Instance.class);
+        super(BeeNestDestroyedTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.DESTROY_BEE_NEST);
     }
 
     @Override
-    public void write(BeeNestDestroyedTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(BeeNestDestroyedTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         buffer.writeBoolean(instance.block != null);
         if (instance.block != null) {
             buffer.writeResourceLocation(Objects.requireNonNull(instance.block.getRegistryName()));
         }
-        PacketUtil.writeItemPredicate(instance.itemPredicate, buffer);
-        PacketUtil.writeIntRange(instance.beesContained, buffer);
+        PacketUtil.writeItemPredicate(instance.item, buffer);
+        PacketUtil.writeIntRange(instance.numBees, buffer);
     }
 
     @Override
-    public BeeNestDestroyedTrigger.Instance read(PacketBuffer buffer) {
+    public BeeNestDestroyedTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         Block block = buffer.readBoolean() ? ForgeRegistries.BLOCKS.getValue(buffer.readResourceLocation()) : null;
         ItemPredicate itemPredicate = PacketUtil.readItemPredicate(buffer);
-        MinMaxBounds.IntBound beesContained = PacketUtil.readIntRange(buffer);
-        return new BeeNestDestroyedTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, block, itemPredicate, beesContained);
+        MinMaxBounds.Ints beesContained = PacketUtil.readIntRange(buffer);
+        return new BeeNestDestroyedTrigger.TriggerInstance(EntityPredicate.Composite.ANY, block, itemPredicate, beesContained);
     }
 }

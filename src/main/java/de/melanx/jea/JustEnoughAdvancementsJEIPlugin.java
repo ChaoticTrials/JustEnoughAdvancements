@@ -6,8 +6,8 @@ import de.melanx.jea.ingredient.AdvancementIngredientHelper;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
 import de.melanx.jea.plugins.vanilla.criteria.ChannelingLightningInfo;
 import de.melanx.jea.plugins.vanilla.criteria.ShootCrossbowInfo;
-import de.melanx.jea.render.HealthRender;
 import de.melanx.jea.recipe.AdvancementCategory;
+import de.melanx.jea.render.HealthRender;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -16,7 +16,7 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;

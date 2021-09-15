@@ -1,22 +1,22 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IGuiHelper;
 
 public class HealthRender {
     
-    public static void renderHealthBar(MatrixStack matrixStack, HeartValues... values) {
-        matrixStack.push();
+    public static void renderHealthBar(PoseStack poseStack, HeartValues... values) {
+        poseStack.pushPose();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         int x = 0;
         int y = 0;
         for (HeartValues hearts : values) {
             for (int i = 0; i < hearts.size(); i++) {
-                hearts.drawHeart(matrixStack, i, x * 10, -(y * 10));
+                hearts.drawHeart(poseStack, i, x * 10, -(y * 10));
                 x += 1;
                 if (x >= 10) {
                     x = 0;
@@ -25,7 +25,7 @@ public class HealthRender {
             }
         }
         RenderSystem.disableBlend();
-        matrixStack.pop();
+        poseStack.popPose();
     }
     
     public static boolean isInHealthBarBox(int x, int y, double mouseX, double mouseY, HeartValues... values) {
@@ -105,38 +105,38 @@ public class HealthRender {
             return Math.max(this.minHearts, (int) Math.ceil((this.health + this.damaging) / 2f));
         }
         
-        public void drawHeart(MatrixStack matrixStack, int idx, int x, int y) {
+        public void drawHeart(PoseStack poseStack, int idx, int x, int y) {
             if (2 * (idx + 1) <= this.health) {
-                HeartEffect.background.draw(matrixStack, x, y);
-                matrixStack.translate(0, 0, 10);
-                this.heart.normal.draw(matrixStack, x, y);
-                matrixStack.translate(0, 0, -10);
+                HeartEffect.background.draw(poseStack, x, y);
+                poseStack.translate(0, 0, 10);
+                this.heart.normal.draw(poseStack, x, y);
+                poseStack.translate(0, 0, -10);
             } else if ((2 * (idx + 1)) - 1 <= this.health) {
                 if (this.damaging > 0) {
-                    HeartEffect.background.draw(matrixStack, x, y, 0, 0, 0, 4);
-                    HeartEffect.backgroundDamaging.draw(matrixStack, x, y, 0, 0, 5, 0);
-                    matrixStack.translate(0, 0, 10);
-                    this.heart.half.draw(matrixStack, x, y);
-                    this.heart.damaging.draw(matrixStack, x, y, 0, 0, 5, 0);
-                    matrixStack.translate(0, 0, -10);
+                    HeartEffect.background.draw(poseStack, x, y, 0, 0, 0, 4);
+                    HeartEffect.backgroundDamaging.draw(poseStack, x, y, 0, 0, 5, 0);
+                    poseStack.translate(0, 0, 10);
+                    this.heart.half.draw(poseStack, x, y);
+                    this.heart.damaging.draw(poseStack, x, y, 0, 0, 5, 0);
+                    poseStack.translate(0, 0, -10);
                 } else {
-                    HeartEffect.background.draw(matrixStack, x, y, 0, 0, 0, 0);
-                    matrixStack.translate(0, 0, 10);
-                    this.heart.half.draw(matrixStack, x, y);
-                    matrixStack.translate(0, 0, -10);
+                    HeartEffect.background.draw(poseStack, x, y, 0, 0, 0, 0);
+                    poseStack.translate(0, 0, 10);
+                    this.heart.half.draw(poseStack, x, y);
+                    poseStack.translate(0, 0, -10);
                 }
             } else if (2 * (idx + 1) <= this.health + this.damaging) {
-                HeartEffect.backgroundDamaging.draw(matrixStack, x, y);
-                matrixStack.translate(0, 0, 10);
-                this.heart.damaging.draw(matrixStack, x, y);
-                matrixStack.translate(0, 0, -10);
+                HeartEffect.backgroundDamaging.draw(poseStack, x, y);
+                poseStack.translate(0, 0, 10);
+                this.heart.damaging.draw(poseStack, x, y);
+                poseStack.translate(0, 0, -10);
             } else if ((2 * (idx + 1)) - 1 <= this.health + this.damaging) {
-                HeartEffect.backgroundDamaging.draw(matrixStack, x, y, 0, 0, 0, 0);
-                matrixStack.translate(0, 0, 10);
-                this.heart.damagingHalf.draw(matrixStack, x, y, 0, 0, 0, 0);
-                matrixStack.translate(0, 0, -10);
+                HeartEffect.backgroundDamaging.draw(poseStack, x, y, 0, 0, 0, 0);
+                poseStack.translate(0, 0, 10);
+                this.heart.damagingHalf.draw(poseStack, x, y, 0, 0, 0, 0);
+                poseStack.translate(0, 0, -10);
             } else {
-                HeartEffect.background.draw(matrixStack, x, y, 0, 0, 0, 0);
+                HeartEffect.background.draw(poseStack, x, y, 0, 0, 0, 0);
             }
         }
     }

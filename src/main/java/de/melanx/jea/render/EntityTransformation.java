@@ -1,8 +1,8 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 
 public class EntityTransformation {
     
@@ -16,13 +16,13 @@ public class EntityTransformation {
         this.quaternion = quaternion;
     }
     
-    public void applyForEntity(MatrixStack matrixStack) {
-        matrixStack.scale(this.entityScale, -this.entityScale, this.entityScale);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
-        matrixStack.rotate(this.quaternion);
+    public void applyForEntity(PoseStack poseStack) {
+        poseStack.scale(this.entityScale, -this.entityScale, this.entityScale);
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(-2));
+        poseStack.mulPose(this.quaternion);
     }
     
-    public void applyForMissing(MatrixStack matrixStack) {
-        matrixStack.scale(this.entityScale, -this.entityScale, this.entityScale);
+    public void applyForMissing(PoseStack poseStack) {
+        poseStack.scale(this.entityScale, -this.entityScale, this.entityScale);
     }
 }

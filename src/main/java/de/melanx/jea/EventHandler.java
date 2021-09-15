@@ -3,9 +3,9 @@ package de.melanx.jea;
 import de.melanx.jea.config.JeaConfig;
 import de.melanx.jea.render.FakeClientPlayer;
 import io.github.noeppi_noeppi.libx.event.ConfigLoadedEvent;
-import io.github.noeppi_noeppi.libx.event.DatapacksReloadedEvent;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.server.ServerWorld;
+import io.github.noeppi_noeppi.libx.event.DataPacksReloadedEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderNameplateEvent;
@@ -21,20 +21,20 @@ public class EventHandler {
     
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getPlayer() instanceof ServerPlayerEntity && event.getPlayer().world.getServer() != null) {
-            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayer().world.getServer(), (ServerPlayerEntity) event.getPlayer());
+        if (event.getPlayer() instanceof ServerPlayer && event.getPlayer().level.getServer() != null) {
+            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayer().level.getServer(), (ServerPlayer) event.getPlayer());
         }
     }
 
     @SubscribeEvent
-    public void resourcesReload(DatapacksReloadedEvent event) {
+    public void resourcesReload(DataPacksReloadedEvent event) {
         JustEnoughAdvancements.getNetwork().syncAdvancements(event.getServer());
     }
     
     @SubscribeEvent
     public void serverTick(TickEvent.WorldTickEvent event) {
         // Reason that this is not a ServerTickEvent is that we need a MinecraftServer instance.
-        if (this.needsResyncAdvancements && event.world instanceof ServerWorld) {
+        if (this.needsResyncAdvancements && event.world instanceof ServerLevel) {
             this.needsResyncAdvancements = false;
             JustEnoughAdvancements.getNetwork().syncAdvancements(event.world.getServer());
         }

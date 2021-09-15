@@ -3,8 +3,8 @@ package de.melanx.jea.client;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientAdvancementManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.multiplayer.ClientAdvancements;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
@@ -18,10 +18,10 @@ public class ClientAdvancementProgress {
     @Nullable
     public static AdvancementProgress getProgress(Minecraft mc, ResourceLocation advancement) {
         if (mc.getConnection() != null) {
-            ClientAdvancementManager mgr = mc.getConnection().getAdvancementManager();
-            Advancement clientAdvancement = mgr.getAdvancementList().getAdvancement(advancement);
+            ClientAdvancements mgr = mc.getConnection().getAdvancements();
+            Advancement clientAdvancement = mgr.getAdvancements().get(advancement);
             if (clientAdvancement != null) {
-                AdvancementProgress progress = mgr.advancementToProgress.get(clientAdvancement);
+                AdvancementProgress progress = mgr.progress.get(clientAdvancement);
                 //noinspection RedundantIfStatement
                 if (progress != null) {
                     return progress;

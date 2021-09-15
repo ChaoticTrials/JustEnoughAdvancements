@@ -3,24 +3,24 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.ConsumeItemTrigger;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.ConsumeItemTrigger;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class ConsumeItemSerializer extends CriterionSerializer<ConsumeItemTrigger.Instance> {
+public class ConsumeItemSerializer extends CriterionSerializer<ConsumeItemTrigger.TriggerInstance> {
 
     public ConsumeItemSerializer() {
-        super(ConsumeItemTrigger.Instance.class);
+        super(ConsumeItemTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.CONSUME_ITEM);
     }
 
     @Override
-    public void write(ConsumeItemTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(ConsumeItemTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeItemPredicate(instance.item, buffer);
     }
 
     @Override
-    public ConsumeItemTrigger.Instance read(PacketBuffer buffer) {
-        return new ConsumeItemTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, PacketUtil.readItemPredicate(buffer));
+    public ConsumeItemTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new ConsumeItemTrigger.TriggerInstance(EntityPredicate.Composite.ANY, PacketUtil.readItemPredicate(buffer));
     }
 }

@@ -1,31 +1,31 @@
 package de.melanx.jea.plugins.vanilla.serializer;
 
-import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.DamageSourcePredicate;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.KilledTrigger;
-import net.minecraft.network.PacketBuffer;
+import de.melanx.jea.util.LootUtil;
+import net.minecraft.advancements.critereon.DamageSourcePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.KilledTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class KilledByEntitySerializer extends CriterionSerializer<KilledTrigger.Instance> {
+public class KilledByEntitySerializer extends CriterionSerializer<KilledTrigger.TriggerInstance> {
 
     public KilledByEntitySerializer() {
-        super(KilledTrigger.Instance.class);
+        super(KilledTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.KILLED_BY_ENTITY);
     }
 
     @Override
-    public void write(KilledTrigger.Instance instance, PacketBuffer buffer) {
-        PacketUtil.writeEntityPredicate(LootUtil.asEntity(instance.entity), buffer);
+    public void write(KilledTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
+        PacketUtil.writeEntityPredicate(LootUtil.asEntity(instance.entityPredicate), buffer);
         PacketUtil.writeDamageSourcePredicate(instance.killingBlow, buffer);
     }
 
     @Override
-    public KilledTrigger.Instance read(PacketBuffer buffer) {
-        EntityPredicate.AndPredicate entity = LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer));
+    public KilledTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        EntityPredicate.Composite entity = LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer));
         DamageSourcePredicate damage = PacketUtil.readDamageSourcePredicate(buffer);
-        return new KilledTrigger.Instance(VanillaCriteriaIds.KILLED_BY_ENTITY, EntityPredicate.AndPredicate.ANY_AND, entity, damage);
+        return new KilledTrigger.TriggerInstance(VanillaCriteriaIds.KILLED_BY_ENTITY, EntityPredicate.Composite.ANY, entity, damage);
     }
 }

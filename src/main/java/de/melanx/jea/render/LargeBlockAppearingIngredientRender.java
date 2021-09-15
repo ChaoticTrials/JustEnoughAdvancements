@@ -1,15 +1,17 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
-import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -34,16 +36,16 @@ public class LargeBlockAppearingIngredientRender extends LargeBlockIngredientRen
     }
 
     @Override
-    protected void renderBlock(@Nonnull MatrixStack matrixStack, BlockState state) {
-        float animationTime = (ClientTickHandler.ticksInGame + Minecraft.getInstance().getRenderPartialTicks()) % this.totalTicks;
+    protected void renderBlock(@Nonnull PoseStack poseStack, BlockState state) {
+        float animationTime = (ClientTickHandler.ticksInGame + Minecraft.getInstance().getFrameTime()) % this.totalTicks;
         boolean hasSurface = false;
-        if (state.getBlock() instanceof BushBlock) {
+        if (state.getBlock() instanceof BushBlock bush) {
             List<Block> surfaces;
             if (surface.containsKey(state.getBlock())) {
                 surfaces = surface.get(state.getBlock()).orElse(null);
             } else {
                 surfaces = ForgeRegistries.BLOCKS.getValues().stream()
-                        .filter(b -> validGround((BushBlock) state.getBlock(), b))
+                        .filter(b -> validGround(bush, b))
                         .collect(Collectors.toList());
                 if (surfaces.isEmpty()) {
                     surface.put(state.getBlock(), Optional.empty());
@@ -55,22 +57,22 @@ public class LargeBlockAppearingIngredientRender extends LargeBlockIngredientRen
             if (surfaces != null) {
                 hasSurface = true;
                 //noinspection deprecation
-                Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(JeaRender.cycle(surfaces).getDefaultState(), matrixStack, Minecraft.getInstance().getRenderTypeBuffers().getBufferSource(), LightTexture.packLight(15, 15), OverlayTexture.NO_OVERLAY);
-                Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish();
+                Minecraft.getInstance().getBlockRenderer().renderSingleBlock(JeaRender.cycle(surfaces).defaultBlockState(), poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+                Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
             }
         }
         if (animationTime > this.invisibleTicks) {
             if (state.getBlock() instanceof BushBlock && hasSurface) {
-                matrixStack.push();
-                matrixStack.translate(0, 1, 0);
+                poseStack.pushPose();
+                poseStack.translate(0, 1, 0);
                 BlockState renderState = state;
-                if (state.hasProperty(BlockStateProperties.AGE_0_7)) {
-                    renderState = state.with(BlockStateProperties.AGE_0_7, 3);
+                if (state.hasProperty(BlockStateProperties.AGE_7)) {
+                    renderState = state.setValue(BlockStateProperties.AGE_7, 3);
                 }
-                super.renderBlock(matrixStack, renderState);
-                matrixStack.pop();
+                super.renderBlock(poseStack, renderState);
+                poseStack.popPose();
             } else {
-                super.renderBlock(matrixStack, state);
+                super.renderBlock(poseStack, state);
             }
         }
     }
@@ -78,10 +80,10 @@ public class LargeBlockAppearingIngredientRender extends LargeBlockIngredientRen
     private static boolean validGround(BushBlock crop, Block ground) {
         try {
             if (validGroundMethod == null) {
-                validGroundMethod = ObfuscationReflectionHelper.findMethod(BushBlock.class, "func_200014_a_", BlockState.class, IBlockReader.class, BlockPos.class);
+                validGroundMethod = ObfuscationReflectionHelper.findMethod(BushBlock.class, "m_6266_", BlockState.class, BlockGetter.class, BlockPos.class);
                 validGroundMethod.setAccessible(true);
             }
-            return (boolean) validGroundMethod.invoke(crop, ground.getDefaultState(), Minecraft.getInstance().world, BlockPos.ZERO);
+            return (boolean) validGroundMethod.invoke(crop, ground.defaultBlockState(), Minecraft.getInstance().level, BlockPos.ZERO);
         } catch (ReflectiveOperationException e) {
             return false;
         }

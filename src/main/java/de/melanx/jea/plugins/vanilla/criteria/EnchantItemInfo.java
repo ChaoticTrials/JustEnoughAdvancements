@@ -1,8 +1,8 @@
 package de.melanx.jea.plugins.vanilla.criteria;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
@@ -13,67 +13,64 @@ import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.advancements.criterion.EnchantedItemTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.advancements.critereon.EnchantedItemTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.EnchantingTableTileEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.Objects;
 
-public class EnchantItemInfo implements ICriterionInfo<EnchantedItemTrigger.Instance> {
+public class EnchantItemInfo implements ICriterionInfo<EnchantedItemTrigger.TriggerInstance> {
     
-    private final EnchantingTableTileEntity tile = new EnchantingTableTileEntity();
-    private TileEntityRenderer<EnchantingTableTileEntity> tileRender = null;
+    private final EnchantmentTableBlockEntity tile = new EnchantmentTableBlockEntity(JeaRender.BELOW_WORLD, Blocks.ENCHANTING_TABLE.defaultBlockState());
+    private BlockEntityRenderer<EnchantmentTableBlockEntity> tileRender = null;
     
     @Override
-    public Class<EnchantedItemTrigger.Instance> criterionClass() {
-        return EnchantedItemTrigger.Instance.class;
+    public Class<EnchantedItemTrigger.TriggerInstance> criterionClass() {
+        return EnchantedItemTrigger.TriggerInstance.class;
     }
 
     @Override
-    public void setIngredients(IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.Instance instance, IIngredients ii) {
-        ii.setInputLists(VanillaTypes.ITEM, ImmutableList.of(
+    public void setIngredients(IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.TriggerInstance instance, IIngredients ii) {
+        ii.setInputLists(VanillaTypes.ITEM, List.of(
                 getStacks(instance.item)
         ));
     }
 
     @Override
-    public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.Instance instance, IIngredients ii) {
+    public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.TriggerInstance instance, IIngredients ii) {
         layout.getItemStacks().init(0, true, 95, SPACE_TOP + 17);
         layout.getItemStacks().set(ii);
     }
 
     @Override
-    public void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.Instance instance, double mouseX, double mouseY) {
-        JeaRender.slotAt(matrixStack, 95, SPACE_TOP + 17);
-        if (!instance.levels.isUnbounded()) {
+    public void draw(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.TriggerInstance instance, double mouseX, double mouseY) {
+        JeaRender.slotAt(poseStack, 95, SPACE_TOP + 17);
+        if (!instance.levels.isAny()) {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            JustEnoughAdvancementsJEIPlugin.getXpOrb().draw(matrixStack, 98, SPACE_TOP + 17);
+            JustEnoughAdvancementsJEIPlugin.getXpOrb().draw(poseStack, 98, SPACE_TOP + 17);
             RenderSystem.disableBlend();
-            ITextComponent text1 = new TranslationTextComponent("jea.item.tooltip.enchant.level");
-            mc.fontRenderer.drawText(matrixStack, text1, 109, SPACE_TOP + 17, 0x000000);
-            ITextComponent text2 = IngredientUtil.text(instance.levels);
-            mc.fontRenderer.drawText(matrixStack, text2, 99, SPACE_TOP + mc.fontRenderer.FONT_HEIGHT + 19, 0x000000);
+            Component text1 = new TranslatableComponent("jea.item.tooltip.enchant.level");
+            mc.font.draw(poseStack, text1, 109, SPACE_TOP + 17, 0x000000);
+            Component text2 = IngredientUtil.text(instance.levels);
+            mc.font.draw(poseStack, text2, 99, SPACE_TOP + mc.font.lineHeight + 19, 0x000000);
         }
-        float animationTime = (ClientTickHandler.ticksInGame + mc.getRenderPartialTicks()) % 110;
+        float animationTime = (ClientTickHandler.ticksInGame + mc.getFrameTime()) % 110;
         float bookOpen;
         float swing;
         ItemStack held;
@@ -110,40 +107,40 @@ public class EnchantItemInfo implements ICriterionInfo<EnchantedItemTrigger.Inst
             swing = 0;
             held = getStack(getStacks(instance.item), true);
         }
-        matrixStack.push();
-        matrixStack.translate(30, SPACE_TOP + 90, 0);
-        JeaRender.normalize(matrixStack);
-        JeaRender.transformForEntityRenderSide(matrixStack, false, 2.4f);
+        poseStack.pushPose();
+        poseStack.translate(30, SPACE_TOP + 90, 0);
+        JeaRender.normalize(poseStack);
+        JeaRender.transformForEntityRenderSide(poseStack, false, 2.4f);
         SteveRender.defaultPose(mc);
-        SteveRender.swing(swing, Hand.MAIN_HAND);
+        SteveRender.swing(swing, InteractionHand.MAIN_HAND);
         SteveRender.setEquipmentHand(mc, held);
-        SteveRender.renderSteve(mc, matrixStack, buffer);
-        matrixStack.pop();
-        matrixStack.push();
-        matrixStack.translate(RECIPE_WIDTH - 65, SPACE_TOP + 85, 0);
-        JeaRender.normalize(matrixStack);
-        JeaRender.transformForEntityRenderFront(matrixStack, true, 2);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(10));
-        BlockState state = Blocks.ENCHANTING_TABLE.getDefaultState();
+        SteveRender.renderSteve(mc, poseStack, buffer);
+        poseStack.popPose();
+        poseStack.pushPose();
+        poseStack.translate(RECIPE_WIDTH - 65, SPACE_TOP + 85, 0);
+        JeaRender.normalize(poseStack);
+        JeaRender.transformForEntityRenderFront(poseStack, true, 2);
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(10));
+        BlockState state = Blocks.ENCHANTING_TABLE.defaultBlockState();
         //noinspection deprecation
-        mc.getBlockRendererDispatcher().renderBlock(state, matrixStack, buffer, LightTexture.packLight(15, 15), OverlayTexture.NO_OVERLAY);
-        this.tile.setWorldAndPos(Objects.requireNonNull(mc.world), BlockPos.ZERO);
-        this.tile.cachedBlockState = state;
-        this.tile.pageAngle = (float) Math.PI - (0.5f * (1 - bookOpen) * (float) Math.PI);
-        this.tile.nextPageAngle = this.tile.pageAngle;
-        this.tile.pageTurningSpeed = 2 * (0.5f - (0.5f * (1 - bookOpen)));
-        this.tile.nextPageTurningSpeed = this.tile.pageTurningSpeed;
+        mc.getBlockRenderer().renderSingleBlock(state, poseStack, buffer, LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+        this.tile.setLevel(Objects.requireNonNull(mc.level));
+        this.tile.blockState = state;
+        this.tile.oRot = (float) Math.PI - (0.5f * (1 - bookOpen) * (float) Math.PI);
+        this.tile.rot = this.tile.oRot;
+        this.tile.oOpen = 2 * (0.5f - (0.5f * (1 - bookOpen)));
+        this.tile.open = this.tile.oOpen;
         if (this.tileRender == null) {
-            this.tileRender = TileEntityRendererDispatcher.instance.getRenderer(this.tile);
+            this.tileRender = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(this.tile);
         }
         if (this.tileRender != null) {
-            this.tileRender.render(this.tile, mc.getRenderPartialTicks(), matrixStack, buffer, LightTexture.packLight(15, 15), OverlayTexture.NO_OVERLAY);
+            this.tileRender.render(this.tile, mc.getFrameTime(), poseStack, buffer, LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
         }
-        matrixStack.pop();
+        poseStack.popPose();
     }
 
     @Override
-    public void addTooltip(List<ITextComponent> tooltip, IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.Instance instance, double mouseX, double mouseY) {
+    public void addTooltip(List<Component> tooltip, IAdvancementInfo advancement, String criterionKey, EnchantedItemTrigger.TriggerInstance instance, double mouseX, double mouseY) {
 
     }
 
@@ -166,13 +163,13 @@ public class EnchantItemInfo implements ICriterionInfo<EnchantedItemTrigger.Inst
         int idx = ((ClientTickHandler.ticksInGame - 2) / 110) % stacks.size();
         ItemStack stack = stacks.get(idx);
         if (enchanted) {
-            CompoundNBT nbt = stack.getOrCreateTag();
-            ListNBT list = new ListNBT();
-            list.add(new CompoundNBT());
+            CompoundTag nbt = stack.getOrCreateTag();
+            ListTag list = new ListTag();
+            list.add(new CompoundTag());
             nbt.put("Enchantments", list);
             stack.setTag(nbt);
         } else if (stack.hasTag()) {
-            CompoundNBT nbt = stack.getOrCreateTag();
+            CompoundTag nbt = stack.getOrCreateTag();
             nbt.remove("Enchantments");
             stack.setTag(nbt);
         }

@@ -1,8 +1,8 @@
 package de.melanx.jea.recipe;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.AdvancementInfo;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
@@ -18,12 +18,12 @@ import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.CriterionProgress;
-import net.minecraft.advancements.ICriterionInstance;
+import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class CriterionRecipe {
 
     private final AdvancementInfo info;
     private final String criterionKey;
-    private final ICriterionInstance criterion;
+    private final CriterionTriggerInstance criterion;
     private final ICriterionInfo<?> criterionInfo;
     @Nullable
     private final AdvancementInfo parent;
@@ -43,17 +43,17 @@ public class CriterionRecipe {
         this.info = info;
         this.criterionKey = criterionKey;
         this.criterionInfo = criterionInfo;
-        this.criterion = info.getCriteria().get(criterionKey).getCriterionInstance();
+        this.criterion = info.getCriteria().get(criterionKey).getTrigger();
         this.parent = ClientAdvancements.getInfo(this.info.getParent());
         this.criterionGroup = ImmutableList.copyOf(criterionGroup);
     }
 
     public void setIngredients(IIngredients ii) {
         //noinspection unchecked
-        ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).setIngredients(this.info, this.criterionKey, this.criterion, ii);
-        ii.setOutputs(Jea.ADVANCEMENT_TYPE, ImmutableList.of(this.info));
+        ((ICriterionInfo<CriterionTriggerInstance>) this.criterionInfo).setIngredients(this.info, this.criterionKey, this.criterion, ii);
+        ii.setOutputs(Jea.ADVANCEMENT_TYPE, List.of(this.info));
         if (this.parent != null) {
-            ii.setInputs(Jea.ADVANCEMENT_TYPE, ImmutableList.of(this.parent));
+            ii.setInputs(Jea.ADVANCEMENT_TYPE, List.of(this.parent));
         }
     }
 
@@ -61,11 +61,11 @@ public class CriterionRecipe {
         IGuiIngredientGroup<IAdvancementInfo> group = layout.getIngredientsGroup(Jea.ADVANCEMENT_TYPE);
         group.addTooltipCallback((slot, type, info, list) -> {
             if (list.isEmpty()) {
-                AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, ITooltipFlag.TooltipFlags.NORMAL);
+                AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, TooltipFlag.Default.NORMAL);
             }
         });
         //noinspection unchecked
-        ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).setRecipe(layout, this.info, this.criterionKey, this.criterion, ii);
+        ((ICriterionInfo<CriterionTriggerInstance>) this.criterionInfo).setRecipe(layout, this.info, this.criterionKey, this.criterion, ii);
         group.init(group.getGuiIngredients().size(), false, (ICriterionInfo.RECIPE_WIDTH / 2) - (26 / 2), 0);
         if (this.parent != null) {
             group.init(group.getGuiIngredients().size(), true, Jea.ADVANCEMENT_RECIPE_RENDERER_TINY, 5, 5, 16, 16, 0, 0);
@@ -76,50 +76,45 @@ public class CriterionRecipe {
         
     }
 
-    public void draw(MatrixStack matrixStack, double mouseX, double mouseY, IDrawableStatic complete, IDrawableStatic incomplete) {
+    public void draw(PoseStack poseStack, double mouseX, double mouseY, IDrawableStatic complete, IDrawableStatic incomplete) {
         Minecraft mc = Minecraft.getInstance();
-        FontRenderer font = mc.fontRenderer;
-        int width = font.getStringPropertyWidth(this.info.getFormattedDisplayName());
-        font.drawText(matrixStack, this.info.getFormattedDisplayName(), (ICriterionInfo.RECIPE_WIDTH / 2f) - (width / 2f), 27, 0xFFFFFF);
+        Font font = mc.font;
+        int width = font.width(this.info.getFormattedDisplayName());
+        font.draw(poseStack, this.info.getFormattedDisplayName(), (ICriterionInfo.RECIPE_WIDTH / 2f) - (width / 2f), 27, 0xFFFFFF);
         CriterionCompletion criterionCompletion = this.getCriterionCompletion();
-        matrixStack.push();
-        matrixStack.translate(ICriterionInfo.RECIPE_WIDTH - 16 - 5, 5, 0);
+        poseStack.pushPose();
+        poseStack.translate(ICriterionInfo.RECIPE_WIDTH - 16 - 5, 5, 0);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        //noinspection deprecation
-        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         if (mouseX >= ICriterionInfo.RECIPE_WIDTH - 16 - 5 && mouseX <= ICriterionInfo.RECIPE_WIDTH - 5
                 && mouseY >= 5 && mouseY <= 5 + 16) {
-            //noinspection deprecation
-            RenderSystem.disableLighting();
             RenderSystem.disableDepthTest();
-            //noinspection deprecation
-            RenderSystem.color4f(1, 1, 1, 0.5f);
-            mc.getTextureManager().bindTexture(RenderHelper.TEXTURE_WHITE);
-            AbstractGui.blit(matrixStack, 0, 0, 0, 0, 16, 16, 256, 256);
-            //noinspection deprecation
-            RenderSystem.color4f(1, 1, 1, 1);
+            RenderSystem.setShaderColor(1, 1, 1, 0.5f);
+            RenderSystem.setShaderTexture(0, RenderHelper.TEXTURE_WHITE);
+            GuiComponent.blit(poseStack, 0, 0, 0, 0, 16, 16, 256, 256);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
         }
-        matrixStack.translate(0, 0, 10);
-        matrixStack.scale(16 / 17f, 16 / 17f, 0);
-        matrixStack.translate(1, 1, 0);
-        criterionCompletion.draw(matrixStack, complete, incomplete);
+        poseStack.translate(0, 0, 10);
+        poseStack.scale(16 / 17f, 16 / 17f, 0);
+        poseStack.translate(1, 1, 0);
+        criterionCompletion.draw(poseStack, complete, incomplete);
         RenderSystem.disableBlend();
-        matrixStack.pop();
+        poseStack.popPose();
         //noinspection unchecked
-        ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).draw(matrixStack, mc.getRenderTypeBuffers().getBufferSource(), mc, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
-        mc.getRenderTypeBuffers().getBufferSource().finish();
+        ((ICriterionInfo<CriterionTriggerInstance>) this.criterionInfo).draw(poseStack, mc.renderBuffers().bufferSource(), mc, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
+        mc.renderBuffers().bufferSource().endBatch();
     }
 
-    public List<ITextComponent> getTooltip(double mouseX, double mouseY) {
-        ArrayList<ITextComponent> tooltip = new ArrayList<>();
+    public List<Component> getTooltip(double mouseX, double mouseY) {
+        ArrayList<Component> tooltip = new ArrayList<>();
         if (mouseX >= ICriterionInfo.RECIPE_WIDTH - 16 - 5 && mouseX <= ICriterionInfo.RECIPE_WIDTH - 5
                 && mouseY >= 5 && mouseY <= 5 + 16) {
             this.getCriterionCompletion().addTooltip(tooltip);
         } else if (mouseY > ICriterionInfo.SPACE_TOP) {
             // Don't let criterion infos add their tooltip into the header.
             //noinspection unchecked
-            ((ICriterionInfo<ICriterionInstance>) this.criterionInfo).addTooltip(tooltip, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
+            ((ICriterionInfo<CriterionTriggerInstance>) this.criterionInfo).addTooltip(tooltip, this.info, this.criterionKey, this.criterion, mouseX, mouseY);
         }
         return tooltip;
     }
@@ -128,12 +123,12 @@ public class CriterionRecipe {
         AdvancementProgress progress = ClientAdvancementProgress.getProgress(this.info.getId());
         CriterionCompletion completion = CriterionCompletion.INCOMPLETE;
         if (progress != null) {
-            CriterionProgress criterionProgress = progress.getCriterionProgress(this.criterionKey);
-            if (criterionProgress != null && criterionProgress.isObtained()) {
+            CriterionProgress criterionProgress = progress.getCriterion(this.criterionKey);
+            if (criterionProgress != null && criterionProgress.isDone()) {
                 completion = CriterionCompletion.COMPLETE;
             } else if (this.criterionGroup.stream()
-                    .map(progress::getCriterionProgress)
-                    .anyMatch(x -> x != null && x.isObtained())) {
+                    .map(progress::getCriterion)
+                    .anyMatch(x -> x != null && x.isDone())) {
                 completion = CriterionCompletion.PARTIALLY_COMPLETE;
             }
         }

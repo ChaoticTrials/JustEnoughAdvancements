@@ -2,24 +2,24 @@ package de.melanx.jea.plugins.vanilla.serializer;
 
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.PlayerGeneratesContainerLootTrigger;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.LootTableTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class GenerateContainerLootSerializer extends CriterionSerializer<PlayerGeneratesContainerLootTrigger.Instance> {
+public class GenerateContainerLootSerializer extends CriterionSerializer<LootTableTrigger.TriggerInstance> {
 
     public GenerateContainerLootSerializer() {
-        super(PlayerGeneratesContainerLootTrigger.Instance.class);
+        super(LootTableTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.GENERATE_CONTAINER_LOOT);
     }
 
     @Override
-    public void write(PlayerGeneratesContainerLootTrigger.Instance instance, PacketBuffer buffer) {
-        buffer.writeResourceLocation(instance.generatedLoot);
+    public void write(LootTableTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
+        buffer.writeResourceLocation(instance.lootTable);
     }
 
     @Override
-    public PlayerGeneratesContainerLootTrigger.Instance read(PacketBuffer buffer) {
-        return new PlayerGeneratesContainerLootTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, buffer.readResourceLocation());
+    public LootTableTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new LootTableTrigger.TriggerInstance(EntityPredicate.Composite.ANY, buffer.readResourceLocation());
     }
 }

@@ -2,8 +2,8 @@ package de.melanx.jea.api.client;
 
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -41,7 +41,7 @@ public interface IAdvancementInfo {
      * Gets the formatted component used as title for the advancement. Use this instead of
      * {@code DisplayInfo#getTitle}
      */
-    IFormattableTextComponent getFormattedDisplayName();
+    MutableComponent getFormattedDisplayName();
 
     /**
      * Gets the parent advancement id or null if this advancement has no parent.

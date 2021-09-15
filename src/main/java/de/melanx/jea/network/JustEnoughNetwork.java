@@ -3,11 +3,12 @@ package de.melanx.jea.network;
 import de.melanx.jea.AdvancementInfo;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import io.github.noeppi_noeppi.libx.network.NetworkX;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,12 @@ public class JustEnoughNetwork extends NetworkX {
         this.instance.send(PacketDistributor.ALL.noArg(), collectAdvancements(server));
     }
 
-    public void syncAdvancements(MinecraftServer server, ServerPlayerEntity player) {
+    public void syncAdvancements(MinecraftServer server, ServerPlayer player) {
         this.instance.send(PacketDistributor.PLAYER.with(() -> player), collectAdvancements(server));
     }
 
     private static AdvancementInfoUpdateSerializer.AdvancementInfoUpdateMessage collectAdvancements(MinecraftServer server) {
-        Set<AdvancementInfo> advancements = server.getAdvancementManager().getAllAdvancements().stream().flatMap(AdvancementInfo::createAsStream).collect(Collectors.toSet());
+        Set<AdvancementInfo> advancements = server.getAdvancements().getAllAdvancements().stream().map(AdvancementInfo::create).flatMap(Optional::stream).collect(Collectors.toSet());
         return new AdvancementInfoUpdateSerializer.AdvancementInfoUpdateMessage(advancements);
     }
 }

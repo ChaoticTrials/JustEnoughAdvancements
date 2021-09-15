@@ -1,10 +1,10 @@
 package de.melanx.jea.render;
 
-import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.world.entity.projectile.FishingHook;
 
-public class FakeFishingBobber extends FishingBobberEntity {
+public class FakeFishingBobber extends FishingHook {
 
     public FakeFishingBobber(FakeClientPlayer player) {
-        super(player, player.world, 0, 0);
+        super(player, player.level, 0, 0);
     }
 }

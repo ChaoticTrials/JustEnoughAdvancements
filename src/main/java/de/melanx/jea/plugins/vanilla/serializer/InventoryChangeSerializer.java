@@ -3,39 +3,39 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class InventoryChangeSerializer extends CriterionSerializer<InventoryChangeTrigger.Instance> {
+public class InventoryChangeSerializer extends CriterionSerializer<InventoryChangeTrigger.TriggerInstance> {
     
     public InventoryChangeSerializer() {
-        super(InventoryChangeTrigger.Instance.class);
+        super(InventoryChangeTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.INVENTORY_CHANGE);
     }
 
     @Override
-    public void write(InventoryChangeTrigger.Instance instance, PacketBuffer buffer) {
-        PacketUtil.writeIntRange(instance.occupied, buffer);
-        PacketUtil.writeIntRange(instance.full, buffer);
-        PacketUtil.writeIntRange(instance.empty, buffer);
-        buffer.writeVarInt(instance.items.length);
-        for (ItemPredicate predicate : instance.items) {
+    public void write(InventoryChangeTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
+        PacketUtil.writeIntRange(instance.slotsOccupied, buffer);
+        PacketUtil.writeIntRange(instance.slotsFull, buffer);
+        PacketUtil.writeIntRange(instance.slotsEmpty, buffer);
+        buffer.writeVarInt(instance.predicates.length);
+        for (ItemPredicate predicate : instance.predicates) {
             PacketUtil.writeItemPredicate(predicate, buffer);
         }
     }
 
     @Override
-    public InventoryChangeTrigger.Instance read(PacketBuffer buffer) {
-        MinMaxBounds.IntBound occupied = PacketUtil.readIntRange(buffer);
-        MinMaxBounds.IntBound full = PacketUtil.readIntRange(buffer);
-        MinMaxBounds.IntBound empty = PacketUtil.readIntRange(buffer);
+    public InventoryChangeTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        MinMaxBounds.Ints occupied = PacketUtil.readIntRange(buffer);
+        MinMaxBounds.Ints full = PacketUtil.readIntRange(buffer);
+        MinMaxBounds.Ints empty = PacketUtil.readIntRange(buffer);
         ItemPredicate[] items = new ItemPredicate[buffer.readVarInt()];
         for (int i = 0; i < items.length; i++) {
             items[i] = PacketUtil.readItemPredicate(buffer);
         }
-        return new InventoryChangeTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, occupied, full, empty, items);
+        return new InventoryChangeTrigger.TriggerInstance(EntityPredicate.Composite.ANY, occupied, full, empty, items);
     }
 }

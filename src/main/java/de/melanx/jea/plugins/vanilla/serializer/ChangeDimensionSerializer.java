@@ -3,21 +3,21 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.ChangeDimensionTrigger;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.advancements.critereon.ChangeDimensionTrigger;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
-public class ChangeDimensionSerializer extends CriterionSerializer<ChangeDimensionTrigger.Instance> {
+public class ChangeDimensionSerializer extends CriterionSerializer<ChangeDimensionTrigger.TriggerInstance> {
 
     public ChangeDimensionSerializer() {
-        super(ChangeDimensionTrigger.Instance.class);
+        super(ChangeDimensionTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.CHANGE_DIMENSION);
     }
 
     @Override
-    public void write(ChangeDimensionTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(ChangeDimensionTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         byte mask = 0;
         if (instance.from != null) mask |= 1;
         if (instance.to != null) mask |= (1 << 1);
@@ -31,16 +31,16 @@ public class ChangeDimensionSerializer extends CriterionSerializer<ChangeDimensi
     }
 
     @Override
-    public ChangeDimensionTrigger.Instance read(PacketBuffer buffer) {
+    public ChangeDimensionTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         int mask = buffer.readByte();
-        RegistryKey<World> from = null;
-        RegistryKey<World> to = null;
+        ResourceKey<Level> from = null;
+        ResourceKey<Level> to = null;
         if ((mask & 1) != 0) {
-            from = PacketUtil.readKey(buffer, World.class);
+            from = PacketUtil.readKey(buffer, Level.class);
         }
         if ((mask & (1 << 1)) != 0) {
-            to = PacketUtil.readKey(buffer, World.class);
+            to = PacketUtil.readKey(buffer, Level.class);
         }
-        return new ChangeDimensionTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, from, to);
+        return new ChangeDimensionTrigger.TriggerInstance(EntityPredicate.Composite.ANY, from, to);
     }
 }

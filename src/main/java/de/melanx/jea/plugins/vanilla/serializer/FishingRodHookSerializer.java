@@ -1,33 +1,33 @@
 package de.melanx.jea.plugins.vanilla.serializer;
 
-import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.FishingRodHookedTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.network.PacketBuffer;
+import de.melanx.jea.util.LootUtil;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.FishingRodHookedTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class FishingRodHookSerializer extends CriterionSerializer<FishingRodHookedTrigger.Instance> {
+public class FishingRodHookSerializer extends CriterionSerializer<FishingRodHookedTrigger.TriggerInstance> {
 
     public FishingRodHookSerializer() {
-        super(FishingRodHookedTrigger.Instance.class);
+        super(FishingRodHookedTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.FISHING_ROD_HOOK);
     }
 
     @Override
-    public void write(FishingRodHookedTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(FishingRodHookedTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeItemPredicate(instance.rod, buffer);
         PacketUtil.writeEntityPredicate(LootUtil.asEntity(instance.entity), buffer);
         PacketUtil.writeItemPredicate(instance.item, buffer);
     }
 
     @Override
-    public FishingRodHookedTrigger.Instance read(PacketBuffer buffer) {
+    public FishingRodHookedTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         ItemPredicate rod = PacketUtil.readItemPredicate(buffer);
-        EntityPredicate.AndPredicate bobber = LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer));
+        EntityPredicate.Composite bobber = LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer));
         ItemPredicate item = PacketUtil.readItemPredicate(buffer);
-        return new FishingRodHookedTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, rod, bobber, item);
+        return new FishingRodHookedTrigger.TriggerInstance(EntityPredicate.Composite.ANY, rod, bobber, item);
     }
 }

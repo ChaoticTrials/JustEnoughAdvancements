@@ -1,47 +1,47 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import io.github.noeppi_noeppi.libx.render.ClientTickHandler;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.core.BlockPos;
 
 import java.util.List;
 
 public class JeaRender {
     
-    public static final BlockPos BELOW_WORLD = new BlockPos(0, -2, 0);
+    public static final BlockPos BELOW_WORLD = new BlockPos(0, -655538, 0);
 
     public static double normalScale(double totalScale) {
         return 16 * totalScale;
     }
     
-    public static void normalize(MatrixStack matrixStack) {
-        normalize(matrixStack, 0, 0);
+    public static void normalize(PoseStack poseStack) {
+        normalize(poseStack, 0, 0);
     }
     
-    public static void normalize(MatrixStack matrixStack, int x, int y) {
-        matrixStack.translate(x, y, 60);
-        matrixStack.scale(16, 16, 16);
+    public static void normalize(PoseStack poseStack, int x, int y) {
+        poseStack.translate(x, y, 60);
+        poseStack.scale(16, 16, 16);
     }
     
-    public static void transformForEntityRenderFront(MatrixStack matrixStack, boolean right, float entityScale) {
-        matrixStack.scale(entityScale, -entityScale, entityScale);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
+    public static void transformForEntityRenderFront(PoseStack poseStack, boolean right, float entityScale) {
+        poseStack.scale(entityScale, -entityScale, entityScale);
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(-2));
         if (right) {
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(-15));
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(-15));
         } else {
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(15));
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(15));
         }
     }
     
-    public static void transformForEntityRenderSide(MatrixStack matrixStack, boolean right, float entityScale) {
-        matrixStack.scale(entityScale, -entityScale, entityScale);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(-2));
+    public static void transformForEntityRenderSide(PoseStack poseStack, boolean right, float entityScale) {
+        poseStack.scale(entityScale, -entityScale, entityScale);
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(-2));
         if (right) {
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(-65));
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(-65));
         } else {
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(65));
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(65));
         }
     }
     
@@ -78,9 +78,9 @@ public class JeaRender {
         return constants[(((ClientTickHandler.ticksInGame / time) % constants.length) + constants.length) % constants.length];
     }
     
-    public static void slotAt(MatrixStack matrixStack, int x, int y) {
+    public static void slotAt(PoseStack poseStack, int x, int y) {
         if (JustEnoughAdvancementsJEIPlugin.getSlot() != null) {
-            JustEnoughAdvancementsJEIPlugin.getSlot().draw(matrixStack, x, y);
+            JustEnoughAdvancementsJEIPlugin.getSlot().draw(poseStack, x, y);
         }
     }
 }

@@ -4,7 +4,8 @@ import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.plugins.vanilla.criteria.*;
 import de.melanx.jea.plugins.vanilla.serializer.*;
-import de.melanx.jea.plugins.vanilla.special.RideStriderInfo;
+import de.melanx.jea.plugins.vanilla.special.*;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
@@ -49,7 +50,10 @@ public class VanillaPlugin {
                 new TameAnimalSerializer(),
                 new TargetHitSerializer(),
                 new UseTotemSerializer(),
-                new VillagerTradeSerializer()
+                new VillagerTradeSerializer(),
+                new UsingItemSerializer(),
+                new StartRidingSerializer(),
+                new LightningStrikeSerializer()
         );
     }
     
@@ -91,7 +95,14 @@ public class VanillaPlugin {
         Jea.register(VanillaCriteriaIds.HURT_ENTITY, new HurtEntityInfo());
         Jea.register(VanillaCriteriaIds.KILLED_BY_ENTITY, new KilledByEntityInfo());
         Jea.register(VanillaCriteriaIds.KILLED_ENTITY, new KilledEntityInfo());
+        Jea.register(VanillaCriteriaIds.LIGHTNING_STRIKE, new LightningStrikeInfo());
 
         Jea.registerSpecial(RideStriderInfo.ADVANCEMENT, RideStriderInfo.CRITERION, new RideStriderInfo());
+        Jea.registerSpecial(WalkOnPowderSnowInfo.ADVANCEMENT, WalkOnPowderSnowInfo.CRITERION, new WalkOnPowderSnowInfo());
+        Jea.registerSpecial(SpyglassInfo.PARROT_ID, SpyglassInfo.PARROT_CRITERION, new SpyglassInfo(EntityType.PARROT));
+        Jea.registerSpecial(SpyglassInfo.GHASTT_ID, SpyglassInfo.GHAST_CRITERION, new SpyglassInfo(EntityType.GHAST));
+        Jea.registerSpecial(SpyglassInfo.DRAGON_ID, SpyglassInfo.DRAGON_CRITERION, new SpyglassInfo(EntityType.ENDER_DRAGON));
+        Jea.registerSpecial(FloatGoatInfo.ADVANCEMENT, FloatGoatInfo.CRITERION, new FloatGoatInfo());
+        Jea.registerSpecial(AxolotlAttackInfo.ADVANCEMENT, AxolotlAttackInfo.CRITERION, new AxolotlAttackInfo());
     }
 }

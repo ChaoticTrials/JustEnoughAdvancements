@@ -3,24 +3,24 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.UsedTotemTrigger;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.UsedTotemTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class UseTotemSerializer extends CriterionSerializer<UsedTotemTrigger.Instance> {
+public class UseTotemSerializer extends CriterionSerializer<UsedTotemTrigger.TriggerInstance> {
 
     public UseTotemSerializer() {
-        super(UsedTotemTrigger.Instance.class);
+        super(UsedTotemTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.USE_TOTEM);
     }
 
     @Override
-    public void write(UsedTotemTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(UsedTotemTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeItemPredicate(instance.item, buffer);
     }
 
     @Override
-    public UsedTotemTrigger.Instance read(PacketBuffer buffer) {
-        return new UsedTotemTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, PacketUtil.readItemPredicate(buffer));
+    public UsedTotemTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new UsedTotemTrigger.TriggerInstance(EntityPredicate.Composite.ANY, PacketUtil.readItemPredicate(buffer));
     }
 }

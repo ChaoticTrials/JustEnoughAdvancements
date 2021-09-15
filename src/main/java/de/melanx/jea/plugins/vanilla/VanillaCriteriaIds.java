@@ -1,8 +1,8 @@
 package de.melanx.jea.plugins.vanilla;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.criterion.*;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.resources.ResourceLocation;
 
 public class VanillaCriteriaIds {
 
@@ -29,18 +29,21 @@ public class VanillaCriteriaIds {
     public static final ResourceLocation LEVITATION = LevitationTrigger.ID;
     public static final ResourceLocation NETHER_TRAVEL = NetherTravelTrigger.ID;
     public static final ResourceLocation PLACE_BLOCK = PlacedBlockTrigger.ID;
-    public static final ResourceLocation ENTITY_INTERACTION = PlayerEntityInteractionTrigger.ID;
-    public static final ResourceLocation GENERATE_CONTAINER_LOOT = PlayerGeneratesContainerLootTrigger.ID;
+    public static final ResourceLocation ENTITY_INTERACTION = PlayerInteractTrigger.ID;
+    public static final ResourceLocation GENERATE_CONTAINER_LOOT = LootTableTrigger.ID;
     public static final ResourceLocation HURT_ENTITY = PlayerHurtEntityTrigger.ID;
     public static final ResourceLocation LOCATION = CriteriaTriggers.LOCATION.id;
     public static final ResourceLocation SLEEP_IN_BED = CriteriaTriggers.SLEPT_IN_BED.id;
-    public static final ResourceLocation WIN_RAID = CriteriaTriggers.HERO_OF_THE_VILLAGE.id;
-    public static final ResourceLocation RIGHT_CLICK_BLOCK = RightClickBlockWithItemTrigger.ID;
+    public static final ResourceLocation WIN_RAID = CriteriaTriggers.RAID_WIN.id;
+    public static final ResourceLocation RIGHT_CLICK_BLOCK = ItemUsedOnBlockTrigger.ID;
     public static final ResourceLocation SHOOT_CROSSBOW = ShotCrossbowTrigger.ID;
     public static final ResourceLocation SLIDE_BLOCK = SlideDownBlockTrigger.ID;
     public static final ResourceLocation SUMMON_ENTITY = SummonedEntityTrigger.ID;
     public static final ResourceLocation TAME_ANIMAL = TameAnimalTrigger.ID;
-    public static final ResourceLocation TARGET_HIT = TargetHitTrigger.ID;
+    public static final ResourceLocation TARGET_HIT = TargetBlockTrigger.ID;
     public static final ResourceLocation USE_TOTEM = UsedTotemTrigger.ID;
-    public static final ResourceLocation VILLAGER_TRADE = VillagerTradeTrigger.ID;
+    public static final ResourceLocation VILLAGER_TRADE = TradeTrigger.ID;
+    public static final ResourceLocation USING_ITEM = UsingItemTrigger.ID;
+    public static final ResourceLocation START_RIDING = StartRidingTrigger.ID;
+    public static final ResourceLocation LIGHTNING_STRIKE = LightningStrikeTrigger.ID;
 }

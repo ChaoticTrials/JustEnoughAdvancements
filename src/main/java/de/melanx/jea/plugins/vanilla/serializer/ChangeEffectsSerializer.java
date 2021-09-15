@@ -3,24 +3,26 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EffectsChangedTrigger;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.network.PacketBuffer;
+import de.melanx.jea.util.LootUtil;
+import net.minecraft.advancements.critereon.EffectsChangedTrigger;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class ChangeEffectsSerializer extends CriterionSerializer<EffectsChangedTrigger.Instance> {
+public class ChangeEffectsSerializer extends CriterionSerializer<EffectsChangedTrigger.TriggerInstance> {
 
     public ChangeEffectsSerializer() {
-        super(EffectsChangedTrigger.Instance.class);
+        super(EffectsChangedTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.CHANGE_EFFECTS);
     }
 
     @Override
-    public void write(EffectsChangedTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(EffectsChangedTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeMobEffectsPredicate(instance.effects, buffer);
+        PacketUtil.writeEntityPredicate(LootUtil.asEntity(instance.source), buffer);
     }
 
     @Override
-    public EffectsChangedTrigger.Instance read(PacketBuffer buffer) {
-        return new EffectsChangedTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, PacketUtil.readMobEffectsPredicate(buffer));
+    public EffectsChangedTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new EffectsChangedTrigger.TriggerInstance(EntityPredicate.Composite.ANY, PacketUtil.readMobEffectsPredicate(buffer), LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer)));
     }
 }

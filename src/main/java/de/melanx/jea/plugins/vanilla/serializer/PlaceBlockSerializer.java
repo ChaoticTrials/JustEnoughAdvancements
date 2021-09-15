@@ -3,38 +3,38 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.*;
-import net.minecraft.block.Block;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 
-public class PlaceBlockSerializer extends CriterionSerializer<PlacedBlockTrigger.Instance> {
+public class PlaceBlockSerializer extends CriterionSerializer<PlacedBlockTrigger.TriggerInstance> {
 
     public PlaceBlockSerializer() {
-        super(PlacedBlockTrigger.Instance.class);
+        super(PlacedBlockTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.PLACE_BLOCK);
     }
 
     @Override
-    public void write(PlacedBlockTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(PlacedBlockTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         byte mask = 0;
         if (instance.block != null) mask |= 1;
-        if (instance.properties != null) mask |= (1 << 1);
+        if (instance.state != null) mask |= (1 << 1);
         buffer.writeByte(mask);
         if (instance.block != null) {
             buffer.writeResourceLocation(Objects.requireNonNull(instance.block.getRegistryName()));
         }
-        if (instance.properties != null) {
-            PacketUtil.writeStatePropertiesPredicate(instance.properties, buffer);
+        if (instance.state != null) {
+            PacketUtil.writeStatePropertiesPredicate(instance.state, buffer);
         }
         PacketUtil.writeLocationPredicate(instance.location, buffer);
         PacketUtil.writeItemPredicate(instance.item, buffer);
     }
 
     @Override
-    public PlacedBlockTrigger.Instance read(PacketBuffer buffer) {
+    public PlacedBlockTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         byte mask = buffer.readByte();
         Block block = null;
         StatePropertiesPredicate properties = null;
@@ -47,6 +47,6 @@ public class PlaceBlockSerializer extends CriterionSerializer<PlacedBlockTrigger
         LocationPredicate location = PacketUtil.readLocationPredicate(buffer);
         ItemPredicate item = PacketUtil.readItemPredicate(buffer);
         //noinspection ConstantConditions
-        return new PlacedBlockTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, block, properties, location, item);
+        return new PlacedBlockTrigger.TriggerInstance(EntityPredicate.Composite.ANY, block, properties, location, item);
     }
 }

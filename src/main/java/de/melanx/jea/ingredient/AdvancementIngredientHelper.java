@@ -2,16 +2,25 @@ package de.melanx.jea.ingredient;
 
 import com.google.common.collect.Streams;
 import de.melanx.jea.api.client.IAdvancementInfo;
+import de.melanx.jea.api.client.Jea;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class AdvancementIngredientHelper implements IIngredientHelper<IAdvancementInfo> {
 
+    @Nonnull
+    @Override
+    public IIngredientType<IAdvancementInfo> getIngredientType() {
+        return Jea.ADVANCEMENT_TYPE;
+    }
+
     @Nullable
     @Override
-    public IAdvancementInfo getMatch(@Nonnull Iterable<IAdvancementInfo> ingredients, @Nonnull IAdvancementInfo advancement) {
+    public IAdvancementInfo getMatch(@Nonnull Iterable<IAdvancementInfo> ingredients, @Nonnull IAdvancementInfo advancement, @Nonnull UidContext context) {
         //noinspection UnstableApiUsage
         return Streams.stream(ingredients).filter(a -> advancement.getId().equals(a.getId())).findFirst().orElse(null);
     }
@@ -24,7 +33,7 @@ public class AdvancementIngredientHelper implements IIngredientHelper<IAdvanceme
 
     @Nonnull
     @Override
-    public String getUniqueId(@Nonnull IAdvancementInfo advancement) {
+    public String getUniqueId(@Nonnull IAdvancementInfo advancement, @Nonnull UidContext context) {
         return advancement.getId().toString();
     }
 

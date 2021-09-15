@@ -3,8 +3,8 @@
 	"parent": "block/block",
 	"textures": {
 		"dirt": "block/dirt",
-		"grass_path_side": "block/grass_path_side",
-		"grass_path_top": "block/grass_path_top",
+		"grass_path_side": "block/dirt_path_side",
+		"grass_path_top": "block/dirt_path_top",
 		"particle": "block/dirt"
 	},
 	"elements": [

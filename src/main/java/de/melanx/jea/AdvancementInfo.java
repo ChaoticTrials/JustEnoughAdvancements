@@ -8,14 +8,13 @@ import de.melanx.jea.network.PacketUtil;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Stream;
 
 public final class AdvancementInfo implements IAdvancementInfo {
     
@@ -25,32 +24,32 @@ public final class AdvancementInfo implements IAdvancementInfo {
     private final List<List<String>> completion;
     @Nullable
     private final ResourceLocation parent;
-    private final IFormattableTextComponent formattedDisplayName;
+    private final MutableComponent formattedDisplayName;
     private final Map<String, ResourceLocation> criteriaSerializerIds;
 
     private AdvancementInfo(Advancement advancement) {
         this.id = advancement.getId();
         this.display = Objects.requireNonNull(advancement.getDisplay());
         //noinspection ConstantConditions
-        this.criteria = advancement.getCriteria() != null ? ImmutableMap.copyOf(advancement.getCriteria()) : ImmutableMap.of();
+        this.criteria = advancement.getCriteria() != null ? ImmutableMap.copyOf(advancement.getCriteria()) : Map.of();
         //noinspection UnstableApiUsage
         this.completion = Arrays.stream(advancement.getRequirements()).map(array ->
                 Arrays.stream(array).filter(this.criteria::containsKey).collect(ImmutableList.toImmutableList())
         ).collect(ImmutableList.toImmutableList());
         this.parent = advancement.getParent() == null ? null : advancement.getParent().getId();
-        this.formattedDisplayName = this.display.getTitle().deepCopy().mergeStyle(this.display.getFrame().getFormat());
+        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getFrame().getChatColor());
         this.criteriaSerializerIds = PacketUtil.getCriteriaSerializers(this.criteria);
     }
     
-    private AdvancementInfo(PacketBuffer buffer) {
+    private AdvancementInfo(FriendlyByteBuf buffer) {
         this.id = buffer.readResourceLocation();
-        this.display = DisplayInfo.read(buffer);
+        this.display = DisplayInfo.fromNetwork(buffer);
         Pair<Map<String, Criterion>, Map<String, ResourceLocation>> criteriaData = PacketUtil.readCriteria(buffer);
         this.criteria = criteriaData.getLeft();
         this.criteriaSerializerIds = criteriaData.getRight();
         this.completion = PacketUtil.readCompletion(buffer);
         this.parent = buffer.readBoolean() ? buffer.readResourceLocation() : null;
-        this.formattedDisplayName = this.display.getTitle().deepCopy().mergeStyle(this.display.getFrame().getFormat());
+        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getFrame().getChatColor());
     }
     
     private AdvancementInfo(IAdvancementInfo wrap) {
@@ -60,13 +59,13 @@ public final class AdvancementInfo implements IAdvancementInfo {
         //noinspection UnstableApiUsage
         this.completion = wrap.getCompletion().stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList());
         this.parent = wrap.getParent();
-        this.formattedDisplayName = this.display.getTitle().deepCopy().mergeStyle(this.display.getFrame().getFormat());
+        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getFrame().getChatColor());
         this.criteriaSerializerIds = PacketUtil.getCriteriaSerializers(this.criteria);
     }
     
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(this.id);
-        this.display.write(buffer);
+        this.display.serializeToNetwork(buffer);
         PacketUtil.writeCriteria(buffer, this.criteria, this.criteriaSerializerIds);
         PacketUtil.writeCompletion(buffer, this.completion);
         buffer.writeBoolean(this.parent != null);
@@ -83,17 +82,13 @@ public final class AdvancementInfo implements IAdvancementInfo {
         }
     }
     
-    public static Stream<AdvancementInfo> createAsStream(Advancement advancement) {
-        return create(advancement).map(Stream::of).orElse(Stream.empty());
-    }
-    
-    public static AdvancementInfo read(PacketBuffer buffer) {
+    public static AdvancementInfo read(FriendlyByteBuf buffer) {
         return new AdvancementInfo(buffer);
     }
 
     public static AdvancementInfo get(IAdvancementInfo info) {
-        if (info instanceof AdvancementInfo) {
-            return (AdvancementInfo) info;
+        if (info instanceof AdvancementInfo impl) {
+            return impl;
         } else {
             JustEnoughAdvancements.logger.warn("IAdvancementInfo found that is not an instance of AdvancementInfo. This should nt happen. Another mod may have created their own implementation of IAdvancementInfo which is not supported. Class is " + info.getClass());
             return new AdvancementInfo(info);
@@ -127,7 +122,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
     }
 
     @Override
-    public IFormattableTextComponent getFormattedDisplayName() {
+    public MutableComponent getFormattedDisplayName() {
         return this.formattedDisplayName;
     }
 
@@ -139,7 +134,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
     public String toString() {
         return "AdvancementInfo {" +
                 "id=" + this.id +
-                ", display=" + this.display.serialize() +
+                ", display=" + this.display.serializeToJson() +
                 '}';
     }
 

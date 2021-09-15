@@ -2,23 +2,23 @@ package de.melanx.jea.plugins.vanilla.serializer;
 
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.BrewedPotionTrigger;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.Potion;
+import net.minecraft.advancements.critereon.BrewedPotionTrigger;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 
-public class BrewPotionSerializer extends CriterionSerializer<BrewedPotionTrigger.Instance> {
+public class BrewPotionSerializer extends CriterionSerializer<BrewedPotionTrigger.TriggerInstance> {
     
     public BrewPotionSerializer() {
-        super(BrewedPotionTrigger.Instance.class);
+        super(BrewedPotionTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.BREW_POTION);
     }
 
     @Override
-    public void write(BrewedPotionTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(BrewedPotionTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         buffer.writeBoolean(instance.potion != null);
         if (instance.potion != null) {
             buffer.writeResourceLocation(Objects.requireNonNull(instance.potion.getRegistryName()));
@@ -26,11 +26,11 @@ public class BrewPotionSerializer extends CriterionSerializer<BrewedPotionTrigge
     }
 
     @Override
-    public BrewedPotionTrigger.Instance read(PacketBuffer buffer) {
+    public BrewedPotionTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         Potion potion = null;
         if (buffer.readBoolean()) {
-            potion = Objects.requireNonNull(ForgeRegistries.POTION_TYPES.getValue(buffer.readResourceLocation()));
+            potion = Objects.requireNonNull(ForgeRegistries.POTIONS.getValue(buffer.readResourceLocation()));
         }
-        return new BrewedPotionTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, potion);
+        return new BrewedPotionTrigger.TriggerInstance(EntityPredicate.Composite.ANY, potion);
     }
 }

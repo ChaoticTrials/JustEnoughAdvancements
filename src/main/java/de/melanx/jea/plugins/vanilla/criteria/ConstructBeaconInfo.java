@@ -1,7 +1,7 @@
 package de.melanx.jea.plugins.vanilla.criteria;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import de.melanx.jea.render.JeaRender;
@@ -9,102 +9,101 @@ import de.melanx.jea.util.IngredientUtil;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.advancements.criterion.ConstructBeaconTrigger;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.advancements.critereon.ConstructBeaconTrigger;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConstructBeaconInfo implements ICriterionInfo<ConstructBeaconTrigger.Instance> {
+public class ConstructBeaconInfo implements ICriterionInfo<ConstructBeaconTrigger.TriggerInstance> {
 
     @Override
-    public Class<ConstructBeaconTrigger.Instance> criterionClass() {
-        return ConstructBeaconTrigger.Instance.class;
+    public Class<ConstructBeaconTrigger.TriggerInstance> criterionClass() {
+        return ConstructBeaconTrigger.TriggerInstance.class;
     }
 
     @Override
-    public void setIngredients(IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.Instance instance, IIngredients ii) {
-        ii.setInputLists(VanillaTypes.ITEM, ImmutableList.of(
-                ImmutableList.of(new ItemStack(Items.BEACON)),
-                BlockTags.BEACON_BASE_BLOCKS.getAllElements().stream().map(ItemStack::new).collect(Collectors.toList())
+    public void setIngredients(IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.TriggerInstance instance, IIngredients ii) {
+        ii.setInputLists(VanillaTypes.ITEM, List.of(
+                List.of(new ItemStack(Items.BEACON)),
+                BlockTags.BEACON_BASE_BLOCKS.getValues().stream().map(ItemStack::new).collect(Collectors.toList())
         ));
     }
 
     @Override
-    public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.Instance instance, IIngredients ii) {
+    public void setRecipe(IRecipeLayout layout, IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.TriggerInstance instance, IIngredients ii) {
         layout.getItemStacks().init(0, true, 3, SPACE_TOP + 3);
         layout.getItemStacks().init(1, true, 3, SPACE_TOP + 24);
         layout.getItemStacks().set(ii);
     }
 
     @Override
-    public void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.Instance instance, double mouseX, double mouseY) {
-        JeaRender.slotAt(matrixStack, 3, SPACE_TOP + 3);
-        JeaRender.slotAt(matrixStack, 3, SPACE_TOP + 24);
-        MinMaxBounds.IntBound level = MinMaxBounds.IntBound.atLeast(1);
-        if (!instance.level.isUnbounded()) {
+    public void draw(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.TriggerInstance instance, double mouseX, double mouseY) {
+        JeaRender.slotAt(poseStack, 3, SPACE_TOP + 3);
+        JeaRender.slotAt(poseStack, 3, SPACE_TOP + 24);
+        MinMaxBounds.Ints level = MinMaxBounds.Ints.atLeast(1);
+        if (!instance.level.isAny()) {
             level = instance.level;
         }
-        ITextComponent text = new TranslationTextComponent("jea.item.tooltip.beacon.level", IngredientUtil.text(level));
-        mc.fontRenderer.drawText(matrixStack, text, 2, SPACE_TOP + RECIPE_HEIGHT - 2 - mc.fontRenderer.FONT_HEIGHT, 0x000000);
+        Component text = new TranslatableComponent("jea.item.tooltip.beacon.level", IngredientUtil.text(level));
+        mc.font.draw(poseStack, text, 2, SPACE_TOP + RECIPE_HEIGHT - 2 - mc.font.lineHeight, 0x000000);
         int renderLevel = IngredientUtil.getExampleValue(level).orElse(1);
-        matrixStack.push();
-        matrixStack.translate(RECIPE_WIDTH - 60, SPACE_TOP + RECIPE_HEIGHT - 30, 0);
-        JeaRender.normalize(matrixStack);
-        JeaRender.transformForEntityRenderFront(matrixStack, true, 4f / (1 + (2 * renderLevel)));
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(20));
-        this.renderBeacon(matrixStack, buffer, mc, renderLevel);
-        matrixStack.pop();
+        poseStack.pushPose();
+        poseStack.translate(RECIPE_WIDTH - 60, SPACE_TOP + RECIPE_HEIGHT - 30, 0);
+        JeaRender.normalize(poseStack);
+        JeaRender.transformForEntityRenderFront(poseStack, true, 4f / (1 + (2 * renderLevel)));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(20));
+        this.renderBeacon(poseStack, buffer, mc, renderLevel);
+        poseStack.popPose();
     }
     
-    private void renderBeacon(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, int level) {
-        if (!BlockTags.BEACON_BASE_BLOCKS.getAllElements().isEmpty()) {
-            BlockRendererDispatcher brd = mc.getBlockRendererDispatcher();
-            BlockState beacon = Blocks.BEACON.getDefaultState();
-            BlockState base = JeaRender.cycle(BlockTags.BEACON_BASE_BLOCKS.getAllElements()).getDefaultState();
-            int light = LightTexture.packLight(15, 15);
+    private void renderBeacon(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, int level) {
+        if (!BlockTags.BEACON_BASE_BLOCKS.getValues().isEmpty()) {
+            BlockRenderDispatcher brd = mc.getBlockRenderer();
+            BlockState beacon = Blocks.BEACON.defaultBlockState();
+            BlockState base = JeaRender.cycle(BlockTags.BEACON_BASE_BLOCKS.getValues()).defaultBlockState();
+            int light = LightTexture.pack(15, 15);
             int overlay = OverlayTexture.NO_OVERLAY;
-            matrixStack.push();
+            poseStack.pushPose();
             for (int i = level; i > 0; i--) {
-                renderBeaconLayer(matrixStack, buffer, mc, brd, base, light, overlay, i);
-                matrixStack.translate(0, 1, 0);
+                renderBeaconLayer(poseStack, buffer, mc, brd, base, light, overlay, i);
+                poseStack.translate(0, 1, 0);
             }
-            matrixStack.translate(-0.5, 0, -0.5);
+            poseStack.translate(-0.5, 0, -0.5);
             //noinspection deprecation
-            brd.renderBlock(beacon, matrixStack, buffer, light, overlay);
-            matrixStack.pop();
+            brd.renderSingleBlock(beacon, poseStack, buffer, light, overlay);
+            poseStack.popPose();
         }
     }
     
-    private static void renderBeaconLayer(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, BlockRendererDispatcher brd, BlockState state, int light, int overlay, int layer) {
-        matrixStack.push();
-        matrixStack.translate(-0.5 - layer, 0, -0.5 - layer);
+    private static void renderBeaconLayer(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, BlockRenderDispatcher brd, BlockState state, int light, int overlay, int layer) {
+        poseStack.pushPose();
+        poseStack.translate(-0.5 - layer, 0, -0.5 - layer);
         for (int x = -layer; x <= layer; x++) {
             for (int z = -layer; z <= layer; z++) {
                 //noinspection deprecation
-                brd.renderBlock(state, matrixStack, buffer, light, overlay);
-                matrixStack.translate(0, 0, 1);
+                brd.renderSingleBlock(state, poseStack, buffer, light, overlay);
+                poseStack.translate(0, 0, 1);
             }
-            matrixStack.translate(1, 0, -(2 * layer) - 1);
+            poseStack.translate(1, 0, -(2 * layer) - 1);
         }
-        matrixStack.pop();
+        poseStack.popPose();
     }
 
     @Override
-    public void addTooltip(List<ITextComponent> tooltip, IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.Instance instance, double mouseX, double mouseY) {
+    public void addTooltip(List<Component> tooltip, IAdvancementInfo advancement, String criterionKey, ConstructBeaconTrigger.TriggerInstance instance, double mouseX, double mouseY) {
 
     }
 }

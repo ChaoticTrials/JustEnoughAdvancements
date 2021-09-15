@@ -3,11 +3,9 @@ package de.melanx.jea;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.api.JeaRegistries;
 import de.melanx.jea.network.JustEnoughNetwork;
-import de.melanx.jea.plugins.botania.BotaniaPlugin;
-import de.melanx.jea.plugins.mythicbotany.MythicBotanyPlugin;
 import de.melanx.jea.plugins.vanilla.VanillaPlugin;
-import io.github.noeppi_noeppi.libx.mod.registration.ModXRegistration;
-import net.minecraft.util.ResourceLocation;
+import io.github.noeppi_noeppi.libx.mod.ModX;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -21,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 
 @Mod("jea")
-public class JustEnoughAdvancements extends ModXRegistration {
+public class JustEnoughAdvancements extends ModX {
 
     private static JustEnoughAdvancements instance;
     private static JustEnoughNetwork network;
@@ -36,10 +34,10 @@ public class JustEnoughAdvancements extends ModXRegistration {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(JeaRegistries::initRegistries);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, VanillaPlugin::init);
         if (ModList.get().isLoaded("botania")) {
-            FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, BotaniaPlugin::init);
+//            FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, BotaniaPlugin::init);
         }
         if (ModList.get().isLoaded("mythicbotany")) {
-            FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, MythicBotanyPlugin::init);
+//            FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(CriterionSerializer.class, MythicBotanyPlugin::init);
         }
         
         MinecraftForge.EVENT_BUS.register(new EventHandler());
@@ -64,10 +62,10 @@ public class JustEnoughAdvancements extends ModXRegistration {
     protected void clientSetup(FMLClientSetupEvent event) {
         VanillaPlugin.register();
         if (ModList.get().isLoaded("botania")) {
-            BotaniaPlugin.register();
+//            BotaniaPlugin.register();
         }
         if (ModList.get().isLoaded("mythicbotany")) {
-            MythicBotanyPlugin.register();
+//            MythicBotanyPlugin.register();
         }
     }
     

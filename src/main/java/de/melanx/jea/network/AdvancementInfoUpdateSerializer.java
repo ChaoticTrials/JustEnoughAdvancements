@@ -2,7 +2,7 @@ package de.melanx.jea.network;
 
 import de.melanx.jea.AdvancementInfo;
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +15,7 @@ public class AdvancementInfoUpdateSerializer implements PacketSerializer<Advance
     }
 
     @Override
-    public void encode(AdvancementInfoUpdateMessage msg, PacketBuffer buffer) {
+    public void encode(AdvancementInfoUpdateMessage msg, FriendlyByteBuf buffer) {
         buffer.writeVarInt(msg.advancements.size());
         for (AdvancementInfo info : msg.advancements) {
             info.write(buffer);
@@ -23,7 +23,7 @@ public class AdvancementInfoUpdateSerializer implements PacketSerializer<Advance
     }
 
     @Override
-    public AdvancementInfoUpdateMessage decode(PacketBuffer buffer) {
+    public AdvancementInfoUpdateMessage decode(FriendlyByteBuf buffer) {
         int size = buffer.readVarInt();
         Set<AdvancementInfo> advancements = new HashSet<>(size);
         for (int i = 0; i < size; i++) {
@@ -32,12 +32,5 @@ public class AdvancementInfoUpdateSerializer implements PacketSerializer<Advance
         return new AdvancementInfoUpdateMessage(advancements);
     }
 
-    public static class AdvancementInfoUpdateMessage {
-        
-        public final Set<AdvancementInfo> advancements;
-
-        public AdvancementInfoUpdateMessage(Set<AdvancementInfo> advancements) {
-            this.advancements = advancements;
-        }
-    }
+    public record AdvancementInfoUpdateMessage(Set<AdvancementInfo> advancements) {}
 }

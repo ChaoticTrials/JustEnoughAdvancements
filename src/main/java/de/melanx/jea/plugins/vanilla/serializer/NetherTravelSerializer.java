@@ -3,31 +3,31 @@ package de.melanx.jea.plugins.vanilla.serializer;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.DistancePredicate;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.LocationPredicate;
-import net.minecraft.advancements.criterion.NetherTravelTrigger;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.DistancePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.LocationPredicate;
+import net.minecraft.advancements.critereon.NetherTravelTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class NetherTravelSerializer extends CriterionSerializer<NetherTravelTrigger.Instance> {
+public class NetherTravelSerializer extends CriterionSerializer<NetherTravelTrigger.TriggerInstance> {
 
     public NetherTravelSerializer() {
-        super(NetherTravelTrigger.Instance.class);
+        super(NetherTravelTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.NETHER_TRAVEL);
     }
 
     @Override
-    public void write(NetherTravelTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(NetherTravelTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeLocationPredicate(instance.entered, buffer);
         PacketUtil.writeLocationPredicate(instance.exited, buffer);
         PacketUtil.writeDistancePredicate(instance.distance, buffer);
     }
 
     @Override
-    public NetherTravelTrigger.Instance read(PacketBuffer buffer) {
+    public NetherTravelTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
         LocationPredicate entered = PacketUtil.readLocationPredicate(buffer);
         LocationPredicate exited = PacketUtil.readLocationPredicate(buffer);
         DistancePredicate distance = PacketUtil.readDistancePredicate(buffer);
-        return new NetherTravelTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, entered, exited, distance);
+        return new NetherTravelTrigger.TriggerInstance(EntityPredicate.Composite.ANY, entered, exited, distance);
     }
 }

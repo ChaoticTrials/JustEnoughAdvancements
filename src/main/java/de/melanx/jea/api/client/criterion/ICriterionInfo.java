@@ -1,20 +1,20 @@
 package de.melanx.jea.api.client.criterion;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.advancements.ICriterionInstance;
+import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 /**
  * A criterion info is used to draw data for one criterion on a recipe.
  */
-public interface ICriterionInfo<T extends ICriterionInstance> {
+public interface ICriterionInfo<T extends CriterionTriggerInstance> {
 
     // TODO a way for implementations to easily mrk thing selected on hover likes slots.
     
@@ -57,10 +57,10 @@ public interface ICriterionInfo<T extends ICriterionInstance> {
     /**
      * Just like in a recipe category.
      */
-    void draw(MatrixStack matrixStack, IRenderTypeBuffer buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
+    void draw(PoseStack poseStack, MultiBufferSource buffer, Minecraft mc, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
 
     /**
      * Adds the tooltip text for a mouse location.
      */
-    void addTooltip(List<ITextComponent> tooltip, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
+    void addTooltip(List<Component> tooltip, IAdvancementInfo advancement, String criterionKey, T instance, double mouseX, double mouseY);
 }

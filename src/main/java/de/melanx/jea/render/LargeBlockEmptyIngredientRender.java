@@ -1,7 +1,7 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.block.BlockState;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,7 +17,7 @@ public class LargeBlockEmptyIngredientRender extends LargeBlockIngredientRender 
     }
 
     @Override
-    protected void renderBlock(@Nonnull MatrixStack matrixStack, BlockState state) {
+    protected void renderBlock(@Nonnull PoseStack poseStack, BlockState state) {
         if (this.stateConsumer != null) {
             this.stateConsumer.accept(state);
         }

@@ -1,6 +1,6 @@
 package de.melanx.jea.recipe;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.AdvancementInfo;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.client.AdvancementDisplayHelper;
@@ -8,10 +8,10 @@ import de.melanx.jea.client.ClientAdvancementProgress;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.advancements.AdvancementState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,30 +21,30 @@ import java.util.List;
 public class AdvancementRecipeRendererTiny implements IIngredientRenderer<IAdvancementInfo> {
     
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int x, int y, @Nullable IAdvancementInfo info) {
+    public void render(@Nonnull PoseStack poseStack, int x, int y, @Nullable IAdvancementInfo info) {
         if (info != null) {
             Minecraft mc = Minecraft.getInstance();
-            IRenderTypeBuffer buffer = mc.getRenderTypeBuffers().getBufferSource();
-            AdvancementState state = AdvancementState.UNOBTAINED;
+            MultiBufferSource buffer = mc.renderBuffers().bufferSource();
+            AdvancementWidgetType state = AdvancementWidgetType.UNOBTAINED;
             AdvancementProgress progress = ClientAdvancementProgress.getProgress(mc, info.getId());
             if (progress != null && progress.getPercent() >= 1) {
-                state = AdvancementState.OBTAINED;
+                state = AdvancementWidgetType.OBTAINED;
             }
 
-            matrixStack.push();
-            matrixStack.translate(x, y, 0);
-            matrixStack.scale(16/26f, 16/26f, 1);
+            poseStack.pushPose();
+            poseStack.translate(x, y, 0);
+            poseStack.scale(16/26f, 16/26f, 1);
             
-            AdvancementDisplayHelper.renderAdvancement(matrixStack, buffer, AdvancementInfo.get(info), state, 0, 0);
+            AdvancementDisplayHelper.renderAdvancement(poseStack, buffer, AdvancementInfo.get(info), state, 0, 0);
         
-            matrixStack.pop();
+            poseStack.popPose();
         }
     }
 
     @Nonnull
     @Override
-    public List<ITextComponent> getTooltip(@Nonnull IAdvancementInfo info, @Nonnull ITooltipFlag flag) {
-        List<ITextComponent> list = new ArrayList<>();
+    public List<Component> getTooltip(@Nonnull IAdvancementInfo info, @Nonnull TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
         AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, flag);
         return list;
     }

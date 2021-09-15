@@ -2,23 +2,23 @@ package de.melanx.jea.plugins.vanilla.serializer;
 
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.ImpossibleTrigger;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.advancements.critereon.ImpossibleTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class ImpossibleSerializer extends CriterionSerializer<ImpossibleTrigger.Instance> {
+public class ImpossibleSerializer extends CriterionSerializer<ImpossibleTrigger.TriggerInstance> {
 
     public ImpossibleSerializer() {
-        super(ImpossibleTrigger.Instance.class);
+        super(ImpossibleTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.IMPOSSIBLE);
     }
 
     @Override
-    public void write(ImpossibleTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(ImpossibleTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         //
     }
 
     @Override
-    public ImpossibleTrigger.Instance read(PacketBuffer buffer) {
-        return new ImpossibleTrigger.Instance();
+    public ImpossibleTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new ImpossibleTrigger.TriggerInstance();
     }
 }

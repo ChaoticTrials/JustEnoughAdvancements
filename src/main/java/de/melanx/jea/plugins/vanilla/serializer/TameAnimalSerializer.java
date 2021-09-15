@@ -1,27 +1,27 @@
 package de.melanx.jea.plugins.vanilla.serializer;
 
-import de.melanx.jea.util.LootUtil;
 import de.melanx.jea.api.CriterionSerializer;
 import de.melanx.jea.network.PacketUtil;
 import de.melanx.jea.plugins.vanilla.VanillaCriteriaIds;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.TameAnimalTrigger;
-import net.minecraft.network.PacketBuffer;
+import de.melanx.jea.util.LootUtil;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.TameAnimalTrigger;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class TameAnimalSerializer extends CriterionSerializer<TameAnimalTrigger.Instance> {
+public class TameAnimalSerializer extends CriterionSerializer<TameAnimalTrigger.TriggerInstance> {
 
     public TameAnimalSerializer() {
-        super(TameAnimalTrigger.Instance.class);
+        super(TameAnimalTrigger.TriggerInstance.class);
         this.setRegistryName(VanillaCriteriaIds.TAME_ANIMAL);
     }
 
     @Override
-    public void write(TameAnimalTrigger.Instance instance, PacketBuffer buffer) {
+    public void write(TameAnimalTrigger.TriggerInstance instance, FriendlyByteBuf buffer) {
         PacketUtil.writeEntityPredicate(LootUtil.asEntity(instance.entity), buffer);
     }
 
     @Override
-    public TameAnimalTrigger.Instance read(PacketBuffer buffer) {
-        return new TameAnimalTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer)));
+    public TameAnimalTrigger.TriggerInstance read(FriendlyByteBuf buffer) {
+        return new TameAnimalTrigger.TriggerInstance(EntityPredicate.Composite.ANY, LootUtil.asLootPredicate(PacketUtil.readEntityPredicate(buffer)));
     }
 }

@@ -1,10 +1,10 @@
 package de.melanx.jea.recipe;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,25 +24,21 @@ public enum CriterionCompletion {
         this.subTitle = subTitle;
     }
 
-    public void draw(MatrixStack matrixStack, IDrawableStatic complete, IDrawableStatic incomplete) {
+    public void draw(PoseStack poseStack, IDrawableStatic complete, IDrawableStatic incomplete) {
         switch (this) {
-            case COMPLETE:
-                complete.draw(matrixStack);
-                break;
-            case PARTIALLY_COMPLETE:
-                complete.draw(matrixStack,0, 0, 0, 0, 0, 7);
-                incomplete.draw(matrixStack,0, 0, 0, 0, 8, 0);
-                break;
-            case INCOMPLETE:
-                incomplete.draw(matrixStack);
-                break;
+            case COMPLETE -> complete.draw(poseStack);
+            case PARTIALLY_COMPLETE -> {
+                complete.draw(poseStack, 0, 0, 0, 0, 0, 7);
+                incomplete.draw(poseStack, 0, 0, 0, 0, 8, 0);
+            }
+            case INCOMPLETE -> incomplete.draw(poseStack);
         }
     }
     
-    public void addTooltip(List<ITextComponent> list) {
-        list.add(new TranslationTextComponent(this.translationKey).mergeStyle(TextFormatting.GREEN));
+    public void addTooltip(List<Component> list) {
+        list.add(new TranslatableComponent(this.translationKey).withStyle(ChatFormatting.GREEN));
         if (this.subTitle != null) {
-            list.add(new TranslationTextComponent(this.subTitle));
+            list.add(new TranslatableComponent(this.subTitle));
         }
     }
 }

@@ -1,90 +1,90 @@
 package de.melanx.jea.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Pose;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class SteveRender {
     
-    private static ClientWorld currentWorld;
+    private static ClientLevel currentLevel;
     private static FakeClientPlayer fakePlayer;
     private static FakeFishingBobber fakeBobber;
     
     public static void defaultPose(Minecraft mc) {
-        setPose(mc, 0, 0, 0, 0, Pose.STANDING, Hand.MAIN_HAND, false, false, 0, false);
+        setPose(mc, 0, 0, 0, 0, Pose.STANDING, InteractionHand.MAIN_HAND, false, false, 0, false);
     }
     
-    public static void setPose(Minecraft mc, float yaw, float pitch, float swingProgress, int usingTick, Pose pose, Hand hand, boolean sneaking, boolean sprinting, float limbSwingAmount, boolean sitting) {
+    public static void setPose(Minecraft mc, float yRot, float xRot, float swingProgress, int usingTick, Pose pose, InteractionHand hand, boolean sneaking, boolean sprinting, float limbSwingAmount, boolean sitting) {
         updateFakePlayer(mc);
-        fakePlayer.rotationYaw = 0;
-        fakePlayer.prevRotationYaw = 0;
-        fakePlayer.rotationYawHead = yaw;
-        fakePlayer.prevRotationYawHead = yaw;
-        fakePlayer.rotationPitch = pitch;
-        fakePlayer.prevRotationPitch = pitch;
-        fakePlayer.activeItemStackUseCount = usingTick;
-        fakePlayer.swingProgress = swingProgress;
-        fakePlayer.prevSwingProgress = swingProgress;
-        fakePlayer.swingProgressInt = (int) (6 * swingProgress);
+        fakePlayer.setYRot(0);
+        fakePlayer.yRotO = 0;
+        fakePlayer.yHeadRot = yRot;
+        fakePlayer.yHeadRotO = yRot;
+        fakePlayer.setXRot(xRot);
+        fakePlayer.xRotO = xRot;
+        fakePlayer.useItemRemaining = usingTick;
+        fakePlayer.attackAnim = swingProgress;
+        fakePlayer.oAttackAnim = swingProgress;
+        fakePlayer.swingTime = (int) (6 * swingProgress);
         fakePlayer.setPose(pose);
-        fakePlayer.swingingHand = hand;
-        fakePlayer.setActiveHand(hand);
-        fakePlayer.setSneaking(sneaking);
+        fakePlayer.swingingArm = hand;
+        fakePlayer.startUsingItem(hand);
+        fakePlayer.setShiftKeyDown(sneaking);
         fakePlayer.setSprinting(sprinting);
-        fakePlayer.limbSwingAmount = limbSwingAmount;
-        fakePlayer.prevLimbSwingAmount = limbSwingAmount;
+        fakePlayer.animationSpeed = limbSwingAmount;
+        fakePlayer.animationSpeedOld = limbSwingAmount;
         if (sitting) {
-            fakePlayer.ridingEntity = fakePlayer;
+            fakePlayer.vehicle = fakePlayer;
         } else {
-            fakePlayer.ridingEntity = null;
+            fakePlayer.vehicle = null;
         }
         
         // Technically not the pose but still used together with it
-        fakePlayer.forceFireTicks(0);
+        fakePlayer.setRemainingFireTicks(0);
         fakePlayer.hurtTime = 0;
-        fakePlayer.fishingBobber = null;
+        fakePlayer.fishing = null;
     }
     
-    public static void swing(float swingProgress, Hand hand) {
+    public static void swing(float swingProgress, InteractionHand hand) {
         if (fakePlayer != null) {
-            fakePlayer.swingProgress = swingProgress;
-            fakePlayer.prevSwingProgress = swingProgress;
+            fakePlayer.attackAnim = swingProgress;
+            fakePlayer.oAttackAnim = swingProgress;
             if (swingProgress != 0) {
-                fakePlayer.swingingHand = hand;
-                fakePlayer.setActiveHand(hand);
+                fakePlayer.swingingArm = hand;
+                fakePlayer.startUsingItem(hand);
             }
-            fakePlayer.activeItemStackUseCount = 0;
+            fakePlayer.useItemRemaining = 0;
         }
     }
 
     public static void limbSwing(float limbSwingAmount) {
         if (fakePlayer != null) {
-            fakePlayer.limbSwingAmount = limbSwingAmount;
-            fakePlayer.prevLimbSwingAmount = limbSwingAmount;
+            fakePlayer.animationSpeed = limbSwingAmount;
+            fakePlayer.animationSpeedOld = limbSwingAmount;
         }
     }
 
-    public static void use(int useTick, Hand hand) {
+    public static void use(int useTick, InteractionHand hand) {
         if (fakePlayer != null) {
             if (useTick != 0) {
-                fakePlayer.swingingHand = hand;
-                fakePlayer.setActiveHand(hand);
+                fakePlayer.swingingArm = hand;
+                fakePlayer.startUsingItem(hand);
             }
-            fakePlayer.activeItemStackUseCount = useTick;
+            fakePlayer.useItemRemaining = useTick;
         }
     }
     
     public static void fireTicks(int fire) {
         if (fakePlayer != null) {
-            fakePlayer.forceFireTicks(fire);
+            fakePlayer.setRemainingFireTicks(fire);
         }
     }
     
@@ -96,26 +96,26 @@ public class SteveRender {
     
     public static void fishingBobber(boolean bobber) {
         if (fakePlayer != null) {
-            fakePlayer.fishingBobber = bobber ? fakeBobber : null;
+            fakePlayer.fishing = bobber ? fakeBobber : null;
         }
     }
     
     public static void sitting(boolean sitting) {
         if (fakePlayer != null) {
             if (sitting) {
-                fakePlayer.ridingEntity = fakePlayer;
+                fakePlayer.vehicle = fakePlayer;
             } else {
-                fakePlayer.ridingEntity = null;
+                fakePlayer.vehicle = null;
             }
         }
     }
     
-    public static void rotationHead(float yaw, float pitch) {
+    public static void rotationHead(float yRot, float xRot) {
         if (fakePlayer != null) {
-            fakePlayer.rotationYawHead = yaw;
-            fakePlayer.prevRotationYawHead = yaw;
-            fakePlayer.rotationPitch = pitch;
-            fakePlayer.prevRotationPitch = pitch;
+            fakePlayer.yHeadRot = yRot;
+            fakePlayer.yHeadRotO = yRot;
+            fakePlayer.setXRot(xRot);
+            fakePlayer.xRotO = xRot;
         }
     }
     
@@ -129,36 +129,36 @@ public class SteveRender {
     
     public static void setEquipment(Minecraft mc, ItemStack mainHand, ItemStack offHand, ItemStack head, ItemStack chest, ItemStack legs, ItemStack feet) {
         updateFakePlayer(mc);
-        fakePlayer.inventory.currentItem = 0;
-        fakePlayer.inventory.mainInventory.set(0, mainHand.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : mainHand);
-        fakePlayer.inventory.offHandInventory.set(0, offHand.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : offHand);
-        fakePlayer.inventory.armorInventory.set(EquipmentSlotType.HEAD.getIndex(), head.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : head);
-        fakePlayer.inventory.armorInventory.set(EquipmentSlotType.CHEST.getIndex(), chest.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : chest);
-        fakePlayer.inventory.armorInventory.set(EquipmentSlotType.LEGS.getIndex(), legs.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : legs);
-        fakePlayer.inventory.armorInventory.set(EquipmentSlotType.FEET.getIndex(), feet.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : feet);
-        fakePlayer.activeItemStack = fakePlayer.getActiveHand() == Hand.MAIN_HAND ? mainHand : offHand;
+        fakePlayer.getInventory().selected = 0;
+        fakePlayer.getInventory().items.set(0, mainHand.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : mainHand);
+        fakePlayer.getInventory().offhand.set(0, offHand.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : offHand);
+        fakePlayer.getInventory().armor.set(EquipmentSlot.HEAD.getIndex(), head.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : head);
+        fakePlayer.getInventory().armor.set(EquipmentSlot.CHEST.getIndex(), chest.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : chest);
+        fakePlayer.getInventory().armor.set(EquipmentSlot.LEGS.getIndex(), legs.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : legs);
+        fakePlayer.getInventory().armor.set(EquipmentSlot.FEET.getIndex(), feet.getItem() == Items.STRUCTURE_VOID ? ItemStack.EMPTY : feet);
+        fakePlayer.useItem = fakePlayer.getUsedItemHand() == InteractionHand.MAIN_HAND ? mainHand : offHand;
     }
     
-    public static void renderSteve(Minecraft mc, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
+    public static void renderSteve(Minecraft mc, PoseStack poseStack, MultiBufferSource buffer) {
         if (fakePlayer != null) {
-            EntityRenderer<? super FakeClientPlayer> renderer = mc.getRenderManager().getRenderer(fakePlayer);
-            renderer.render(fakePlayer, fakePlayer.rotationYaw, mc.getRenderPartialTicks(), matrixStack, buffer, LightTexture.packLight(15, 15));
+            EntityRenderer<? super FakeClientPlayer> renderer = mc.getEntityRenderDispatcher().getRenderer(fakePlayer);
+            renderer.render(fakePlayer, fakePlayer.getYRot(), mc.getFrameTime(), poseStack, buffer, LightTexture.pack(15, 15));
         }
     }
     
-    public static void renderSteveStatic(Minecraft mc, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
+    public static void renderSteveStatic(Minecraft mc, PoseStack poseStack, MultiBufferSource buffer) {
         if (fakePlayer != null) {
-            EntityRenderer<? super FakeClientPlayer> renderer = mc.getRenderManager().getRenderer(fakePlayer);
-            renderer.render(fakePlayer, fakePlayer.rotationYaw, 0, matrixStack, buffer, LightTexture.packLight(15, 15));
+            EntityRenderer<? super FakeClientPlayer> renderer = mc.getEntityRenderDispatcher().getRenderer(fakePlayer);
+            renderer.render(fakePlayer, fakePlayer.getYRot(), 0, poseStack, buffer, LightTexture.pack(15, 15));
         }
     }
     
     private static void updateFakePlayer(Minecraft mc) {
-        if (currentWorld == null || mc.world != currentWorld) {
-            currentWorld = mc.world;
-            fakePlayer = new FakeClientPlayer(mc.world);
+        if (currentLevel == null || mc.level != currentLevel) {
+            currentLevel = mc.level;
+            fakePlayer = new FakeClientPlayer(mc.level);
             fakeBobber = new FakeFishingBobber(fakePlayer);
-            fakePlayer.fishingBobber = null;
+            fakePlayer.fishing = null;
         }
     }
 }
