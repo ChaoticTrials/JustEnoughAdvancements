@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 
 @Mod("jea")
-public class JustEnoughAdvancements extends ModX {
+public final class JustEnoughAdvancements extends ModX {
 
     private static JustEnoughAdvancements instance;
     private static JustEnoughNetwork network;
