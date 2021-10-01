@@ -26,8 +26,8 @@ public class JustEnoughNetwork extends NetworkX {
     }
 
     @Override
-    protected String getProtocolVersion() {
-        return BASE_PROTOCOL_VERSION + "." + PLUGIN_PROTOCOL_VERSION;
+    protected Protocol getProtocol() {
+        return Protocol.of(BASE_PROTOCOL_VERSION + "." + PLUGIN_PROTOCOL_VERSION);
     }
 
     @Override
@@ -36,11 +36,11 @@ public class JustEnoughNetwork extends NetworkX {
     }
 
     public void syncAdvancements(MinecraftServer server) {
-        this.instance.send(PacketDistributor.ALL.noArg(), collectAdvancements(server));
+        this.channel.send(PacketDistributor.ALL.noArg(), collectAdvancements(server));
     }
 
     public void syncAdvancements(MinecraftServer server, ServerPlayer player) {
-        this.instance.send(PacketDistributor.PLAYER.with(() -> player), collectAdvancements(server));
+        this.channel.send(PacketDistributor.PLAYER.with(() -> player), collectAdvancements(server));
     }
 
     private static AdvancementInfoUpdateSerializer.AdvancementInfoUpdateMessage collectAdvancements(MinecraftServer server) {
