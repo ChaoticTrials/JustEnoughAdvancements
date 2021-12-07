@@ -39,7 +39,6 @@ public class ClientAdvancements {
             if (connection != null && connection.getRecipeManager() != null) {
                 MinecraftForge.EVENT_BUS.post(new RecipesUpdatedEvent(connection.getRecipeManager()));
             }
-            JeiUtil.triggerReload();
         }
     }
     
