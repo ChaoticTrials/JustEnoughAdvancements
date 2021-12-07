@@ -7,11 +7,9 @@ import de.melanx.jea.JustEnoughAdvancements;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
-import de.melanx.jea.api.client.criterion.ICriterionInfo;
-import de.melanx.jea.recipe.CriterionRecipe;
+import de.melanx.jea.recipe.AdvancementRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.advancements.Criterion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +27,6 @@ public class ClientAdvancements {
     
     public static void update(Set<AdvancementInfo> info) {
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            //noinspection UnstableApiUsage
             advancements = info.stream().collect(ImmutableMap.toImmutableMap(x -> x.id, Function.identity()));
             JustEnoughAdvancementsJEIPlugin.runtimeOptional(runtime -> updateAdvancementIngredientsJEI(runtime, 3));
             // We trigger a recipes updated event here so JEI will reload recipes and show our
@@ -39,7 +36,6 @@ public class ClientAdvancements {
             if (connection != null && connection.getRecipeManager() != null) {
                 MinecraftForge.EVENT_BUS.post(new RecipesUpdatedEvent(connection.getRecipeManager()));
             }
-            JeiUtil.triggerReload();
         }
     }
     
@@ -80,29 +76,11 @@ public class ClientAdvancements {
         return advancements.get(key);
     }
 
-    public static List<CriterionRecipe> collectRecipes() {
-        List<CriterionRecipe> recipes = new ArrayList<>();
+    public static List<AdvancementRecipe> collectRecipes() {
+        List<AdvancementRecipe> recipes = new ArrayList<>();
         for (AdvancementInfo info : ClientAdvancements.getAdvancements()) {
-            for (Map.Entry<String, Criterion> criterion : info.getCriteria().entrySet()) {
-                if (criterion.getValue().getTrigger() != null) {
-                    if (info.getCriteriaSerializerIds().containsKey(criterion.getKey())) {
-                        ResourceLocation serializerId = info.getCriteriaSerializerIds().get(criterion.getKey());
-                        ICriterionInfo<?> c = Jea.getCriterionInfo(info, criterion.getKey(), serializerId);
-                        if (c != null && c.criterionClass().isAssignableFrom(criterion.getValue().getTrigger().getClass())) {
-                            List<String> criterionGroup = null;
-                            for (List<String> completionGroup : info.getCompletion()) {
-                                if (completionGroup.contains(criterion.getKey())) {
-                                    criterionGroup = completionGroup;
-                                    break;
-                                }
-                            }
-                            if (criterionGroup == null) {
-                                criterionGroup = List.of(criterion.getKey());
-                            }
-                            recipes.add(new CriterionRecipe(info, criterion.getKey(), c, criterionGroup));
-                        }
-                    }
-                }
+            if (info.getDisplay() != null) {
+                recipes.add(new AdvancementRecipe(info));
             }
         }
         JustEnoughAdvancements.logger.info("Collected " + recipes.size() + " advancement criterion recipes.");

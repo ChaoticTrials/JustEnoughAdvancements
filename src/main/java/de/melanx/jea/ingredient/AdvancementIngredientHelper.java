@@ -21,7 +21,6 @@ public class AdvancementIngredientHelper implements IIngredientHelper<IAdvanceme
     @Nullable
     @Override
     public IAdvancementInfo getMatch(@Nonnull Iterable<IAdvancementInfo> ingredients, @Nonnull IAdvancementInfo advancement, @Nonnull UidContext context) {
-        //noinspection UnstableApiUsage
         return Streams.stream(ingredients).filter(a -> advancement.getId().equals(a.getId())).findFirst().orElse(null);
     }
 

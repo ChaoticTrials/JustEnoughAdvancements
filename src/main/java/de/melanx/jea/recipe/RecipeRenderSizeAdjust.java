@@ -2,8 +2,6 @@ package de.melanx.jea.recipe;
 
 import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.ingredient.AdvancementIngredientRenderer;
-import de.melanx.jea.render.LargeBlockIngredientRender;
-import de.melanx.jea.render.LargeItemIngredientRender;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -50,11 +48,6 @@ public class RecipeRenderSizeAdjust {
     private static Rect2i newSize(IIngredientRenderer<?> render, Rect2i size) {
         if (render == Jea.ADVANCEMENT_RECIPE_RENDERER) {
             return new Rect2i(size.getX(), size.getY(), 26, 26);
-        } else if (render instanceof LargeBlockIngredientRender) {
-            return new Rect2i(size.getX(), size.getY(), LargeBlockIngredientRender.SIZE, LargeBlockIngredientRender.SIZE);
-        } else if (render instanceof LargeItemIngredientRender largeItem) {
-            return new Rect2i(size.getX(), size.getY(), largeItem.size, largeItem.size);
-
         } else {
             return null;
         }

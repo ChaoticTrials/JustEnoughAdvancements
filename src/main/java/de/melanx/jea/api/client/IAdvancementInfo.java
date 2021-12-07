@@ -2,6 +2,7 @@ package de.melanx.jea.api.client;
 
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -26,22 +27,10 @@ public interface IAdvancementInfo {
     DisplayInfo getDisplay();
 
     /**
-     * Gets the criteria for the advancement.
-     */
-    Map<String, Criterion> getCriteria();
-
-    /**
-     * Gets which criteria must be completed to complete the advancement.
-     * To compete an advancement, there must be at least one criterion completed from
-     * each sub-list.
-     */
-    List<List<String>> getCompletion();
-
-    /**
      * Gets the formatted component used as title for the advancement. Use this instead of
      * {@code DisplayInfo#getTitle}
      */
-    MutableComponent getFormattedDisplayName();
+    Component getFormattedDisplayName();
 
     /**
      * Gets the parent advancement id or null if this advancement has no parent.

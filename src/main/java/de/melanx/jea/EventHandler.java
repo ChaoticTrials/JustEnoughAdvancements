@@ -1,17 +1,12 @@
 package de.melanx.jea;
 
 import de.melanx.jea.config.JeaConfig;
-import de.melanx.jea.render.FakeClientPlayer;
 import io.github.noeppi_noeppi.libx.event.ConfigLoadedEvent;
-import io.github.noeppi_noeppi.libx.event.DataPacksReloadedEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderNameplateEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -27,8 +22,8 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void resourcesReload(DataPacksReloadedEvent event) {
-        JustEnoughAdvancements.getNetwork().syncAdvancements(event.getServer());
+    public void resourcesReload(OnDatapackSyncEvent event) {
+        JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayerList().getServer());
     }
     
     @SubscribeEvent
@@ -44,18 +39,6 @@ public class EventHandler {
     public void configReload(ConfigLoadedEvent event) {
         if (event.getConfigClass() == JeaConfig.class && event.getReason() == ConfigLoadedEvent.LoadReason.RELOAD) {
             this.needsResyncAdvancements = true;
-        }
-    }
-    
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void renderNameplate(RenderNameplateEvent event) {
-        // Fake steve should not have a name plate
-        if (event.getEntity() instanceof FakeClientPlayer) {
-            if (event.isCancelable()) {
-                event.setCanceled(true);
-            }
-            event.setResult(Event.Result.DENY);
         }
     }
 }

@@ -2,7 +2,6 @@ package de.melanx.jea.recipe;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.JustEnoughAdvancements;
-import de.melanx.jea.api.client.criterion.ICriterionInfo;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -16,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class AdvancementCategory implements IRecipeCategory<CriterionRecipe> {
+public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
     
     public static final ResourceLocation UID = new ResourceLocation(JustEnoughAdvancements.getInstance().modid, "advancement");
     
@@ -26,7 +25,7 @@ public class AdvancementCategory implements IRecipeCategory<CriterionRecipe> {
     private final IDrawableStatic incomplete;
     
     public AdvancementCategory(IGuiHelper guiHelper) {
-        this.background = guiHelper.createBlankDrawable(ICriterionInfo.RECIPE_WIDTH, ICriterionInfo.RECIPE_HEIGHT + ICriterionInfo.SPACE_TOP);
+        this.background = guiHelper.createBlankDrawable(150, 126);
         this.icon = guiHelper.createDrawable(new ResourceLocation("minecraft", "textures/gui/toasts.png"), 236, 2, 16, 16);
         this.complete = guiHelper.createDrawable(new ResourceLocation("minecraft", "textures/gui/container/beacon.png"), 91, 222, 15, 15);
         this.incomplete = guiHelper.createDrawable(new ResourceLocation("minecraft", "textures/gui/container/beacon.png"), 113, 222, 15, 15);
@@ -40,8 +39,8 @@ public class AdvancementCategory implements IRecipeCategory<CriterionRecipe> {
 
     @Nonnull
     @Override
-    public Class<? extends CriterionRecipe> getRecipeClass() {
-        return CriterionRecipe.class;
+    public Class<? extends AdvancementRecipe> getRecipeClass() {
+        return AdvancementRecipe.class;
     }
 
     @Nonnull
@@ -63,23 +62,23 @@ public class AdvancementCategory implements IRecipeCategory<CriterionRecipe> {
     }
 
     @Override
-    public void setIngredients(@Nonnull CriterionRecipe recipe, @Nonnull IIngredients ii) {
+    public void setIngredients(@Nonnull AdvancementRecipe recipe, @Nonnull IIngredients ii) {
         recipe.setIngredients(ii);
     }
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayout layout, @Nonnull CriterionRecipe recipe, @Nonnull IIngredients ii) {
+    public void setRecipe(@Nonnull IRecipeLayout layout, @Nonnull AdvancementRecipe recipe, @Nonnull IIngredients ii) {
         recipe.setRecipe(layout, ii);
     }
 
     @Override
-    public void draw(CriterionRecipe recipe, @Nonnull PoseStack poseStack, double mouseX, double mouseY) {
+    public void draw(AdvancementRecipe recipe, @Nonnull PoseStack poseStack, double mouseX, double mouseY) {
         recipe.draw(poseStack, mouseX, mouseY, this.complete, this.incomplete);
     }
 
     @Nonnull
     @Override
-    public List<Component> getTooltipStrings(@Nonnull CriterionRecipe recipe, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(@Nonnull AdvancementRecipe recipe, double mouseX, double mouseY) {
         return recipe.getTooltip(mouseX, mouseY);
     }
 }

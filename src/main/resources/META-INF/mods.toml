@@ -7,7 +7,7 @@ issueTrackerURL="http://www.github.com/MelanX/JustEnoughAdvancements/issues/"
 modId="jea"
 version="${file.jarVersion}"
 displayName="Just Enough Advancements"
-updateJSONURL="https://raw.githubusercontent.com/MelanX/mod-updatechecker-files/master/jea.json"
+updateJSONURL="https://assets.melanx.de/updates/jea.json"
 displayURL="www.curseforge.com/members/melanx/"
 #logoFile="jea.png"
 credits=""
@@ -19,22 +19,22 @@ An addon for JEI to view advancements.
 [[dependencies.jea]]
     modId="forge"
     mandatory=true
-    versionRange="[37,)"
+    versionRange="[38.0.15,)"
 
 [[dependencies.jea]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17.1,)"
+    versionRange="[1.18,)"
 
 [[dependencies.jea]]
     modId="jei"
     mandatory=true
-    versionRange="[8.0.0.16,)"
+    versionRange="[9.0.0.40,)"
 
 [[dependencies.jea]]
     modId="libx"
     mandatory=true
-    versionRange="[1.17.1-2.0.18,)"
+    versionRange="[1.18-3.0.0,)"
 
 #[[dependencies.jea]]
 #    modId="botania"
