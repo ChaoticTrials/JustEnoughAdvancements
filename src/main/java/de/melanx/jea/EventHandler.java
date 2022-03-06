@@ -23,7 +23,11 @@ public class EventHandler {
 
     @SubscribeEvent
     public void resourcesReload(OnDatapackSyncEvent event) {
-        JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayerList().getServer());
+        if (event.getPlayer() == null) {
+            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayerList().getServer());
+        } else {
+            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayerList().getServer(), event.getPlayer());
+        }
     }
     
     @SubscribeEvent

@@ -6,8 +6,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
@@ -16,9 +14,7 @@ public final class JustEnoughAdvancements extends ModX {
 
     private static JustEnoughAdvancements instance;
     private static JustEnoughNetwork network;
-
-    public static final Logger logger = LogManager.getLogger();
-
+    
     public JustEnoughAdvancements() {
         instance = this;
         network = new JustEnoughNetwork(this);

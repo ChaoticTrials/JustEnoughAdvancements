@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="[40,)"
 license="Apache License"
 issueTrackerURL="http://www.github.com/MelanX/JustEnoughAdvancements/issues/"
 
@@ -19,29 +19,19 @@ An addon for JEI to view advancements.
 [[dependencies.jea]]
     modId="forge"
     mandatory=true
-    versionRange="[38.0.15,)"
+    versionRange="[40.0.12,)"
 
 [[dependencies.jea]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18,)"
+    versionRange="[1.18.2,)"
 
 [[dependencies.jea]]
     modId="jei"
     mandatory=true
-    versionRange="[9.0.0.40,)"
+    versionRange="[9.4.3.123,)"
 
 [[dependencies.jea]]
     modId="libx"
     mandatory=true
-    versionRange="[1.18-3.0.0,)"
-
-#[[dependencies.jea]]
-#    modId="botania"
-#    mandatory=false
-#    versionRange="[1.16.5-415,)"
-#
-#[[dependencies.jea]]
-#    modId="mythicbotany"
-#    mandatory=false
-#    versionRange="[1.16.4-1.3.5,)"
+    versionRange="[1.18.2-3.2.1,)"

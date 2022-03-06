@@ -51,10 +51,10 @@ public class ClientAdvancements {
             }
         } catch (ConcurrentModificationException e) {
             if (tries > 0) {
-                JustEnoughAdvancements.logger.warn("Failed to update advancement ingredients for JEI. Trying again.");
+                JustEnoughAdvancements.getInstance().logger.warn("Failed to update advancement ingredients for JEI. Trying again.");
                 updateAdvancementIngredientsJEI(runtime, tries - 1);
             } else {
-                JustEnoughAdvancements.logger.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
+                JustEnoughAdvancements.getInstance().logger.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
             }
         }
     }
@@ -83,7 +83,7 @@ public class ClientAdvancements {
                 recipes.add(new AdvancementRecipe(info));
             }
         }
-        JustEnoughAdvancements.logger.info("Collected " + recipes.size() + " advancement criterion recipes.");
+        JustEnoughAdvancements.getInstance().logger.info("Collected " + recipes.size() + " advancement criterion recipes.");
         return ImmutableList.copyOf(recipes);
     }
 }
