@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdvancementRecipeRenderer implements IIngredientRenderer<IAdvancementInfo> {
-    
+
     @Override
-    public void render(@Nonnull PoseStack poseStack, int x, int y, @Nullable IAdvancementInfo info) {
+    public void render(@Nonnull PoseStack poseStack, @Nullable IAdvancementInfo info) {
         if (info != null) {
             Minecraft mc = Minecraft.getInstance();
             MultiBufferSource buffer = mc.renderBuffers().bufferSource();
@@ -31,7 +31,10 @@ public class AdvancementRecipeRenderer implements IIngredientRenderer<IAdvanceme
                 state = AdvancementWidgetType.OBTAINED;
             }
             
-            AdvancementDisplayHelper.renderAdvancement(poseStack, buffer, AdvancementInfo.get(info), state, x, y);
+            poseStack.pushPose();
+            this.transform(poseStack);
+            AdvancementDisplayHelper.renderAdvancement(poseStack, buffer, AdvancementInfo.get(info), state);
+            poseStack.popPose();
         }
     }
 
@@ -41,5 +44,19 @@ public class AdvancementRecipeRenderer implements IIngredientRenderer<IAdvanceme
         List<Component> list = new ArrayList<>();
         AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, flag);
         return list;
+    }
+    
+    protected void transform(PoseStack poseStack) {
+        
+    }
+
+    @Override
+    public int getWidth() {
+        return 26;
+    }
+
+    @Override
+    public int getHeight() {
+        return 26;
     }
 }

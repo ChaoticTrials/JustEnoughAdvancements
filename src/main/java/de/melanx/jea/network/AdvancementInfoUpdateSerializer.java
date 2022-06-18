@@ -1,8 +1,8 @@
 package de.melanx.jea.network;
 
 import de.melanx.jea.AdvancementInfo;
-import io.github.noeppi_noeppi.libx.network.PacketSerializer;
 import net.minecraft.network.FriendlyByteBuf;
+import org.moddingx.libx.network.PacketSerializer;
 
 import java.util.HashSet;
 import java.util.Set;

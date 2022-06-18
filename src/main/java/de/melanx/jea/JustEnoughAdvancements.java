@@ -1,16 +1,20 @@
 package de.melanx.jea;
 
 import de.melanx.jea.network.JustEnoughNetwork;
-import io.github.noeppi_noeppi.libx.mod.ModX;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.moddingx.libx.mod.ModX;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
 @Mod("jea")
 public final class JustEnoughAdvancements extends ModX {
+    
+    public static final Logger logger = LoggerFactory.getLogger("jea");
 
     private static JustEnoughAdvancements instance;
     private static JustEnoughNetwork network;

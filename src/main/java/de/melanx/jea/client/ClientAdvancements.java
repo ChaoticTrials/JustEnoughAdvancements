@@ -7,15 +7,12 @@ import de.melanx.jea.JustEnoughAdvancements;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
+import de.melanx.jea.internal.JeiRestarter;
 import de.melanx.jea.recipe.AdvancementRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.*;
@@ -29,13 +26,7 @@ public class ClientAdvancements {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             advancements = info.stream().collect(ImmutableMap.toImmutableMap(x -> x.id, Function.identity()));
             JustEnoughAdvancementsJEIPlugin.runtimeOptional(runtime -> updateAdvancementIngredientsJEI(runtime, 3));
-            // We trigger a recipes updated event here so JEI will reload recipes and show our
-            // new advancement information.
-            ClientPacketListener connection = Minecraft.getInstance().getConnection();
-            //noinspection ConstantConditions
-            if (connection != null && connection.getRecipeManager() != null) {
-                MinecraftForge.EVENT_BUS.post(new RecipesUpdatedEvent(connection.getRecipeManager()));
-            }
+            JeiRestarter.restart();
         }
     }
     
@@ -51,10 +42,10 @@ public class ClientAdvancements {
             }
         } catch (ConcurrentModificationException e) {
             if (tries > 0) {
-                JustEnoughAdvancements.getInstance().logger.warn("Failed to update advancement ingredients for JEI. Trying again.");
+                JustEnoughAdvancements.logger.warn("Failed to update advancement ingredients for JEI. Trying again.");
                 updateAdvancementIngredientsJEI(runtime, tries - 1);
             } else {
-                JustEnoughAdvancements.getInstance().logger.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
+                JustEnoughAdvancements.logger.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
             }
         }
     }
@@ -83,7 +74,7 @@ public class ClientAdvancements {
                 recipes.add(new AdvancementRecipe(info));
             }
         }
-        JustEnoughAdvancements.getInstance().logger.info("Collected " + recipes.size() + " advancement criterion recipes.");
+        JustEnoughAdvancements.logger.info("Collected " + recipes.size() + " advancement criterion recipes.");
         return ImmutableList.copyOf(recipes);
     }
 }

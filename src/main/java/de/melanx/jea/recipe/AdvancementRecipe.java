@@ -3,25 +3,23 @@ package de.melanx.jea.recipe;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.AdvancementInfo;
-import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
-import de.melanx.jea.client.AdvancementDisplayHelper;
 import de.melanx.jea.client.ClientAdvancementProgress;
 import de.melanx.jea.client.ClientAdvancements;
-import io.github.noeppi_noeppi.libx.render.RenderHelper;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.TooltipFlag;
+import org.moddingx.libx.render.RenderHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -38,30 +36,23 @@ public class AdvancementRecipe {
         this.parent = ClientAdvancements.getInfo(this.info.getParent());
     }
 
-    public void setIngredients(IIngredients ii) {
-        ii.setOutputs(Jea.ADVANCEMENT_TYPE, List.of(this.info));
+    public ResourceLocation id() {
+        return this.info.id;
+    }
+
+    public void setRecipe(IRecipeLayoutBuilder builder, IFocusGroup focus) {
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 62, 0)
+                .addIngredient(Jea.ADVANCEMENT_TYPE, this.info)
+                .setCustomRenderer(Jea.ADVANCEMENT_TYPE, Jea.ADVANCEMENT_RECIPE_RENDERER);
+        
         if (this.parent != null) {
-            ii.setInputs(Jea.ADVANCEMENT_TYPE, List.of(this.parent));
+            builder.addSlot(RecipeIngredientRole.INPUT, 5, 5)
+                    .addIngredient(Jea.ADVANCEMENT_TYPE, this.parent)
+                    .setCustomRenderer(Jea.ADVANCEMENT_TYPE, Jea.ADVANCEMENT_RECIPE_RENDERER_TINY);
         }
     }
 
-    public void setRecipe(IRecipeLayout layout, IIngredients ii) {
-        IGuiIngredientGroup<IAdvancementInfo> group = layout.getIngredientsGroup(Jea.ADVANCEMENT_TYPE);
-        group.addTooltipCallback((slot, type, info, list) -> {
-            if (list.isEmpty()) {
-                AdvancementDisplayHelper.addAdvancementTooltipToList(AdvancementInfo.get(info), list, TooltipFlag.Default.NORMAL);
-            }
-        });
-        group.init(group.getGuiIngredients().size(), false, 62, 0);
-        if (this.parent != null) {
-            group.init(group.getGuiIngredients().size(), true, Jea.ADVANCEMENT_RECIPE_RENDERER_TINY, 5, 5, 16, 16, 0, 0);
-        }
-        group.set(ii);
-        RecipeRenderSizeAdjust.changeRecipeSizes(layout, VanillaTypes.ITEM);
-        RecipeRenderSizeAdjust.changeRecipeSizes(layout, Jea.ADVANCEMENT_TYPE);
-    }
-
-    public void draw(PoseStack poseStack, double mouseX, double mouseY, IDrawableStatic complete, IDrawableStatic incomplete) {
+    public void draw(IRecipeSlotsView slots, PoseStack poseStack, double mouseX, double mouseY, IDrawableStatic complete, IDrawableStatic incomplete) {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
         int width = font.width(this.info.getFormattedDisplayName());
@@ -95,7 +86,7 @@ public class AdvancementRecipe {
         mc.renderBuffers().bufferSource().endBatch();
     }
 
-    public List<Component> getTooltip(double mouseX, double mouseY) {
+    public List<Component> getTooltip(IRecipeSlotsView slots, double mouseX, double mouseY) {
         ArrayList<Component> tooltip = new ArrayList<>();
         if (mouseX >= 129 && mouseX <= 145 && mouseY >= 5 && mouseY <= 5 + 16) {
             this.getCriterionCompletion().addTooltip(tooltip, this.info);

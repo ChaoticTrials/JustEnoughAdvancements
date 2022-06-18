@@ -5,7 +5,6 @@ import de.melanx.jea.AdvancementInfo;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
@@ -29,8 +28,8 @@ public enum AdvancementCompletion {
     public void addTooltip(List<Component> list, AdvancementInfo info) {
         switch (this) {
             case COMPLETE -> list.add(info.getDisplay().getFrame().getDisplayName().copy().withStyle(ChatFormatting.GREEN));
-            case PARTIALLY_COMPLETE -> list.add(new TranslatableComponent("jea.advancement.partial.simple").withStyle(ChatFormatting.YELLOW));
-            case INCOMPLETE -> list.add(new TranslatableComponent("jea.advancement.incomplete").withStyle(ChatFormatting.RED));
+            case PARTIALLY_COMPLETE -> list.add(Component.translatable("jea.advancement.partial.simple").withStyle(ChatFormatting.YELLOW));
+            case INCOMPLETE -> list.add(Component.translatable("jea.advancement.incomplete").withStyle(ChatFormatting.RED));
         }
     }
 }

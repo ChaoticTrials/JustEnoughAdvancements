@@ -2,22 +2,24 @@ package de.melanx.jea.recipe;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.JustEnoughAdvancements;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
     
-    public static final ResourceLocation UID = new ResourceLocation(JustEnoughAdvancements.getInstance().modid, "advancement");
+    public static final RecipeType<AdvancementRecipe> TYPE = RecipeType.create(JustEnoughAdvancements.getInstance().modid, "advancement", AdvancementRecipe.class);
     
     private final IDrawable background;
     private final IDrawable icon;
@@ -33,20 +35,20 @@ public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
 
     @Nonnull
     @Override
-    public ResourceLocation getUid() {
-        return UID;
+    public RecipeType<AdvancementRecipe> getRecipeType() {
+        return TYPE;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public Class<? extends AdvancementRecipe> getRecipeClass() {
-        return AdvancementRecipe.class;
+    public ResourceLocation getRegistryName(@Nonnull AdvancementRecipe recipe) {
+        return recipe.id();
     }
 
     @Nonnull
     @Override
     public Component getTitle() {
-        return new TranslatableComponent("jea.category.advancement");
+        return Component.translatable("jea.category.advancement");
     }
 
     @Nonnull
@@ -60,25 +62,20 @@ public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
     public IDrawable getIcon() {
         return this.icon;
     }
-
+    
     @Override
-    public void setIngredients(@Nonnull AdvancementRecipe recipe, @Nonnull IIngredients ii) {
-        recipe.setIngredients(ii);
+    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull AdvancementRecipe recipe, @Nonnull IFocusGroup focus) {
+        recipe.setRecipe(builder, focus);
     }
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayout layout, @Nonnull AdvancementRecipe recipe, @Nonnull IIngredients ii) {
-        recipe.setRecipe(layout, ii);
-    }
-
-    @Override
-    public void draw(AdvancementRecipe recipe, @Nonnull PoseStack poseStack, double mouseX, double mouseY) {
-        recipe.draw(poseStack, mouseX, mouseY, this.complete, this.incomplete);
+    public void draw(@Nonnull AdvancementRecipe recipe, @Nonnull IRecipeSlotsView slots, @Nonnull PoseStack poseStack, double mouseX, double mouseY) {
+        recipe.draw(slots, poseStack, mouseX, mouseY, this.complete, this.incomplete);
     }
 
     @Nonnull
     @Override
-    public List<Component> getTooltipStrings(@Nonnull AdvancementRecipe recipe, double mouseX, double mouseY) {
-        return recipe.getTooltip(mouseX, mouseY);
+    public List<Component> getTooltipStrings(@Nonnull AdvancementRecipe recipe, @Nonnull IRecipeSlotsView slots, double mouseX, double mouseY) {
+        return recipe.getTooltip(slots, mouseX, mouseY);
     }
 }

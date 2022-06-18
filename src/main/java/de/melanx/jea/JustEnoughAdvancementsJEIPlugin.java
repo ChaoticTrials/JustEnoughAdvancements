@@ -44,7 +44,7 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@Nonnull IRecipeRegistration registration) {
-        registration.addRecipes(ClientAdvancements.collectRecipes(), AdvancementCategory.UID);
+        registration.addRecipes(AdvancementCategory.TYPE, ClientAdvancements.collectRecipes());
     }
 
     @Override

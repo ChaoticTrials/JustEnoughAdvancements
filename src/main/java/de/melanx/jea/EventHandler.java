@@ -1,7 +1,6 @@
 package de.melanx.jea;
 
 import de.melanx.jea.config.JeaConfig;
-import io.github.noeppi_noeppi.libx.event.ConfigLoadedEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -9,6 +8,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.moddingx.libx.event.ConfigLoadedEvent;
 
 public class EventHandler {
     
