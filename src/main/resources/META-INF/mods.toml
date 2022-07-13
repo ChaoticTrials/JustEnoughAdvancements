@@ -19,7 +19,7 @@ An addon for JEI to view advancements.
 [[dependencies.jea]]
     modId="forge"
     mandatory=true
-    versionRange="[41.0.33,)"
+    versionRange="[41.0.96,)"
 
 [[dependencies.jea]]
     modId="minecraft"
@@ -29,9 +29,9 @@ An addon for JEI to view advancements.
 [[dependencies.jea]]
     modId="jei"
     mandatory=true
-    versionRange="[11.0.0.206,)"
+    versionRange="[11.0.0.211,)"
 
 [[dependencies.jea]]
     modId="libx"
     mandatory=true
-    versionRange="[1.19-4.0.2,)"
+    versionRange="[1.19-4.0.7,)"

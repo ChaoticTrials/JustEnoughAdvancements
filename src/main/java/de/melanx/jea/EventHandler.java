@@ -1,7 +1,6 @@
 package de.melanx.jea;
 
 import de.melanx.jea.config.JeaConfig;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.TickEvent;
@@ -16,8 +15,8 @@ public class EventHandler {
     
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer && event.getPlayer().level.getServer() != null) {
-            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getPlayer().level.getServer(), (ServerPlayer) event.getPlayer());
+        if (event.getEntity() instanceof ServerPlayer && event.getEntity().level.getServer() != null) {
+            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getEntity().level.getServer(), (ServerPlayer) event.getEntity());
         }
     }
 
@@ -31,11 +30,10 @@ public class EventHandler {
     }
     
     @SubscribeEvent
-    public void serverTick(TickEvent.WorldTickEvent event) {
-        // Reason that this is not a ServerTickEvent is that we need a MinecraftServer instance.
-        if (this.needsResyncAdvancements && event.world instanceof ServerLevel) {
+    public void serverTick(TickEvent.ServerTickEvent event) {
+        if (this.needsResyncAdvancements) {
             this.needsResyncAdvancements = false;
-            JustEnoughAdvancements.getNetwork().syncAdvancements(event.world.getServer());
+            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getServer());
         }
     }
     
