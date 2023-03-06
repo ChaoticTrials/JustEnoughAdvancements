@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[44,)"
 license="Apache License"
 issueTrackerURL="http://www.github.com/MelanX/JustEnoughAdvancements/issues/"
 
@@ -9,7 +9,6 @@ version="${file.jarVersion}"
 displayName="Just Enough Advancements"
 updateJSONURL="https://assets.melanx.de/updates/jea.json"
 displayURL="www.curseforge.com/members/melanx/"
-#logoFile="jea.png"
 credits=""
 authors="MelanX, noeppi_noeppi"
 description='''
@@ -19,19 +18,19 @@ An addon for JEI to view advancements.
 [[dependencies.jea]]
     modId="forge"
     mandatory=true
-    versionRange="[41.0.96,)"
+    versionRange="[44.1.20,)"
 
 [[dependencies.jea]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,)"
+    versionRange="[1.19.3,)"
 
 [[dependencies.jea]]
     modId="jei"
     mandatory=true
-    versionRange="[11.0.0.211,)"
+    versionRange="[12.3.0.18,)"
 
 [[dependencies.jea]]
     modId="libx"
     mandatory=true
-    versionRange="[1.19-4.0.7,)"
+    versionRange="[1.19.3-4.3.0,)"

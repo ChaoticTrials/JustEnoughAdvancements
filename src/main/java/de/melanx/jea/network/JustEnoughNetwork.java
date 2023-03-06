@@ -25,7 +25,7 @@ public class JustEnoughNetwork extends NetworkX {
 
     @Override
     protected void registerPackets() {
-        this.register(new AdvancementInfoUpdateSerializer(), () -> AdvancementInfoUpdateHandler::handle, NetworkDirection.PLAY_TO_CLIENT);
+        this.registerGame(NetworkDirection.PLAY_TO_CLIENT, new AdvancementInfoUpdateMessage.Serializer(), () -> AdvancementInfoUpdateMessage.Handler::new);
     }
 
     public void syncAdvancements(MinecraftServer server) {
@@ -36,8 +36,8 @@ public class JustEnoughNetwork extends NetworkX {
         this.channel.send(PacketDistributor.PLAYER.with(() -> player), collectAdvancements(server));
     }
 
-    private static AdvancementInfoUpdateSerializer.AdvancementInfoUpdateMessage collectAdvancements(MinecraftServer server) {
+    private static AdvancementInfoUpdateMessage collectAdvancements(MinecraftServer server) {
         Set<AdvancementInfo> advancements = server.getAdvancements().getAllAdvancements().stream().map(AdvancementInfo::create).flatMap(Optional::stream).collect(Collectors.toSet());
-        return new AdvancementInfoUpdateSerializer.AdvancementInfoUpdateMessage(advancements);
+        return new AdvancementInfoUpdateMessage(advancements);
     }
 }
