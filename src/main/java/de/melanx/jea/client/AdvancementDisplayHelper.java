@@ -25,11 +25,7 @@ public class AdvancementDisplayHelper {
         RenderSystem.setShaderTexture(0, AdvancementWidget.WIDGETS_LOCATION);
         GuiComponent.blit(poseStack, 0, 0, 0, info.getDisplay().getFrame().getTexture(), 128 + (state.getIndex() * 26), 26, 26, 256, 256);
         poseStack.translate(0, 0, 20);
-        RenderSystem.getModelViewStack().pushPose();
-        RenderSystem.getModelViewStack().mulPoseMatrix(poseStack.last().pose());
-        RenderSystem.applyModelViewMatrix();
-        Minecraft.getInstance().getItemRenderer().renderAndDecorateFakeItem(info.getDisplay().getIcon(), 5, 5);
-        RenderSystem.getModelViewStack().popPose();
+        Minecraft.getInstance().getItemRenderer().renderAndDecorateFakeItem(poseStack, info.getDisplay().getIcon(), 5, 5);
         RenderHelper.resetColor();
         poseStack.popPose();
         RenderSystem.applyModelViewMatrix();

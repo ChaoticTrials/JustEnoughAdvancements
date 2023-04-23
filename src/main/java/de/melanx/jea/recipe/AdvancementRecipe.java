@@ -56,7 +56,7 @@ public class AdvancementRecipe {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
         int width = font.width(this.info.getFormattedDisplayName());
-        font.draw(poseStack, this.info.getFormattedDisplayName(), 75 - (width / 2f), 27, 0xFFFFFF);
+        font.draw(poseStack, this.info.getFormattedDisplayName(), 75 - (width / 2f), 29, 0xFFFFFF);
         AdvancementCompletion advancementCompletion = this.getCriterionCompletion();
         poseStack.pushPose();
         poseStack.translate(129, 5, 0);
