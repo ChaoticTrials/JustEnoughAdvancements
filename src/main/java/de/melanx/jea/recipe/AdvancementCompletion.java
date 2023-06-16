@@ -1,9 +1,9 @@
 package de.melanx.jea.recipe;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.AdvancementInfo;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -14,14 +14,14 @@ public enum AdvancementCompletion {
     PARTIALLY_COMPLETE,
     INCOMPLETE;
 
-    public void draw(PoseStack poseStack, IDrawableStatic complete, IDrawableStatic incomplete) {
+    public void draw(GuiGraphics graphics, IDrawableStatic complete, IDrawableStatic incomplete) {
         switch (this) {
-            case COMPLETE -> complete.draw(poseStack);
+            case COMPLETE -> complete.draw(graphics);
             case PARTIALLY_COMPLETE -> {
-                complete.draw(poseStack, 0, 0, 0, 0, 0, 7);
-                incomplete.draw(poseStack, 0, 0, 0, 0, 8, 0);
+                complete.draw(graphics, 0, 0, 0, 0, 0, 7);
+                incomplete.draw(graphics, 0, 0, 0, 0, 8, 0);
             }
-            case INCOMPLETE -> incomplete.draw(poseStack);
+            case INCOMPLETE -> incomplete.draw(graphics);
         }
     }
     

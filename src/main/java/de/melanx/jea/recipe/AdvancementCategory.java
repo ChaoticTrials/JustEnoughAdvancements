@@ -1,6 +1,5 @@
 package de.melanx.jea.recipe;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.JustEnoughAdvancements;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -10,6 +9,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -69,8 +69,8 @@ public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
     }
 
     @Override
-    public void draw(@Nonnull AdvancementRecipe recipe, @Nonnull IRecipeSlotsView slots, @Nonnull PoseStack poseStack, double mouseX, double mouseY) {
-        recipe.draw(slots, poseStack, mouseX, mouseY, this.complete, this.incomplete);
+    public void draw(@Nonnull AdvancementRecipe recipe, @Nonnull IRecipeSlotsView slots, @Nonnull GuiGraphics graphics, double mouseX, double mouseY) {
+        recipe.draw(slots, graphics, mouseX, mouseY, this.complete, this.incomplete);
     }
 
     @Nonnull

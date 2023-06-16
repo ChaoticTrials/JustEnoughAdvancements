@@ -15,8 +15,8 @@ public class EventHandler {
     
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer && event.getEntity().level.getServer() != null) {
-            JustEnoughAdvancements.getNetwork().syncAdvancements(event.getEntity().level.getServer(), (ServerPlayer) event.getEntity());
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            JustEnoughAdvancements.getNetwork().syncAdvancements(serverPlayer.serverLevel().getServer(), serverPlayer);
         }
     }
 

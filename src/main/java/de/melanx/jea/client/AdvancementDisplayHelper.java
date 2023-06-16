@@ -1,15 +1,13 @@
 package de.melanx.jea.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.AdvancementInfo;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidget;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.TooltipFlag;
@@ -19,15 +17,15 @@ import java.util.List;
 
 public class AdvancementDisplayHelper {
 
-    public static void renderAdvancement(PoseStack poseStack, MultiBufferSource buffer, AdvancementInfo info, AdvancementWidgetType state) {
-        poseStack.pushPose();
+    public static void renderAdvancement(GuiGraphics graphics, AdvancementInfo info, AdvancementWidgetType state) {
+        graphics.pose().pushPose();
         RenderHelper.resetColor();
-        RenderSystem.setShaderTexture(0, AdvancementWidget.WIDGETS_LOCATION);
-        GuiComponent.blit(poseStack, 0, 0, 0, info.getDisplay().getFrame().getTexture(), 128 + (state.getIndex() * 26), 26, 26, 256, 256);
-        poseStack.translate(0, 0, 20);
-        Minecraft.getInstance().getItemRenderer().renderAndDecorateFakeItem(poseStack, info.getDisplay().getIcon(), 5, 5);
+        graphics.blit(AdvancementWidget.WIDGETS_LOCATION, 0, 0, 0, info.getDisplay().getFrame().getTexture(), 128 + (state.getIndex() * 26), 26, 26, 256, 256);
+        graphics.pose().translate(0, 0, 20);
+        graphics.renderFakeItem(info.getDisplay().getIcon(), 5, 5);
         RenderHelper.resetColor();
-        poseStack.popPose();
+        graphics.renderItemDecorations(Minecraft.getInstance().font, info.getDisplay().getIcon(), 5, 5);
+        graphics.pose().popPose();
         RenderSystem.applyModelViewMatrix();
     }
     

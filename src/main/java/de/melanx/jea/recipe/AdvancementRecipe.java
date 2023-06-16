@@ -1,7 +1,6 @@
 package de.melanx.jea.recipe;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.melanx.jea.AdvancementInfo;
 import de.melanx.jea.api.client.Jea;
 import de.melanx.jea.client.ClientAdvancementProgress;
@@ -14,7 +13,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -52,35 +51,34 @@ public class AdvancementRecipe {
         }
     }
 
-    public void draw(IRecipeSlotsView slots, PoseStack poseStack, double mouseX, double mouseY, IDrawableStatic complete, IDrawableStatic incomplete) {
+    public void draw(IRecipeSlotsView slots, GuiGraphics graphics, double mouseX, double mouseY, IDrawableStatic complete, IDrawableStatic incomplete) {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
         int width = font.width(this.info.getFormattedDisplayName());
-        font.draw(poseStack, this.info.getFormattedDisplayName(), 75 - (width / 2f), 29, 0xFFFFFF);
+        graphics.drawString(font, this.info.getFormattedDisplayName(), 75 - (width / 2), 29, 0xFFFFFF, false);
         AdvancementCompletion advancementCompletion = this.getCriterionCompletion();
-        poseStack.pushPose();
-        poseStack.translate(129, 5, 0);
+        graphics.pose().pushPose();
+        graphics.pose().translate(129, 5, 0);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1, 1, 1, 1);
         if (mouseX >= 129 && mouseX <= 145 && mouseY >= 5 && mouseY <= 5 + 16) {
             RenderSystem.disableDepthTest();
             RenderSystem.setShaderColor(1, 1, 1, 0.5f);
-            RenderSystem.setShaderTexture(0, RenderHelper.TEXTURE_WHITE);
-            GuiComponent.blit(poseStack, 0, 0, 0, 0, 16, 16, 256, 256);
+            graphics.blit(RenderHelper.TEXTURE_WHITE, 0, 0, 0, 0, 16, 16, 256, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
-        poseStack.translate(0, 0, 10);
-        poseStack.scale(16 / 17f, 16 / 17f, 0);
-        poseStack.translate(1, 1, 0);
-        advancementCompletion.draw(poseStack, complete, incomplete);
+        graphics.pose().translate(0, 0, 10);
+        graphics.pose().scale(16 / 17f, 16 / 17f, 0);
+        graphics.pose().translate(1, 1, 0);
+        advancementCompletion.draw(graphics, complete, incomplete);
         RenderSystem.disableBlend();
-        poseStack.popPose();
+        graphics.pose().popPose();
         if (this.info.getDisplay() != null) {
             Component description = this.info.getDisplay().getDescription();
             List<FormattedCharSequence> lines = ComponentRenderUtils.wrapComponents(description, 130, font);
             for (int i = 0; i < lines.size(); i++) {
-                font.drawShadow(poseStack, lines.get(i), 10, 50 + ((font.lineHeight + 2) * i), 0xFFFFFF);
+                graphics.drawString(font, lines.get(i), 10, 50 + ((font.lineHeight + 2) * i), 0xFFFFFF, true);
             }
         }
         mc.renderBuffers().bufferSource().endBatch();

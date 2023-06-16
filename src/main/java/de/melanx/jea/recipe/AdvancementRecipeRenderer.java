@@ -8,8 +8,8 @@ import de.melanx.jea.client.ClientAdvancementProgress;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 
@@ -21,20 +21,19 @@ import java.util.List;
 public class AdvancementRecipeRenderer implements IIngredientRenderer<IAdvancementInfo> {
 
     @Override
-    public void render(@Nonnull PoseStack poseStack, @Nullable IAdvancementInfo info) {
+    public void render(@Nonnull GuiGraphics graphics, @Nullable IAdvancementInfo info) {
         if (info != null) {
             Minecraft mc = Minecraft.getInstance();
-            MultiBufferSource buffer = mc.renderBuffers().bufferSource();
             AdvancementWidgetType state = AdvancementWidgetType.UNOBTAINED;
             AdvancementProgress progress = ClientAdvancementProgress.getProgress(mc, info.getId());
             if (progress != null && progress.getPercent() >= 1) {
                 state = AdvancementWidgetType.OBTAINED;
             }
             
-            poseStack.pushPose();
-            this.transform(poseStack);
-            AdvancementDisplayHelper.renderAdvancement(poseStack, buffer, AdvancementInfo.get(info), state);
-            poseStack.popPose();
+            graphics.pose().pushPose();
+            this.transform(graphics.pose());
+            AdvancementDisplayHelper.renderAdvancement(graphics, AdvancementInfo.get(info), state);
+            graphics.pose().popPose();
         }
     }
 
