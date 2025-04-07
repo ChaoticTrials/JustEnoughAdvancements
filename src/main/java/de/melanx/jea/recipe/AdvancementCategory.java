@@ -2,6 +2,7 @@ package de.melanx.jea.recipe;
 
 import de.melanx.jea.JustEnoughAdvancements;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -15,22 +16,19 @@ import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
     
     public static final RecipeType<AdvancementRecipe> TYPE = RecipeType.create(JustEnoughAdvancements.getInstance().modid, "advancement", AdvancementRecipe.class);
-    
-    private final IDrawable background;
+
     private final IDrawable icon;
     private final IDrawableStatic complete;
     private final IDrawableStatic incomplete;
     
     public AdvancementCategory(IGuiHelper guiHelper) {
-        this.background = guiHelper.createBlankDrawable(150, 126);
-        this.icon = guiHelper.createDrawable(new ResourceLocation("minecraft", "textures/gui/toasts.png"), 236, 2, 16, 16);
-        this.complete = guiHelper.createDrawable(new ResourceLocation("minecraft", "textures/gui/container/beacon.png"), 91, 222, 15, 15);
-        this.incomplete = guiHelper.createDrawable(new ResourceLocation("minecraft", "textures/gui/container/beacon.png"), 113, 222, 15, 15);
+        this.icon = guiHelper.drawableBuilder(ResourceLocation.fromNamespaceAndPath("jea", "textures/gui/category_icon.png"), 0, 0, 16, 16).setTextureSize(16, 16).build();
+        this.complete = guiHelper.drawableBuilder(ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/sprites/container/beacon/confirm.png"), 1,4, 14, 12).setTextureSize(18, 18).build();
+        this.incomplete = guiHelper.drawableBuilder(ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/sprites/container/beacon/cancel.png"), 2,3, 13, 13).setTextureSize(18, 18).build();
     }
 
     @Nonnull
@@ -51,10 +49,14 @@ public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
         return Component.translatable("jea.category.advancement");
     }
 
-    @Nonnull
     @Override
-    public IDrawable getBackground() {
-        return this.background;
+    public int getWidth() {
+        return 150;
+    }
+
+    @Override
+    public int getHeight() {
+        return 126;
     }
 
     @Nonnull
@@ -73,9 +75,8 @@ public class AdvancementCategory implements IRecipeCategory<AdvancementRecipe> {
         recipe.draw(slots, graphics, mouseX, mouseY, this.complete, this.incomplete);
     }
 
-    @Nonnull
     @Override
-    public List<Component> getTooltipStrings(@Nonnull AdvancementRecipe recipe, @Nonnull IRecipeSlotsView slots, double mouseX, double mouseY) {
-        return recipe.getTooltip(slots, mouseX, mouseY);
+    public void getTooltip(@Nonnull ITooltipBuilder tooltip, @Nonnull AdvancementRecipe recipe, @Nonnull IRecipeSlotsView slots, double mouseX, double mouseY) {
+        recipe.getTooltip(slots, mouseX, mouseY).forEach(tooltip::add);
     }
 }

@@ -4,6 +4,7 @@ import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,12 @@ public class AdvancementIngredientHelper implements IIngredientHelper<IAdvanceme
     @Override
     public String getUniqueId(@Nonnull IAdvancementInfo info, @Nonnull UidContext ctx) {
         return this.getResourceLocation(info).toString();
+    }
+
+    @Nonnull
+    @Override
+    public Object getUid(@Nonnull ITypedIngredient<IAdvancementInfo> typedIngredient, @Nonnull UidContext context) {
+        return this.getResourceLocation(typedIngredient.getIngredient());
     }
 
     @Nonnull

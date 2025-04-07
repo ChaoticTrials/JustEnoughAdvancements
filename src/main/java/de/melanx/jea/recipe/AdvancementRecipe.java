@@ -20,19 +20,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.moddingx.libx.render.RenderHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdvancementRecipe {
 
     private final AdvancementInfo info;
-    @Nullable
     private final AdvancementInfo parent;
 
     public AdvancementRecipe(AdvancementInfo info) {
         this.info = info;
-        this.parent = ClientAdvancements.getInfo(this.info.getParent());
+        this.parent = this.info.getParent().isPresent()
+                ? ClientAdvancements.getInfo(this.info.getParent().get())
+                : null;
     }
 
     public ResourceLocation id() {

@@ -2,11 +2,11 @@ package de.melanx.jea;
 
 import de.melanx.jea.config.JeaConfig;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.moddingx.libx.event.ConfigLoadedEvent;
 
 public class EventHandler {
@@ -30,7 +30,7 @@ public class EventHandler {
     }
     
     @SubscribeEvent
-    public void serverTick(TickEvent.ServerTickEvent event) {
+    public void serverTick(ServerTickEvent.Post event) {
         if (this.needsResyncAdvancements) {
             this.needsResyncAdvancements = false;
             JustEnoughAdvancements.getNetwork().syncAdvancements(event.getServer());

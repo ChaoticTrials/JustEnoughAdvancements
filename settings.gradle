@@ -1,1 +1,9 @@
-rootProject.name= 'JustEnoughAdvancements'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.moddingx.org/release' }
+    }
+}
+
+rootProject.name = 'JustEnoughAdvancements'

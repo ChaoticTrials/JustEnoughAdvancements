@@ -7,13 +7,12 @@ import de.melanx.jea.JustEnoughAdvancements;
 import de.melanx.jea.JustEnoughAdvancementsJEIPlugin;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.api.client.Jea;
-import de.melanx.jea.internal.JeiRestarter;
 import de.melanx.jea.recipe.AdvancementRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.util.*;
 import java.util.function.Function;
@@ -26,7 +25,6 @@ public class ClientAdvancements {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             advancements = info.stream().collect(ImmutableMap.toImmutableMap(x -> x.id, Function.identity()));
             JustEnoughAdvancementsJEIPlugin.runtimeOptional(runtime -> updateAdvancementIngredientsJEI(runtime, 3));
-            JeiRestarter.restart();
         }
     }
     
@@ -42,10 +40,10 @@ public class ClientAdvancements {
             }
         } catch (ConcurrentModificationException e) {
             if (tries > 0) {
-                JustEnoughAdvancements.logger.warn("Failed to update advancement ingredients for JEI. Trying again.");
+                JustEnoughAdvancements.LOGGER.warn("Failed to update advancement ingredients for JEI. Trying again.");
                 updateAdvancementIngredientsJEI(runtime, tries - 1);
             } else {
-                JustEnoughAdvancements.logger.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
+                JustEnoughAdvancements.LOGGER.error("Failed to update advancement ingredients for JEI. Ignoring this for now. Advancements might be out of sync.");
             }
         }
     }
@@ -74,7 +72,8 @@ public class ClientAdvancements {
                 recipes.add(new AdvancementRecipe(info));
             }
         }
-        JustEnoughAdvancements.logger.info("Collected " + recipes.size() + " advancement criterion recipes.");
+
+        JustEnoughAdvancements.LOGGER.info("Collected {} advancement criterion recipes.", recipes.size());
         return ImmutableList.copyOf(recipes);
     }
 }

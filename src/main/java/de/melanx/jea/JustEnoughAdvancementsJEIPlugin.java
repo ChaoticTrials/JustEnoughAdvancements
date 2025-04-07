@@ -20,7 +20,7 @@ import java.util.function.Function;
 @JeiPlugin
 public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
-    public static final ResourceLocation ID = new ResourceLocation(JustEnoughAdvancements.getInstance().modid, "jeiplugin");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(JustEnoughAdvancements.MODID, "jeiplugin");
     
     private static IJeiRuntime runtime;
     
@@ -32,7 +32,7 @@ public class JustEnoughAdvancementsJEIPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registration) {
-        registration.register(Jea.ADVANCEMENT_TYPE, ClientAdvancements.getIAdvancements(), new AdvancementIngredientHelper(), new AdvancementIngredientRenderer());
+        registration.register(Jea.ADVANCEMENT_TYPE, ClientAdvancements.getIAdvancements(), new AdvancementIngredientHelper(), new AdvancementIngredientRenderer(), Jea.ADVANCEMENT_INFO_CODEC);
     }
 
     @Override

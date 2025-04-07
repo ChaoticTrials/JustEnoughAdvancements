@@ -27,7 +27,7 @@ public enum AdvancementCompletion {
     
     public void addTooltip(List<Component> list, AdvancementInfo info) {
         switch (this) {
-            case COMPLETE -> list.add(info.getDisplay().getFrame().getDisplayName().copy().withStyle(ChatFormatting.GREEN));
+            case COMPLETE -> list.add(info.getDisplay().getType().getDisplayName().copy().withStyle(ChatFormatting.GREEN));
             case PARTIALLY_COMPLETE -> list.add(Component.translatable("jea.advancement.partial.simple").withStyle(ChatFormatting.YELLOW));
             case INCOMPLETE -> list.add(Component.translatable("jea.advancement.incomplete").withStyle(ChatFormatting.RED));
         }

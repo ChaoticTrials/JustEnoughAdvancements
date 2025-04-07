@@ -1,9 +1,8 @@
-# Just Enough Advancements (JEA)
+# JustEnoughAdvancements
+An addon for JEI to view advancements.
 
-An addon for [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) which let you search for advancements. This is pronounced like "yeah".
+[![Modrinth](https://badges.moddingx.org/modrinth/versions/5JY3QNIB)](https://modrinth.com/mod/jea)
+[![Modrinth](https://badges.moddingx.org/modrinth/downloads/5JY3QNIB)](https://modrinth.com/mod/jea)
 
-[![Curseforge](http://cf.way2muchnoise.eu/versions/For%20MC_444941_all.svg)](https://www.curseforge.com/minecraft/mc-mods/jea)
-[![CurseForge](http://cf.way2muchnoise.eu/full_444941_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/jea)
-
-[![Modrinth](https://img.shields.io/modrinth/game-versions/5JY3QNIB?color=00AF5C&label=modrinth&logo=modrinth)](https://modrinth.com/mod/jea)
-[![Modrinth](https://img.shields.io/modrinth/dt/5JY3QNIB?color=00AF5C&label=modrinth&logo=modrinth)](https://modrinth.com/mod/jea)
+[![CurseForge](https://badges.moddingx.org/curseforge/versions/444941)](https://www.curseforge.com/minecraft/mc-mods/jea)
+[![CurseForge](https://badges.moddingx.org/curseforge/downloads/444941)](https://www.curseforge.com/minecraft/mc-mods/jea)

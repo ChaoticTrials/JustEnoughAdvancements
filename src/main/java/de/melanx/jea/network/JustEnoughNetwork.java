@@ -3,8 +3,7 @@ package de.melanx.jea.network;
 import de.melanx.jea.AdvancementInfo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.moddingx.libx.mod.ModX;
 import org.moddingx.libx.network.NetworkX;
 
@@ -16,28 +15,25 @@ public class JustEnoughNetwork extends NetworkX {
     
     public JustEnoughNetwork(ModX mod) {
         super(mod);
+
+        this.register(new AdvancementInfoUpdateHandler());
     }
 
     @Override
-    protected Protocol getProtocol() {
-        return Protocol.of("6");
-    }
-
-    @Override
-    protected void registerPackets() {
-        this.registerGame(NetworkDirection.PLAY_TO_CLIENT, new AdvancementInfoUpdateMessage.Serializer(), () -> AdvancementInfoUpdateMessage.Handler::new);
+    protected String getVersion() {
+        return "7";
     }
 
     public void syncAdvancements(MinecraftServer server) {
-        this.channel.send(PacketDistributor.ALL.noArg(), collectAdvancements(server));
+        PacketDistributor.sendToAllPlayers(JustEnoughNetwork.collectAdvancements(server));
     }
 
     public void syncAdvancements(MinecraftServer server, ServerPlayer player) {
-        this.channel.send(PacketDistributor.PLAYER.with(() -> player), collectAdvancements(server));
+        PacketDistributor.sendToPlayer(player, JustEnoughNetwork.collectAdvancements(server));
     }
 
-    private static AdvancementInfoUpdateMessage collectAdvancements(MinecraftServer server) {
+    private static AdvancementInfoUpdateHandler.Message collectAdvancements(MinecraftServer server) {
         Set<AdvancementInfo> advancements = server.getAdvancements().getAllAdvancements().stream().map(AdvancementInfo::create).flatMap(Optional::stream).collect(Collectors.toSet());
-        return new AdvancementInfoUpdateMessage(advancements);
+        return new AdvancementInfoUpdateHandler.Message(advancements);
     }
 }

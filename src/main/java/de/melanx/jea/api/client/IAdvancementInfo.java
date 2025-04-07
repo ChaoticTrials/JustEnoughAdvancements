@@ -4,7 +4,7 @@ import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * An interface describing an advancement in the client.
@@ -31,6 +31,5 @@ public interface IAdvancementInfo {
     /**
      * Gets the parent advancement id or null if this advancement has no parent.
      */
-    @Nullable
-    ResourceLocation getParent();
+    Optional<ResourceLocation> getParent();
 }

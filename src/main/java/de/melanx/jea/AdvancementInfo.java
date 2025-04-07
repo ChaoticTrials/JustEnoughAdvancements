@@ -1,74 +1,85 @@
 package de.melanx.jea;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.melanx.jea.api.client.IAdvancementInfo;
 import de.melanx.jea.config.JeaConfig;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
 public final class AdvancementInfo implements IAdvancementInfo {
-    
+
     public final ResourceLocation id;
     private final DisplayInfo display;
-    @Nullable
-    private final ResourceLocation parent;
+    private final Optional<ResourceLocation> parent;
     private final Component formattedDisplayName;
 
-    private AdvancementInfo(Advancement advancement) {
-        this.id = advancement.getId();
-        this.display = Objects.requireNonNull(advancement.getDisplay());
-        this.parent = advancement.getParent() == null ? null : advancement.getParent().getId();
-        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getFrame().getChatColor());
+    public static final Codec<AdvancementInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ResourceLocation.CODEC.fieldOf("id").forGetter(AdvancementInfo::getId),
+            DisplayInfo.CODEC.fieldOf("display").forGetter(AdvancementInfo::getDisplay),
+            ResourceLocation.CODEC.optionalFieldOf("parent").forGetter(AdvancementInfo::getParent)
+    ).apply(instance, AdvancementInfo::new));
+
+    private AdvancementInfo(ResourceLocation id, DisplayInfo display, Optional<ResourceLocation> parent) {
+        this.id = id;
+        this.display = display;
+        this.parent = parent;
+        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getType().getChatColor());
     }
-    
-    private AdvancementInfo(FriendlyByteBuf buffer) {
-        this.id = buffer.readResourceLocation();
-        this.display = DisplayInfo.fromNetwork(buffer);
-        this.parent = buffer.readBoolean() ? buffer.readResourceLocation() : null;
-        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getFrame().getChatColor());
+
+    private AdvancementInfo(AdvancementHolder advancement) {
+        this(
+                advancement.id(),
+                Objects.requireNonNull(advancement.value().display().orElse(null)),
+                advancement.value().parent()
+        );
     }
-    
+
+    private AdvancementInfo(RegistryFriendlyByteBuf buffer) {
+        this(
+                buffer.readResourceLocation(),
+                DisplayInfo.fromNetwork(buffer),
+                buffer.readOptional(FriendlyByteBuf::readResourceLocation)
+        );
+    }
+
     private AdvancementInfo(IAdvancementInfo wrap) {
-        this.id = wrap.getId();
-        this.display = wrap.getDisplay();
-        this.parent = wrap.getParent();
-        this.formattedDisplayName = this.display.getTitle().copy().withStyle(this.display.getFrame().getChatColor());
+        this(wrap.getId(), wrap.getDisplay(), wrap.getParent());
     }
-    
-    public void write(FriendlyByteBuf buffer) {
+
+    public void write(RegistryFriendlyByteBuf buffer) {
         buffer.writeResourceLocation(this.id);
         this.display.serializeToNetwork(buffer);
-        buffer.writeBoolean(this.parent != null);
-        if (this.parent != null) {
-            buffer.writeResourceLocation(this.parent);
-        }
+        buffer.writeOptional(this.parent, FriendlyByteBuf::writeResourceLocation);
     }
-    
-    public static Optional<AdvancementInfo> create(Advancement advancement) {
-        if (advancement.getDisplay() != null && (JeaConfig.hiddenAdvancements || !advancement.getDisplay().isHidden())) {
+
+    public static Optional<AdvancementInfo> create(AdvancementHolder advancement) {
+        if (advancement.value().display().isPresent() && (JeaConfig.hiddenAdvancements || !advancement.value().display().get().isHidden())) {
             return Optional.of(new AdvancementInfo(advancement));
         } else {
             return Optional.empty();
         }
     }
-    
-    public static AdvancementInfo read(FriendlyByteBuf buffer) {
+
+    public static AdvancementInfo read(RegistryFriendlyByteBuf buffer) {
         return new AdvancementInfo(buffer);
     }
 
     public static AdvancementInfo get(IAdvancementInfo info) {
         if (info instanceof AdvancementInfo impl) {
             return impl;
-        } else {
-            JustEnoughAdvancements.logger.warn("IAdvancementInfo found that is not an instance of AdvancementInfo. This should nt happen. Another mod may have created their own implementation of IAdvancementInfo which is not supported. Class is " + info.getClass());
-            return new AdvancementInfo(info);
         }
+
+        JustEnoughAdvancements.LOGGER.warn("IAdvancementInfo found that is not an instance of AdvancementInfo. This should nt happen. Another mod may have created their own implementation of IAdvancementInfo which is not supported. Class is {}", info.getClass());
+        return new AdvancementInfo(info);
     }
 
     @Override
@@ -81,9 +92,8 @@ public final class AdvancementInfo implements IAdvancementInfo {
         return this.display;
     }
 
-    @Nullable
     @Override
-    public ResourceLocation getParent() {
+    public Optional<ResourceLocation> getParent() {
         return this.parent;
     }
 
@@ -96,7 +106,7 @@ public final class AdvancementInfo implements IAdvancementInfo {
     public String toString() {
         return "AdvancementInfo {" +
                 "id=" + this.id +
-                ", display=" + this.display.serializeToJson() +
+                ", display=" + DisplayInfo.CODEC.encodeStart(JsonOps.INSTANCE, this.display).getOrThrow() +
                 '}';
     }
 
